@@ -1,0 +1,80 @@
+<span
+    i18n:domain="plone.formwidget.namedfile"
+    tal:attributes="id view/id;
+                    class view/klass;
+                    style view/style;
+                    title view/title;
+                    lang view/lang;
+                    onclick view/onclick;
+                    ondblclick view/ondblclick;
+                    onmousedown view/onmousedown;
+                    onmouseup view/onmouseup;
+                    onmouseover view/onmouseover;
+                    onmousemove view/onmousemove;
+                    onmouseout view/onmouseout;
+                    onkeypress view/onkeypress;
+                    onkeydown view/onkeydown;
+                    onkeyup view/onkeyup;
+                    disabled view/disabled;
+                    tabindex view/tabindex;
+                    onfocus view/onfocus;
+                    onblur view/onblur;
+                    onchange view/onchange;
+                    readonly view/readonly;
+                    accesskey view/accesskey;
+                    onselect view/onselect;"
+    tal:define="value view/value;
+                fieldname view/field/__name__ | nothing;
+                filename view/filename;
+                filename_encoded view/filename_encoded;
+                exists python: value is not None;">        
+    <span tal:condition="python:exists and fieldname and context is not None">
+        <img
+            tal:attributes="src string:${context/absolute_url}/@@download/${fieldname}/${filename_encoded};
+                            height view/thumb_height;
+                            width view/thumb_width"
+            /><br />
+        <a
+            tal:content="filename"
+            tal:attributes="href string:${context/absolute_url}/@@download/${fieldname}/${filename_encoded}"
+            >Filename</a>
+        <span class="discreet"> &mdash;
+            <span tal:define="sizekb view/file_size" tal:replace="sizekb">100</span> KB
+        </span>
+    </span>
+    <div tal:condition="view/allow_nochange" style="padding-top: 1em;">
+        <input
+            type="radio"
+            value="nochange"
+            checked="checked"
+            class="noborder"
+            tal:attributes="name string:${view/name}.nochange;
+                            id string:${view/id}-nochange;
+                            onclick string:document.getElementById('${view/id}-input').disabled=true;"
+            />
+        <label
+            tal:attributes="for string:${view/id}-nochange" i18n:translate="image_keep">Keep existing image</label>
+        <br />
+        <input
+            type="radio"
+            value=""
+            class="noborder"
+            tal:attributes="name string:${view/name}.nochange;
+                            id string:${view/id}-replace;
+                            onclick string:document.getElementById('${view/id}-input').disabled=false;" />
+        <label
+            tal:attributes="for string:${view/id}-replace" i18n:translate="image_replace">Replace with new image</label>
+    </div>
+    <div tal:omit-tag="not:view/allow_nochange" style="padding-left: 1.5em; padding-top: 0.5em;">
+        <input
+            type="file"
+            tal:attributes="id string:${view/id}-input;
+                            name view/name;
+                            size view/size;
+                            maxlength view/maxlength;"
+            />
+        <script tal:condition="view/allow_nochange" type="text/javascript"
+            tal:content="string:document.getElementById('${view/id}-input').disabled=true;">
+        </script>
+    </div>
+</span>
