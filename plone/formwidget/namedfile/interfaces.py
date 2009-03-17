@@ -5,9 +5,11 @@ class INamedFileWidget(IFileWidget):
     """A widget for a named file field
     """
     
+    allow_nochange = schema.Bool(title=u"Allow user to keep existing data in lieu of uploading a file?")
     filename = schema.TextLine(title=u"Name of the underlying file", required=False)
     filename_encoded = schema.TextLine(title=u"Filename, URL-encoded", required=False)
     file_size = schema.Int(title=u"Size in kb", required=True, default=0)
+    download_url = schema.URI(title=u"File download URL", required=False)
     
 class INamedImageWidget(INamedFileWidget):
     """A widget for a named image field
