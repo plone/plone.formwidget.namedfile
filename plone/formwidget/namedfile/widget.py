@@ -1,24 +1,28 @@
 import urllib
 
-import zope.component
-import zope.interface
+from zope.component import adapter, getMultiAdapter
+from zope.interface import implementer, implements, implementsOnly
 
 from z3c.form.interfaces import IFieldWidget, IFormLayer, IDataManager, NOVALUE
 from z3c.form.widget import FieldWidget
 from z3c.form.browser import file
 
 from plone.namedfile.interfaces import INamedFileField, INamedImageField, INamed, INamedImage
-from plone.namedfile.utils import safe_basename
+from plone.namedfile.utils import safe_basename, set_headers, stream_data
 
 from plone.formwidget.namedfile.interfaces import INamedFileWidget, INamedImageWidget
 
+from Products.Five.browser import BrowserView
+from zope.publisher.interfaces import IPublishTraverse, NotFound
+
+from Acquisition import Explicit, aq_inner
 
 from ZPublisher.HTTPRequest import FileUpload
 
-class NamedFileWidget(file.FileWidget):
+class NamedFileWidget(Explicit, file.FileWidget):
     """A widget for a named file object
     """
-    zope.interface.implementsOnly(INamedFileWidget)
+    implementsOnly(INamedFileWidget)
 
     klass = u'named-file-widget'
     value = None # don't default to a string
@@ -56,10 +60,19 @@ class NamedFileWidget(file.FileWidget):
         else:
             return urllib.quote_plus(filename)
 
+    @property
+    def download_url(self):
+        if self.field is None:
+            return None
+        if self.filename_encoded:
+            return "%s/++widget++%s/@@download/%s" % (self.request.getURL(), self.field.__name__, self.filename_encoded)
+        else:
+            return "%s/++widget++%s/@@download" % (self.request.getURL(), self.field.__name__)
+
     def extract(self, default=NOVALUE):
         nochange = self.request.get("%s.nochange" % self.name, None)
         if nochange == 'nochange':
-            dm = zope.component.getMultiAdapter((self.context, self.field,), IDataManager)
+            dm = getMultiAdapter((self.context, self.field,), IDataManager)
             return dm.get()
         else:
             return super(NamedFileWidget, self).extract(default)
@@ -67,7 +80,7 @@ class NamedFileWidget(file.FileWidget):
 class NamedImageWidget(NamedFileWidget):
     """A widget for a named file object
     """
-    zope.interface.implementsOnly(INamedImageWidget)
+    implementsOnly(INamedImageWidget)
 
     klass = u'named-image-widget'
 
@@ -81,14 +94,14 @@ class NamedImageWidget(NamedFileWidget):
     @property
     def height(self):
         if INamedImage.providedBy(self.value):
-            return self.value._width
+            return self.value._height
         else:
             return None
 
     @property
     def thumb_width(self):
         width = self.width
-        if width is None:
+        if not width:
             return None
         else:
             return min(width, 48)
@@ -96,7 +109,7 @@ class NamedImageWidget(NamedFileWidget):
     @property
     def thumb_height(self):
         height = self.height
-        if height is None:
+        if not height:
             return None
         else:
             return min(height, 48)
@@ -105,12 +118,49 @@ class NamedImageWidget(NamedFileWidget):
     def alt(self):
         return self.title
 
-@zope.interface.implementer(IFieldWidget)
-@zope.component.adapter(INamedFileField, IFormLayer)
+class Download(BrowserView):
+    """Download a file, via ../context/form/++widget++/@@download/filename    
+    """
+    
+    implements(IPublishTraverse)
+    
+    def __init__(self, context, request):
+        super(BrowserView, self).__init__(context, request)
+        self.filename = None
+        
+    def publishTraverse(self, request, name):
+        
+        if self.filename is None: # ../@@download/filename
+            self.filename = name
+        else:
+            raise NotFound(self, name, request)
+        
+        return self
+    
+    def __call__(self):
+        
+        # TODO: Security check on form view/widget
+        
+        context = aq_inner(self.context.context)
+        field = aq_inner(self.context.field)
+        
+        dm = getMultiAdapter((context, field,), IDataManager)
+        file_ = dm.get()
+        if file_ is None:
+            raise NotFound(self, self.filename, self.request)
+        
+        if not self.filename:
+            self.filename = getattr(file_, 'filename', None)
+        
+        set_headers(file_, self.request.response, filename=self.filename)
+        return stream_data(file_)
+
+@implementer(IFieldWidget)
+@adapter(INamedFileField, IFormLayer)
 def NamedFileFieldWidget(field, request):
     return FieldWidget(field, NamedFileWidget(request))
 
-@zope.interface.implementer(IFieldWidget)
-@zope.component.adapter(INamedImageField, IFormLayer)
+@implementer(IFieldWidget)
+@adapter(INamedImageField, IFormLayer)
 def NamedImageFieldWidget(field, request):
     return FieldWidget(field, NamedImageWidget(request))

@@ -1,6 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="plone.formwidget.namedfile">
 
     <include package="z3c.form" file="meta.zcml" />
@@ -52,6 +53,13 @@
         widget=".interfaces.INamedImageWidget"
         layer="z3c.form.interfaces.IFormLayer"
         template="image_input.pt"
+        />
+
+    <browser:page
+        name="download"
+        for=".interfaces.INamedFileWidget"
+        class=".widget.Download"
+        permission="zope2.View"
         />
 
 </configure>

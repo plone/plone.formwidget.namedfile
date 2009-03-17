@@ -23,20 +23,18 @@
                     readonly view/readonly;
                     accesskey view/accesskey;
                     onselect view/onselect;"
-    tal:define="value view/value;
-                fieldname view/field/__name__ | nothing;
+    tal:define="download_url view/download_url;
                 filename view/filename;
-                filename_encoded view/filename_encoded;
-                exists python: value is not None;">        
-    <span tal:condition="python:exists and fieldname and context is not None">
+                exists python: view.value is not None;">
+    <span tal:condition="python:exists and download_url">
         <img
-            tal:attributes="src string:${context/absolute_url}/@@download/${fieldname}/${filename_encoded};
+            tal:attributes="src download_url;
                             height view/thumb_height;
                             width view/thumb_width"
             /><br />
         <a
             tal:content="filename"
-            tal:attributes="href string:${context/absolute_url}/@@download/${fieldname}/${filename_encoded}"
+            tal:attributes="href download_url"
             >Filename</a>
         <span class="discreet"> &mdash;
             <span tal:define="sizekb view/file_size" tal:replace="sizekb">100</span> KB

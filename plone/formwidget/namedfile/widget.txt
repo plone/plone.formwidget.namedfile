@@ -227,7 +227,7 @@ or changing it.
   <span id="widget.id.file"
         class="named-file-widget required namedfile-field required namedfile-field">
       <span>
-          <a href="http://example.com/content1/@@download/file_field/data.txt">data.txt</a>
+          <a href="http://127.0.0.1/++widget++file_field/@@download/data.txt">data.txt</a>
           <span class="discreet"> &mdash; 0 KB </span>
       </span>
       <div style="padding-top: 1em;">
@@ -256,9 +256,9 @@ or changing it.
   <span id="widget.id.image"
         class="named-image-widget required namedimage-field required namedimage-field">        
       <span>
-          <img src="http://example.com/content1/@@download/image_field/faux.png"
+          <img src="http://127.0.0.1/++widget++image_field/@@download/faux.png"
                width="-1" height="-1" /><br />
-          <a href="http://example.com/content1/@@download/image_field/faux.png">faux.png</a>
+          <a href="http://127.0.0.1/++widget++image_field/@@download/faux.png">faux.png</a>
           <span class="discreet"> &mdash;
               0 KB
           </span>
@@ -315,7 +315,7 @@ If the widgets are rendered again, the newly uploaded files will be shown.
   <span id="widget.id.file"
         class="named-file-widget required namedfile-field required namedfile-field required namedfile-field">
       <span>
-          <a href="http://example.com/content1/@@download/file_field/test2.txt">test2.txt</a>
+          <a href="http://127.0.0.1/++widget++file_field/@@download/test2.txt">test2.txt</a>
           <span class="discreet"> &mdash;
               0 KB
           </span>
@@ -346,8 +346,8 @@ If the widgets are rendered again, the newly uploaded files will be shown.
   <span id="widget.id.image"
         class="named-image-widget required namedimage-field required namedimage-field required namedimage-field">        
       <span>
-          <img src="http://example.com/content1/@@download/image_field/faux2.png" /><br />
-          <a href="http://example.com/content1/@@download/image_field/faux2.png">faux2.png</a>
+          <img src="http://127.0.0.1/++widget++image_field/@@download/faux2.png" /><br />
+          <a href="http://127.0.0.1/++widget++image_field/@@download/faux2.png">faux2.png</a>
           <span class="discreet"> &mdash;
               0 KB
           </span>
