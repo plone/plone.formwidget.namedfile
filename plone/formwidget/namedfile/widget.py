@@ -64,6 +64,8 @@ class NamedFileWidget(Explicit, file.FileWidget):
     def download_url(self):
         if self.field is None:
             return None
+        if self.ignoreContext:
+            return None
         if self.filename_encoded:
             return "%s/++widget++%s/@@download/%s" % (self.request.getURL(), self.field.__name__, self.filename_encoded)
         else:
@@ -140,6 +142,9 @@ class Download(BrowserView):
     def __call__(self):
         
         # TODO: Security check on form view/widget
+        
+        if self.context.ignoreContext:
+            raise NotFound("Cannot get the data file from a widget with no context")
         
         context = aq_inner(self.context.context)
         field = aq_inner(self.context.field)
