@@ -29,6 +29,7 @@ setup(name='plone.formwidget.namedfile',
           'z3c.form',
       ],
       entry_points="""
-      # -*- Entry points: -*-
+      [z3c.autoinclude.plugin]
+      target = plone
       """,
       )
