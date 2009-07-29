@@ -72,12 +72,14 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return "%s/++widget++%s/@@download" % (self.request.getURL(), self.field.__name__)
 
     def extract(self, default=NOVALUE):
-        nochange = self.request.get("%s.nochange" % self.name, None)
-        if nochange == 'nochange':
+        action = self.request.get("%s.nochange" % self.name, None)
+        if action == 'remove':
+            return None
+        elif action == 'nochange':
             dm = getMultiAdapter((self.context, self.field,), IDataManager)
             return dm.get()
-        else:
-            return super(NamedFileWidget, self).extract(default)
+
+        return super(NamedFileWidget, self).extract(default)
 
 class NamedImageWidget(NamedFileWidget):
     """A widget for a named file object

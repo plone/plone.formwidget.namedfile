@@ -238,6 +238,12 @@ or changing it.
                  id="widget.id.file-nochange" />
           <label for="widget.id.file-nochange">Keep existing file</label>
           <br />
+          <input type="radio" value="remove" class="noborder"
+                 name="widget.name.file.nochange"
+                 onclick="document.getElementById('widget.id.file-input').disabled=true"
+                 id="widget.id.file-remove" />
+          <label for="widget.id.file-remove">Remove existing file</label>
+          <br />
           <input type="radio" value="" class="noborder"
                  name="widget.name.file.nochange"
                  onclick="document.getElementById('widget.id.file-input').disabled=false"
@@ -270,6 +276,12 @@ or changing it.
                  onclick="document.getElementById('widget.id.image-input').disabled=true"
                  id="widget.id.image-nochange" />
           <label for="widget.id.image-nochange">Keep existing image</label>
+          <br />
+          <input type="radio" value="remove" class="noborder"
+                 name="widget.name.image.nochange"
+                 onclick="document.getElementById('widget.id.image-input').disabled=true"
+                 id="widget.id.image-remove" />
+          <label for="widget.id.image-remove">Remove existing image</label>
           <br />
           <input type="radio" value="" class="noborder"
                  name="widget.name.image.nochange"
@@ -328,6 +340,12 @@ If the widgets are rendered again, the newly uploaded files will be shown.
                  id="widget.id.file-nochange" />
           <label for="widget.id.file-nochange">Keep existing file</label>
           <br />
+          <input type="radio" value="remove" class="noborder"
+                 name="widget.name.file.nochange"
+                 onclick="document.getElementById('widget.id.file-input').disabled=true"
+                 id="widget.id.file-remove" />
+          <label for="widget.id.file-remove">Remove existing file</label>
+          <br />
           <input type="radio" value="" class="noborder"
                  name="widget.name.file.nochange"
                  onclick="document.getElementById('widget.id.file-input').disabled=false"
@@ -359,6 +377,12 @@ If the widgets are rendered again, the newly uploaded files will be shown.
                  onclick="document.getElementById('widget.id.image-input').disabled=true"
                  id="widget.id.image-nochange" />
           <label for="widget.id.image-nochange">Keep existing image</label>
+          <br />
+          <input type="radio" value="remove" class="noborder"
+                 name="widget.name.image.nochange"
+                 onclick="document.getElementById('widget.id.image-input').disabled=true"
+                 id="widget.id.image-remove" />
+          <label for="widget.id.image-remove">Remove existing image</label>
           <br />
           <input type="radio" value="" class="noborder"
                  name="widget.name.image.nochange"
