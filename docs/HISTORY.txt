@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0a2 (2009-08-02)
+1.0b1 (2009-08-02)
 ------------------
 
 * Add option to remove files or images. This fixes dexterity issue #71:
