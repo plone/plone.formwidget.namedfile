@@ -52,17 +52,19 @@
             />
         <label
             tal:attributes="for string:${view/id}-nochange" i18n:translate="image_keep">Keep existing image</label>
-        <br />
-        <input
-            type="radio"
-            value="remove"
-            class="noborder"
-            tal:attributes="name string:${view/name}.nochange;
-                            id string:${view/id}-remove;
-                            onclick string:document.getElementById('${view/id}-input').disabled=true;"
-            />
-        <label
-            tal:attributes="for string:${view/id}-remove" i18n:translate="image_remove">Remove existing image</label>
+        <tal:block condition="not:view/field/required">
+            <br />
+            <input
+                type="radio"
+                value="remove"
+                class="noborder"
+                tal:attributes="name string:${view/name}.nochange;
+                                id string:${view/id}-remove;
+                                onclick string:document.getElementById('${view/id}-input').disabled=true;"
+                />
+            <label
+                tal:attributes="for string:${view/id}-remove" i18n:translate="image_remove">Remove existing image</label>
+        </tal:block>
         <br />
         <input
             type="radio"
