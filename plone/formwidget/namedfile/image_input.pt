@@ -25,8 +25,10 @@
                     onselect view/onselect;"
     tal:define="download_url view/download_url;
                 filename view/filename;
-                exists python: view.value is not None;">
-    <span tal:condition="python:exists and download_url">
+                exists python: view.value is not None;
+                nochange view/nochange;
+                allow_nochange view/allow_nochange;">
+    <span tal:condition="python:exists and download_url and nochange in (None, 'nochange',)">
         <img
             tal:attributes="src download_url;
                             height view/thumb_height;
@@ -40,15 +42,15 @@
             <span tal:define="sizekb view/file_size" tal:replace="sizekb">100</span> KB
         </span>
     </span>
-    <div tal:condition="view/allow_nochange" style="padding-top: 1em;">
+    <div tal:condition="allow_nochange" style="padding-top: 1em;">
         <input
             type="radio"
             value="nochange"
-            checked="checked"
             class="noborder"
             tal:attributes="name string:${view/name}.nochange;
                             id string:${view/id}-nochange;
-                            onclick string:document.getElementById('${view/id}-input').disabled=true;"
+                            onclick string:document.getElementById('${view/id}-input').disabled=true;
+                            checked python:(nochange is None or nochange == 'nochange') and 'checked' or None;"
             />
         <label
             tal:attributes="for string:${view/id}-nochange" i18n:translate="image_keep">Keep existing image</label>
@@ -60,7 +62,8 @@
                 class="noborder"
                 tal:attributes="name string:${view/name}.nochange;
                                 id string:${view/id}-remove;
-                                onclick string:document.getElementById('${view/id}-input').disabled=true;"
+                                onclick string:document.getElementById('${view/id}-input').disabled=true;
+                                checked python:nochange == 'remove' and 'checked' or None;"
                 />
             <label
                 tal:attributes="for string:${view/id}-remove" i18n:translate="image_remove">Remove existing image</label>
@@ -68,15 +71,16 @@
         <br />
         <input
             type="radio"
-            value=""
+            value="replace"
             class="noborder"
             tal:attributes="name string:${view/name}.nochange;
                             id string:${view/id}-replace;
-                            onclick string:document.getElementById('${view/id}-input').disabled=false;" />
+                            onclick string:document.getElementById('${view/id}-input').disabled=false;
+                            checked python:nochange == 'replace' and 'checked' or None;" />
         <label
             tal:attributes="for string:${view/id}-replace" i18n:translate="image_replace">Replace with new image</label>
     </div>
-    <div tal:omit-tag="not:view/allow_nochange" style="padding-left: 1.5em; padding-top: 0.5em;">
+    <div tal:omit-tag="not:allow_nochange" style="padding-left: 1.5em; padding-top: 0.5em;">
         <input
             type="file"
             tal:attributes="id string:${view/id}-input;
@@ -84,7 +88,7 @@
                             size view/size;
                             maxlength view/maxlength;"
             />
-        <script tal:condition="view/allow_nochange" type="text/javascript"
+        <script tal:condition="python:allow_nochange and nochange != 'replace'" type="text/javascript"
             tal:content="string:document.getElementById('${view/id}-input').disabled=true;">
         </script>
     </div>

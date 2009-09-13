@@ -228,23 +228,20 @@ or changing it.
         class="named-file-widget required namedfile-field required namedfile-field">
       <span>
           <a href="http://127.0.0.1/++widget++file_field/@@download/data.txt">data.txt</a>
-          <span class="discreet"> &mdash; 0 KB </span>
+          <span class="discreet"> &mdash;
+              0 KB
+          </span>
       </span>
       <div style="padding-top: 1em;">
           <input type="radio" value="nochange"
-                 checked="checked" class="noborder"
+                 class="noborder" checked="checked"
                  name="widget.name.file.nochange"
                  onclick="document.getElementById('widget.id.file-input').disabled=true"
                  id="widget.id.file-nochange" />
           <label for="widget.id.file-nochange">Keep existing file</label>
+  <BLANKLINE>
           <br />
-          <input type="radio" value="remove" class="noborder"
-                 name="widget.name.file.nochange"
-                 onclick="document.getElementById('widget.id.file-input').disabled=true"
-                 id="widget.id.file-remove" />
-          <label for="widget.id.file-remove">Remove existing file</label>
-          <br />
-          <input type="radio" value="" class="noborder"
+          <input type="radio" value="replace" class="noborder"
                  name="widget.name.file.nochange"
                  onclick="document.getElementById('widget.id.file-input').disabled=false"
                  id="widget.id.file-replace" />
@@ -256,11 +253,12 @@ or changing it.
           <script type="text/javascript">document.getElementById('widget.id.file-input').disabled=true;</script>
       </div>
   </span>
+  <BLANKLINE>
 
   >>> image_widget.update()
   >>> print image_widget.render()
   <span id="widget.id.image"
-        class="named-image-widget required namedimage-field required namedimage-field">        
+        class="named-image-widget required namedimage-field required namedimage-field">
       <span>
           <img src="http://127.0.0.1/++widget++image_field/@@download/faux.png"
                width="-1" height="-1" /><br />
@@ -271,19 +269,14 @@ or changing it.
       </span>
       <div style="padding-top: 1em;">
           <input type="radio" value="nochange"
-                 checked="checked" class="noborder"
+                 class="noborder" checked="checked"
                  name="widget.name.image.nochange"
                  onclick="document.getElementById('widget.id.image-input').disabled=true"
                  id="widget.id.image-nochange" />
           <label for="widget.id.image-nochange">Keep existing image</label>
+  <BLANKLINE>
           <br />
-          <input type="radio" value="remove" class="noborder"
-                 name="widget.name.image.nochange"
-                 onclick="document.getElementById('widget.id.image-input').disabled=true"
-                 id="widget.id.image-remove" />
-          <label for="widget.id.image-remove">Remove existing image</label>
-          <br />
-          <input type="radio" value="" class="noborder"
+          <input type="radio" value="replace" class="noborder"
                  name="widget.name.image.nochange"
                  onclick="document.getElementById('widget.id.image-input').disabled=false"
                  id="widget.id.image-replace" />
@@ -295,6 +288,7 @@ or changing it.
           <script type="text/javascript">document.getElementById('widget.id.image-input').disabled=true;</script>
       </div>
   </span>
+  <BLANKLINE>
 
 (the image height and width are taken from the NamedImage instance, and here
 default to -1 since we didn't upload a real image)
@@ -334,19 +328,14 @@ If the widgets are rendered again, the newly uploaded files will be shown.
       </span>
       <div style="padding-top: 1em;">
           <input type="radio" value="nochange"
-                 checked="checked" class="noborder"
+                 class="noborder" checked="checked"
                  name="widget.name.file.nochange"
                  onclick="document.getElementById('widget.id.file-input').disabled=true"
                  id="widget.id.file-nochange" />
           <label for="widget.id.file-nochange">Keep existing file</label>
+  <BLANKLINE>
           <br />
-          <input type="radio" value="remove" class="noborder"
-                 name="widget.name.file.nochange"
-                 onclick="document.getElementById('widget.id.file-input').disabled=true"
-                 id="widget.id.file-remove" />
-          <label for="widget.id.file-remove">Remove existing file</label>
-          <br />
-          <input type="radio" value="" class="noborder"
+          <input type="radio" value="replace" class="noborder"
                  name="widget.name.file.nochange"
                  onclick="document.getElementById('widget.id.file-input').disabled=false"
                  id="widget.id.file-replace" />
@@ -360,11 +349,13 @@ If the widgets are rendered again, the newly uploaded files will be shown.
   </span>
   <BLANKLINE>
 
+
   >>> print image_widget.render()
   <span id="widget.id.image"
-        class="named-image-widget required namedimage-field required namedimage-field required namedimage-field">        
+        class="named-image-widget required namedimage-field required namedimage-field required namedimage-field">
       <span>
-          <img src="http://127.0.0.1/++widget++image_field/@@download/faux2.png" /><br />
+          <img src="http://127.0.0.1/++widget++image_field/@@download/faux2.png"
+               width="48" height="48" /><br />
           <a href="http://127.0.0.1/++widget++image_field/@@download/faux2.png">faux2.png</a>
           <span class="discreet"> &mdash;
               0 KB
@@ -372,19 +363,14 @@ If the widgets are rendered again, the newly uploaded files will be shown.
       </span>
       <div style="padding-top: 1em;">
           <input type="radio" value="nochange"
-                 checked="checked" class="noborder"
+                 class="noborder" checked="checked"
                  name="widget.name.image.nochange"
                  onclick="document.getElementById('widget.id.image-input').disabled=true"
                  id="widget.id.image-nochange" />
           <label for="widget.id.image-nochange">Keep existing image</label>
+  <BLANKLINE>
           <br />
-          <input type="radio" value="remove" class="noborder"
-                 name="widget.name.image.nochange"
-                 onclick="document.getElementById('widget.id.image-input').disabled=true"
-                 id="widget.id.image-remove" />
-          <label for="widget.id.image-remove">Remove existing image</label>
-          <br />
-          <input type="radio" value="" class="noborder"
+          <input type="radio" value="replace" class="noborder"
                  name="widget.name.image.nochange"
                  onclick="document.getElementById('widget.id.image-input').disabled=false"
                  id="widget.id.image-replace" />
@@ -486,3 +472,43 @@ and content type.
   u'random.png'
   >>> image_obj.contentType
   'image/x-dummy'
+
+The validator
+-------------
+
+If the user clicked 'replace' but did not provide a file, we want to get a
+validation error.
+
+  >>> from plone.formwidget.namedfile.validator import NamedFileWidgetValidator
+
+If 'nochange' is omitted, we don't get any validation errors.
+
+  >>> request = TestRequest(form={'widget.name.file': myfile})
+  >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
+  >>> validator.validate(None) is None
+  True
+
+However, if it is set to 'replace' and there is no value provided, we get the
+InvalidState exception from validator.py (its docstring is displayed to the
+user).
+
+  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.nochange': 'replace'})
+  >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
+  >>> validator.validate(None)
+  Traceback (most recent call last):
+  ...
+  InvalidState
+  
+If we provide a file, all is good.
+
+  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.nochange': 'replace'})
+  >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
+  >>> validator.validate(file_obj) is None
+  True
+  
+Similarly, if we really wanted to remove the file, we won't complain.
+
+  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.nochange': 'remove'})
+  >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
+  >>> validator.validate(None) is None
+  True

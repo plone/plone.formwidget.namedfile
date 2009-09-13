@@ -9,6 +9,7 @@
     <include package="plone.namedfile" />
 
     <adapter factory=".converter.NamedDataConverter" />
+    <adapter factory=".validator.NamedFileWidgetValidator" />
 
     <class class=".widget.NamedFileWidget">
         <require

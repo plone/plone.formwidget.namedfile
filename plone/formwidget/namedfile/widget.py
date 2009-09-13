@@ -70,7 +70,10 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return "%s/++widget++%s/@@download/%s" % (self.request.getURL(), self.field.__name__, self.filename_encoded)
         else:
             return "%s/++widget++%s/@@download" % (self.request.getURL(), self.field.__name__)
-
+    
+    def nochange(self):
+        return self.request.get("%s.nochange" % self.name, None)
+    
     def extract(self, default=NOVALUE):
         action = self.request.get("%s.nochange" % self.name, None)
         if action == 'remove':
@@ -106,7 +109,7 @@ class NamedImageWidget(NamedFileWidget):
     def thumb_width(self):
         width = self.width
         if not width:
-            return None
+            return 48
         else:
             return min(width, 48)
 
@@ -114,7 +117,7 @@ class NamedImageWidget(NamedFileWidget):
     def thumb_height(self):
         height = self.height
         if not height:
-            return None
+            return 48
         else:
             return min(height, 48)
 

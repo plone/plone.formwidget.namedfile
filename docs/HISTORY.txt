@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.0b2 (2009-09-13)
+------------------
+
+* Make the widget more robust to validation errors elsewhere in the form.
+  Fixes http://code.google.com/p/dexterity/issues/detail?id=76.
+  [optilude]
+
 1.0b1 (2009-08-02)
 ------------------
 
