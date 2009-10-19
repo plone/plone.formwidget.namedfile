@@ -109,17 +109,17 @@ class NamedImageWidget(NamedFileWidget):
     def thumb_width(self):
         width = self.width
         if not width:
-            return 48
+            return 128
         else:
-            return min(width, 48)
+            return min(width, 128)
 
     @property
     def thumb_height(self):
         height = self.height
         if not height:
-            return 48
+            return 128
         else:
-            return min(height, 48)
+            return min(height, 128)
 
     @property
     def alt(self):

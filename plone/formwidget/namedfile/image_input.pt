@@ -31,7 +31,6 @@
     <span tal:condition="python:exists and download_url and nochange in (None, 'nochange',)">
         <img
             tal:attributes="src download_url;
-                            height view/thumb_height;
                             width view/thumb_width"
             /><br />
         <a

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0b3 (unreleased)
+------------------
+
+* In lieu of real image scaling, at least make sure the thumbnail used on the
+  image input widget has the correct aspect ratio.  Fixes
+  http://code.google.com/p/dexterity/issues/detail?id=77
+  [davisagli]
+
 1.0b2 (2009-09-13)
 ------------------
 

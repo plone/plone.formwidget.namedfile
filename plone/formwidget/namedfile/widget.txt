@@ -102,12 +102,12 @@ If nothing is found in the request, the default is returned:
   >>> file_widget.request = TestRequest()
   >>> file_widget.update()
   >>> file_widget.extract()
-  <NOVALUE>
+  <NO_VALUE>
 
   >>> image_widget.request = TestRequest()
   >>> image_widget.update()
   >>> image_widget.extract()
-  <NOVALUE>
+  <NO_VALUE>
 
 We can also handle file-upload objects.
 
@@ -225,7 +225,7 @@ or changing it.
   >>> file_widget.update()
   >>> print file_widget.render()
   <span id="widget.id.file"
-        class="named-file-widget required namedfile-field required namedfile-field">
+        class="named-file-widget required namedfile-field">
       <span>
           <a href="http://127.0.0.1/++widget++file_field/@@download/data.txt">data.txt</a>
           <span class="discreet"> &mdash;
@@ -258,10 +258,10 @@ or changing it.
   >>> image_widget.update()
   >>> print image_widget.render()
   <span id="widget.id.image"
-        class="named-image-widget required namedimage-field required namedimage-field">
+        class="named-image-widget required namedimage-field">
       <span>
           <img src="http://127.0.0.1/++widget++image_field/@@download/faux.png"
-               width="-1" height="-1" /><br />
+               width="-1" /><br />
           <a href="http://127.0.0.1/++widget++image_field/@@download/faux.png">faux.png</a>
           <span class="discreet"> &mdash;
               0 KB
@@ -319,7 +319,7 @@ If the widgets are rendered again, the newly uploaded files will be shown.
 
   >>> print file_widget.render()
   <span id="widget.id.file"
-        class="named-file-widget required namedfile-field required namedfile-field required namedfile-field">
+        class="named-file-widget required namedfile-field">
       <span>
           <a href="http://127.0.0.1/++widget++file_field/@@download/test2.txt">test2.txt</a>
           <span class="discreet"> &mdash;
@@ -352,10 +352,10 @@ If the widgets are rendered again, the newly uploaded files will be shown.
 
   >>> print image_widget.render()
   <span id="widget.id.image"
-        class="named-image-widget required namedimage-field required namedimage-field required namedimage-field">
+        class="named-image-widget required namedimage-field">
       <span>
           <img src="http://127.0.0.1/++widget++image_field/@@download/faux2.png"
-               width="48" height="48" /><br />
+               width="128" /><br />
           <a href="http://127.0.0.1/++widget++image_field/@@download/faux2.png">faux2.png</a>
           <span class="discreet"> &mdash;
               0 KB
