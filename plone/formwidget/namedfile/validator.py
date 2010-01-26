@@ -14,5 +14,6 @@ class NamedFileWidgetValidator(validator.SimpleFieldValidator):
         action = self.request.get("%s.nochange" % self.widget.name, None)
         if action == 'replace' and value is None:
             raise InvalidState()
+        return super(NamedFileWidgetValidator, self).validate(value)
 
 validator.WidgetValidatorDiscriminators(NamedFileWidgetValidator, field=INamedField)

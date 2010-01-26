@@ -82,7 +82,15 @@ class NamedFileWidget(Explicit, file.FileWidget):
             dm = getMultiAdapter((self.context, self.field,), IDataManager)
             return dm.get()
 
-        return super(NamedFileWidget, self).extract(default)
+        # empty unnamed FileUploads should not count as a value
+        value = super(NamedFileWidget, self).extract(default)
+        if isinstance(value, FileUpload):
+            value.seek(0)
+            data = value.read()
+            if not data and not value.filename:
+                return default
+            value.seek(0)
+        return value
 
 class NamedImageWidget(NamedFileWidget):
     """A widget for a named file object

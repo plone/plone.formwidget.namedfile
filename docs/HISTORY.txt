@@ -4,6 +4,13 @@ Changelog
 1.0b3 (unreleased)
 ------------------
 
+* Fix bug where fields that failed validation for requiredness mistakenly
+  interpret the empty FileUpload in the request as a real value.
+  [davisagli]
+
+* Fix bug where fields were not validated for requiredness or field constraints.
+  [davisagli]
+
 * In lieu of real image scaling, at least make sure the thumbnail used on the
   image input widget has the correct aspect ratio.  Fixes
   http://code.google.com/p/dexterity/issues/detail?id=77

@@ -152,6 +152,23 @@ The rendering is unchanged.
              name="widget.name.image" />
   </span>
 
+Empty, unnamed FileUploads are treated as having no value:
+
+  >>> emptyfile = cStringIO.StringIO('')
+  >>> aFieldStorage = FieldStorageStub(emptyfile, filename='')
+  >>> myEmptyUpload = FileUpload(aFieldStorage)
+
+  >>> file_widget.request = TestRequest(form={'widget.name.file': myEmptyUpload})
+  >>> file_widget.update()
+  >>> file_widget.extract()
+  <NO_VALUE>
+
+  >>> image_widget.request = TestRequest(form={'widget.name.image': myEmptyUpload})
+  >>> image_widget.update()
+  >>> image_widget.extract()
+  <NO_VALUE>
+
+
 Rendering field widgets
 -----------------------
 
@@ -473,6 +490,18 @@ and content type.
   >>> image_obj.contentType
   'image/x-dummy'
 
+However, a zero-length, unnamed FileUpload results in the field's missing_value
+being returned.
+
+  >>> myfile = cStringIO.StringIO('')
+  >>> aFieldStorage = FieldStorageStub(myfile, filename='', headers={'Content-Type': 'application/octet-stream'})
+  >>> field_value = file_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> field_value is IContent['file_field'].missing_value
+  True
+  >>> field_value = image_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> field_value is IContent['file_field'].missing_value
+  True
+
 The validator
 -------------
 
@@ -481,10 +510,16 @@ validation error.
 
   >>> from plone.formwidget.namedfile.validator import NamedFileWidgetValidator
 
-If 'nochange' is omitted, we don't get any validation errors.
+If 'nochange' is omitted and the value is None, we should get a validation error
+only when the field is required.
 
   >>> request = TestRequest(form={'widget.name.file': myfile})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
+  >>> validator.validate(None) is None
+  Traceback (most recent call last):
+  ...
+  RequiredMissing
+  >>> IContent['file_field'].required = False
   >>> validator.validate(None) is None
   True
 
@@ -506,9 +541,15 @@ If we provide a file, all is good.
   >>> validator.validate(file_obj) is None
   True
   
-Similarly, if we really wanted to remove the file, we won't complain.
+Similarly, if we really wanted to remove the file, we won't complain, unless
+we again make the field required.
 
   >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.nochange': 'remove'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(None) is None
   True
+  >>> IContent['file_field'].required = True
+  >>> validator.validate(None) is None
+  Traceback (most recent call last):
+  ...
+  RequiredMissing
