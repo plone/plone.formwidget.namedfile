@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b3 (unreleased)
+1.0b3 (2010-01-25)
 ------------------
 
 * Fix bug where fields that failed validation for requiredness mistakenly
