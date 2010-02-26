@@ -518,7 +518,7 @@ only when the field is required.
   >>> validator.validate(None) is None
   Traceback (most recent call last):
   ...
-  RequiredMissing
+  RequiredMissing...
   >>> IContent['file_field'].required = False
   >>> validator.validate(None) is None
   True
@@ -552,4 +552,4 @@ we again make the field required.
   >>> validator.validate(None) is None
   Traceback (most recent call last):
   ...
-  RequiredMissing
+  RequiredMissing...
