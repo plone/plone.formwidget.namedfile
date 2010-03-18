@@ -15,8 +15,6 @@
                     onkeypress view/onkeypress;
                     onkeydown view/onkeydown;
                     onkeyup view/onkeyup;
-                    disabled view/disabled;
-                    tabindex view/tabindex;
                     onfocus view/onfocus;
                     onblur view/onblur;
                     onchange view/onchange;
@@ -80,6 +78,7 @@
             tal:attributes="id string:${view/id}-input;
                             name view/name;
                             size view/size;
+                            disabled view/disabled;
                             maxlength view/maxlength;"
             />
         <script tal:condition="python:allow_nochange and nochange != 'replace'" type="text/javascript"

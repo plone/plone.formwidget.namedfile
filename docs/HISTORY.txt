@@ -4,6 +4,9 @@ Changelog
 1.0b4 (unreleased)
 ------------------
 
+* Disabled state was being applied to the wrong tag (span instead of the 
+  input) for images and files, and we're not using tabindex anymore.
+  [limi]
 
 1.0b3 (2010-01-25)
 ------------------
