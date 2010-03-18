@@ -70,14 +70,14 @@ Later, we will show more advanced functionality when using a field-widget.
 
   >>> file_widget.update()
   >>> print file_widget.render()
-  <span id="widget.id.file" class="named-file-widget">
+  <span class="named-file-widget" id="widget.id.file">
     <input type="file" id="widget.id.file-input"
            name="widget.name.file" />
   </span>
 
   >>> image_widget.update()
   >>> print image_widget.render()
-  <span id="widget.id.image" class="named-image-widget">
+  <span class="named-image-widget" id="widget.id.image">
       <input type="file" id="widget.id.image-input"
              name="widget.name.image" />
   </span>
@@ -141,13 +141,13 @@ Now build a FileUpload:
 The rendering is unchanged.
 
   >>> print file_widget.render()
-  <span id="widget.id.file" class="named-file-widget">
+  <span class="named-file-widget" id="widget.id.file">
       <input type="file" id="widget.id.file-input"
              name="widget.name.file" />
   </span>
 
   >>> print image_widget.render()
-  <span id="widget.id.image" class="named-image-widget">
+  <span class="named-image-widget" id="widget.id.image">
       <input type="file" id="widget.id.image-input"
              name="widget.name.image" />
   </span>
@@ -218,16 +218,16 @@ At first, there is no value, so the behaviour is much like before:
 
   >>> file_widget.update()
   >>> print file_widget.render()
-  <span id="widget.id.file"
-        class="named-file-widget required namedfile-field">
+  <span class="named-file-widget required namedfile-field"
+        id="widget.id.file">
       <input type="file" id="widget.id.file-input"
              name="widget.name.file" />
   </span>
   
   >>> image_widget.update()
   >>> print image_widget.render()
-  <span id="widget.id.image"
-        class="named-image-widget required namedimage-field">
+  <span class="named-image-widget required namedimage-field"
+        id="widget.id.image">
       <input type="file" id="widget.id.image-input"
              name="widget.name.image" />
   </span>
@@ -241,8 +241,8 @@ or changing it.
 
   >>> file_widget.update()
   >>> print file_widget.render()
-  <span id="widget.id.file"
-        class="named-file-widget required namedfile-field">
+  <span class="named-file-widget required namedfile-field"
+        id="widget.id.file">
       <span>
           <a href="http://127.0.0.1/++widget++file_field/@@download/data.txt">data.txt</a>
           <span class="discreet"> &mdash;
@@ -274,8 +274,8 @@ or changing it.
 
   >>> image_widget.update()
   >>> print image_widget.render()
-  <span id="widget.id.image"
-        class="named-image-widget required namedimage-field">
+  <span class="named-image-widget required namedimage-field"
+        id="widget.id.image">
       <span>
           <img src="http://127.0.0.1/++widget++image_field/@@download/faux.png"
                width="-1" /><br />
@@ -335,8 +335,8 @@ empty, the behaviour is the same as before:
 If the widgets are rendered again, the newly uploaded files will be shown.
 
   >>> print file_widget.render()
-  <span id="widget.id.file"
-        class="named-file-widget required namedfile-field">
+  <span class="named-file-widget required namedfile-field"
+        id="widget.id.file">
       <span>
           <a href="http://127.0.0.1/++widget++file_field/@@download/test2.txt">test2.txt</a>
           <span class="discreet"> &mdash;
@@ -368,8 +368,8 @@ If the widgets are rendered again, the newly uploaded files will be shown.
 
 
   >>> print image_widget.render()
-  <span id="widget.id.image"
-        class="named-image-widget required namedimage-field">
+  <span class="named-image-widget required namedimage-field"
+        id="widget.id.image">
       <span>
           <img src="http://127.0.0.1/++widget++image_field/@@download/faux2.png"
                width="128" /><br />
