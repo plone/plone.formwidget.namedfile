@@ -23,9 +23,9 @@
                     onselect view/onselect;"
     tal:define="download_url view/download_url;
                 exists python: view.value is not None;
-                nochange view/nochange;
+                action view/nochange;
                 allow_nochange view/allow_nochange;">
-    <span tal:condition="python: exists and download_url and nochange=='nochange'">
+    <span tal:condition="python: exists and download_url and action=='nochange'">
         <a
             tal:content="view/filename"
             tal:attributes="href download_url"
@@ -42,7 +42,7 @@
             tal:attributes="name string:${view/name}.nochange;
                             id string:${view/id}-nochange;
                             onclick string:document.getElementById('${view/id}-input').disabled=true;
-                            checked python:(nochange is None or nochange == 'nochange') and 'checked' or None;"
+                            checked python:(action == 'nochange') and 'checked' or None;"
             />
         <label
             tal:attributes="for string:${view/id}-nochange" i18n:translate="file_keep">Keep existing file</label>
@@ -55,7 +55,7 @@
                 tal:attributes="name string:${view/name}.nochange;
                                 id string:${view/id}-remove;
                                 onclick string:document.getElementById('${view/id}-input').disabled=true;
-                                checked python:nochange == 'remove' and 'checked' or None;"
+                                checked python:action == 'remove' and 'checked' or None;"
                 />
             <label
                 tal:attributes="for string:${view/id}-remove" i18n:translate="file_remove">Remove existing file</label>
@@ -68,7 +68,7 @@
             tal:attributes="name string:${view/name}.nochange;
                             id string:${view/id}-replace;
                             onclick string:document.getElementById('${view/id}-input').disabled=false;
-                            checked python:nochange == 'replace' and 'checked' or None;" />
+                            checked python:action == 'replace' and 'checked' or None;" />
         <label
             tal:attributes="for string:${view/id}-replace" i18n:translate="file_replace">Replace with new file</label>
     </div>
@@ -81,7 +81,7 @@
                             disabled view/disabled;
                             maxlength view/maxlength;"
             />
-        <script tal:condition="python:allow_nochange and nochange != 'replace'" type="text/javascript"
+        <script tal:condition="python:allow_nochange and action != 'replace'" type="text/javascript"
             tal:content="string:document.getElementById('${view/id}-input').disabled=true;">
         </script>
     </div>
