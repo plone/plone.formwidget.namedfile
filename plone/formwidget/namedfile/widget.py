@@ -71,11 +71,11 @@ class NamedFileWidget(Explicit, file.FileWidget):
         else:
             return "%s/++widget++%s/@@download" % (self.request.getURL(), self.field.__name__)
     
-    def nochange(self):
-        return self.request.get("%s.nochange" % self.name, "nochange")
+    def action(self):
+        return self.request.get("%s.action" % self.name, "nochange")
     
     def extract(self, default=NOVALUE):
-        action = self.request.get("%s.nochange" % self.name, None)
+        action = self.request.get("%s.action" % self.name, None)
         if action == 'remove':
             return None
         elif action == 'nochange':

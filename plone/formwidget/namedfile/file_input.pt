@@ -23,7 +23,7 @@
                     onselect view/onselect;"
     tal:define="download_url view/download_url;
                 exists python: view.value is not None;
-                action view/nochange;
+                action view/action;
                 allow_nochange view/allow_nochange;">
     <span tal:condition="python: exists and download_url and action=='nochange'">
         <a
@@ -39,7 +39,7 @@
             type="radio"
             value="nochange"
             class="noborder"
-            tal:attributes="name string:${view/name}.nochange;
+            tal:attributes="name string:${view/name}.action;
                             id string:${view/id}-nochange;
                             onclick string:document.getElementById('${view/id}-input').disabled=true;
                             checked python:(action == 'nochange') and 'checked' or None;"
@@ -52,7 +52,7 @@
                 type="radio"
                 value="remove"
                 class="noborder"
-                tal:attributes="name string:${view/name}.nochange;
+                tal:attributes="name string:${view/name}.action;
                                 id string:${view/id}-remove;
                                 onclick string:document.getElementById('${view/id}-input').disabled=true;
                                 checked python:action == 'remove' and 'checked' or None;"
@@ -65,7 +65,7 @@
             type="radio"
             value="replace"
             class="noborder"
-            tal:attributes="name string:${view/name}.nochange;
+            tal:attributes="name string:${view/name}.action;
                             id string:${view/id}-replace;
                             onclick string:document.getElementById('${view/id}-input').disabled=false;
                             checked python:action == 'replace' and 'checked' or None;" />

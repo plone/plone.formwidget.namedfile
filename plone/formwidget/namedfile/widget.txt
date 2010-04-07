@@ -252,14 +252,14 @@ or changing it.
       <div style="padding-top: 1em;">
           <input type="radio" value="nochange"
                  class="noborder" checked="checked"
-                 name="widget.name.file.nochange"
+                 name="widget.name.file.action"
                  onclick="document.getElementById('widget.id.file-input').disabled=true"
                  id="widget.id.file-nochange" />
           <label for="widget.id.file-nochange">Keep existing file</label>
   <BLANKLINE>
           <br />
           <input type="radio" value="replace" class="noborder"
-                 name="widget.name.file.nochange"
+                 name="widget.name.file.action"
                  onclick="document.getElementById('widget.id.file-input').disabled=false"
                  id="widget.id.file-replace" />
           <label for="widget.id.file-replace">Replace with new file</label>
@@ -287,14 +287,14 @@ or changing it.
       <div style="padding-top: 1em;">
           <input type="radio" value="nochange"
                  class="noborder" checked="checked"
-                 name="widget.name.image.nochange"
+                 name="widget.name.image.action"
                  onclick="document.getElementById('widget.id.image-input').disabled=true"
                  id="widget.id.image-nochange" />
           <label for="widget.id.image-nochange">Keep existing image</label>
   <BLANKLINE>
           <br />
           <input type="radio" value="replace" class="noborder"
-                 name="widget.name.image.nochange"
+                 name="widget.name.image.action"
                  onclick="document.getElementById('widget.id.image-input').disabled=false"
                  id="widget.id.image-replace" />
           <label for="widget.id.image-replace">Replace with new image</label>
@@ -311,7 +311,7 @@ or changing it.
 default to -1 since we didn't upload a real image)
 
 Notice how there are radio buttons to decide whether to upload a new file or
-keep the existing one. If the '.nochange' field is not submitted or is
+keep the existing one. If the '.action' field is not submitted or is
 empty, the behaviour is the same as before:
 
   >>> myfile = cStringIO.StringIO('File upload contents.')
@@ -346,14 +346,14 @@ If the widgets are rendered again, the newly uploaded files will be shown.
       <div style="padding-top: 1em;">
           <input type="radio" value="nochange"
                  class="noborder" checked="checked"
-                 name="widget.name.file.nochange"
+                 name="widget.name.file.action"
                  onclick="document.getElementById('widget.id.file-input').disabled=true"
                  id="widget.id.file-nochange" />
           <label for="widget.id.file-nochange">Keep existing file</label>
   <BLANKLINE>
           <br />
           <input type="radio" value="replace" class="noborder"
-                 name="widget.name.file.nochange"
+                 name="widget.name.file.action"
                  onclick="document.getElementById('widget.id.file-input').disabled=false"
                  id="widget.id.file-replace" />
           <label for="widget.id.file-replace">Replace with new file</label>
@@ -381,14 +381,14 @@ If the widgets are rendered again, the newly uploaded files will be shown.
       <div style="padding-top: 1em;">
           <input type="radio" value="nochange"
                  class="noborder" checked="checked"
-                 name="widget.name.image.nochange"
+                 name="widget.name.image.action"
                  onclick="document.getElementById('widget.id.image-input').disabled=true"
                  id="widget.id.image-nochange" />
           <label for="widget.id.image-nochange">Keep existing image</label>
   <BLANKLINE>
           <br />
           <input type="radio" value="replace" class="noborder"
-                 name="widget.name.image.nochange"
+                 name="widget.name.image.action"
                  onclick="document.getElementById('widget.id.image-input').disabled=false"
                  id="widget.id.image-replace" />
           <label for="widget.id.image-replace">Replace with new image</label>
@@ -401,7 +401,7 @@ If the widgets are rendered again, the newly uploaded files will be shown.
   </span>
   <BLANKLINE>
   
-However, if we provide the '.nochange' field, we get back the value currently
+However, if we provide the '.action' field, we get back the value currently
 stored in the field.
 
   >>> content.file_field = NamedFile(data='My file data', filename='data.txt')
@@ -410,7 +410,7 @@ stored in the field.
   >>> file_widget.value = content.file_field
   >>> image_widget.value = content.image_field
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': '', 'widget.name.file.nochange': 'nochange'})
+  >>> file_widget.request = TestRequest(form={'widget.name.file': '', 'widget.name.file.action': 'nochange'})
   >>> file_widget.update()
   >>> file_widget.extract() is content.file_field
   True
@@ -419,7 +419,7 @@ stored in the field.
   >>> aFieldStorage = FieldStorageStub(myfile, filename='faux2.png')
   >>> myUpload = FileUpload(aFieldStorage)
 
-  >>> image_widget.request = TestRequest(form={'widget.name.image': '', 'widget.name.image.nochange': 'nochange'})
+  >>> image_widget.request = TestRequest(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
   >>> image_widget.update()
   >>> image_widget.extract() is content.image_field
   True
@@ -510,7 +510,7 @@ validation error.
 
   >>> from plone.formwidget.namedfile.validator import NamedFileWidgetValidator
 
-If 'nochange' is omitted and the value is None, we should get a validation error
+If 'action' is omitted and the value is None, we should get a validation error
 only when the field is required.
 
   >>> request = TestRequest(form={'widget.name.file': myfile})
@@ -527,7 +527,7 @@ However, if it is set to 'replace' and there is no value provided, we get the
 InvalidState exception from validator.py (its docstring is displayed to the
 user).
 
-  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.nochange': 'replace'})
+  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(None)
   Traceback (most recent call last):
@@ -536,7 +536,7 @@ user).
   
 If we provide a file, all is good.
 
-  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.nochange': 'replace'})
+  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(file_obj) is None
   True
@@ -544,7 +544,7 @@ If we provide a file, all is good.
 Similarly, if we really wanted to remove the file, we won't complain, unless
 we again make the field required.
 
-  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.nochange': 'remove'})
+  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'remove'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(None) is None
   True

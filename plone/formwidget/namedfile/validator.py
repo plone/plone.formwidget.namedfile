@@ -11,7 +11,7 @@ class NamedFileWidgetValidator(validator.SimpleFieldValidator):
     
     def validate(self, value):
         """See interfaces.IValidator"""
-        action = self.request.get("%s.nochange" % self.widget.name, None)
+        action = self.request.get("%s.action" % self.widget.name, None)
         if action == 'replace' and value is None:
             raise InvalidState()
         return super(NamedFileWidgetValidator, self).validate(value)
