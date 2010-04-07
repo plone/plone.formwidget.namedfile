@@ -25,7 +25,7 @@
                 exists python: view.value is not None;
                 nochange view/nochange;
                 allow_nochange view/allow_nochange;">
-    <span tal:condition="python: exists and download_url and nochange in (None, 'nochange',)">
+    <span tal:condition="python: exists and download_url and nochange=='nochange'">
         <a
             tal:content="view/filename"
             tal:attributes="href download_url"
