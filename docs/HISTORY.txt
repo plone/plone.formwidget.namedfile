@@ -1,7 +1,13 @@
 Changelog
 =========
 
-1.0b4 (unreleased)
+1.0b5 (unreleased)
+------------------
+
+* Your change here...
+
+
+1.0b4 (2010-04-07)
 ------------------
 
 * Rename nochange to action, since the field was being used to specify
