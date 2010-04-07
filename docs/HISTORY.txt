@@ -4,6 +4,10 @@ Changelog
 1.0b4 (unreleased)
 ------------------
 
+* Rename nochange to action, since the field was being used to specify
+  which action to take.
+  [wichert]
+
 * Disabled state was being applied to the wrong tag (span instead of the 
   input) for images and files, and we're not using tabindex anymore.
   [limi]
