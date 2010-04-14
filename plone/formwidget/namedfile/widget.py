@@ -1,3 +1,4 @@
+import os
 import urllib
 
 from zope.component import adapter, getMultiAdapter
@@ -85,9 +86,10 @@ class NamedFileWidget(Explicit, file.FileWidget):
         # empty unnamed FileUploads should not count as a value
         value = super(NamedFileWidget, self).extract(default)
         if isinstance(value, FileUpload):
+            value.seek(0, os.SEEK_END)
+            empty = value.tell()==0
             value.seek(0)
-            data = value.read()
-            if not data and not value.filename:
+            if empty and not value.filename:
                 return default
             value.seek(0)
         return value
