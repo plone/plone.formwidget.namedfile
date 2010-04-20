@@ -4,6 +4,10 @@ Changelog
 1.0b6 (unreleased)
 ------------------
 
+* Do not query the datamanager if we should ignore the context. Fixes 
+  http://code.google.com/p/dexterity/issues/detail?id=120
+  [wichert]
+
 1.0b5 (2010-04-19)
 ------------------
 
