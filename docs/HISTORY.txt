@@ -1,11 +1,11 @@
 Changelog
 =========
 
-1.0b5 (unreleased)
+1.0b5 (2010-04-19)
 ------------------
 
-* Your change here...
-
+* Avoiding reading file uploads to determine their size.
+  [wichert]
 
 1.0b4 (2010-04-07)
 ------------------
