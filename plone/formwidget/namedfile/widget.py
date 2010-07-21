@@ -83,7 +83,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if action == 'remove':
             return None
         elif action == 'nochange':
-            if self.form.ignoreContext:
+            if self.ignoreContext:
                 return default
             dm = getMultiAdapter((self.context, self.field,), IDataManager)
             return dm.get()
