@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b7 (unreleased)
+1.0b7 (2010-08-05)
 ------------------
 
 * Fix Wichert's previous fix to check ignoreContext the correct way.
