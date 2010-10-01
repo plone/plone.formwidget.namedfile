@@ -84,6 +84,9 @@ class NamedFileWidget(Explicit, file.FileWidget):
     
     def extract(self, default=NOVALUE):
         action = self.request.get("%s.action" % self.name, None)
+        if self.request.get('PATH_INFO', '').endswith('kss_z3cform_inline_validation'):
+            action = 'nochange'
+        
         if action == 'remove':
             return None
         elif action == 'nochange':

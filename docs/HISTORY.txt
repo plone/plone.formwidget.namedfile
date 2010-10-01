@@ -1,8 +1,12 @@
 Changelog
 =========
 
-1.0b8 (unreleased)
+1.0b8 (2010-10-01)
 ------------------
+
+* Avoid showing validation errors during KSS validation, as the file is not
+  uploaded in this case.
+  [davisagli]
 
 * Don't use the action from the request when the form submission succeeded.
   (In that case we always want "keep existing image")
