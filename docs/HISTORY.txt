@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.0b8 (unreleased)
+------------------
+
+* Don't use the action from the request when the form submission succeeded.
+  (In that case we always want "keep existing image")
+  [davisagli]
+
 1.0b7 (2010-08-05)
 ------------------
 

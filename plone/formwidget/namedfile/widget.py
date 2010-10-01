@@ -76,7 +76,11 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return "%s/++widget++%s/@@download" % (self.request.getURL(), self.field.__name__)
     
     def action(self):
-        return self.request.get("%s.action" % self.name, "nochange")
+        action = self.request.get("%s.action" % self.name, "nochange")
+        if hasattr(self.form, 'successMessage') and self.form.status == self.form.successMessage:
+            # if form action completed successfully, we want nochange
+            action = 'nochange'
+        return action
     
     def extract(self, default=NOVALUE):
         action = self.request.get("%s.action" % self.name, None)
