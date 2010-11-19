@@ -4,6 +4,9 @@ Changelog
 1.0b9 (unreleased)
 ------------------
 
+* Added Spanish translations.
+  [dukebody]
+
 * Added german translations.
   [jbaumann]
 
