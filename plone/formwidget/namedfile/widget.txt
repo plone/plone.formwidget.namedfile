@@ -233,10 +233,12 @@ At first, there is no value, so the behaviour is much like before:
   </span>
 
 However, if we now set a value, we will have the option of keeping it,
-or changing it.
+or changing it.  The filename can handle unicode and international
+characters.
 
   >>> from plone.namedfile import NamedFile, NamedImage
-  >>> file_widget.value = NamedFile(data='My file data', filename='data.txt')
+  >>> file_widget.value = NamedFile(data='My file data',
+  ...                               filename=unicode('data_深.txt', 'utf-8'))
   >>> image_widget.value = NamedImage(data='My image data', filename='faux.png')
 
   >>> file_widget.update()
@@ -244,7 +246,7 @@ or changing it.
   <span class="named-file-widget required namedfile-field"
         id="widget.id.file">
       <span>
-          <a href="http://127.0.0.1/++widget++file_field/@@download/data.txt">data.txt</a>
+          <a href="http://127.0.0.1/++widget++file_field/@@download/data_%E6%B7%B1.txt">data_深.txt</a>
           <span class="discreet"> &mdash;
               0 KB
           </span>

@@ -4,6 +4,9 @@ Changelog
 1.0b9 (unreleased)
 ------------------
 
+* Fix handling of unicode filenames when quoting the URL.
+  [rossp]
+
 * Added Spanish translations.
   [dukebody]
 

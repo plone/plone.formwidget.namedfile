@@ -62,6 +62,8 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if filename is None:
             return None
         else:
+            if isinstance(filename, unicode):
+                filename = filename.encode('utf-8')
             return urllib.quote_plus(filename)
 
     @property
