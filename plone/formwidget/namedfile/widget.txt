@@ -470,15 +470,17 @@ A data string is converted to the appropriate type:
   <plone.namedfile.file.NamedImage object at ...>
 
 A FileUpload object is converted to the appropriate type, preserving filename
-and content type.
+and content type, and possibly handling international characters in filenames.
 
   >>> myfile = cStringIO.StringIO('File upload contents.')
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='random.txt', headers={'Content-Type': 'text/x-dummy'})
+  >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
+  >>> aFieldStorage = FieldStorageStub(myfile, filename='rand\xc3\xb8m.txt',
+  ...     headers={'Content-Type': 'text/x-dummy'})
   >>> file_obj = file_converter.toFieldValue(FileUpload(aFieldStorage))
   >>> file_obj.data
   'File upload contents.'
   >>> file_obj.filename
-  u'random.txt'
+  u'rand\xf8m.txt'
   >>> file_obj.contentType
   'text/x-dummy'
   

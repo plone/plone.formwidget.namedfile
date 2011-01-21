@@ -4,8 +4,9 @@ Changelog
 1.0b9 (unreleased)
 ------------------
 
-* Fix handling of unicode filenames when quoting the URL.
-  [rossp]
+* Fix handling of unicode filenames when converting or quoting the URL.
+  Fixes http://code.google.com/p/dexterity/issues/detail?id=148
+  [rossp, mj]
 
 * Added Spanish translations.
   [dukebody]
