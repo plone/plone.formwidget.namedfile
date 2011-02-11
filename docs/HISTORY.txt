@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b9 (unreleased)
+1.0b9 (2011-02-11)
 ------------------
 
 * Fix handling of unicode filenames when converting or quoting the URL.
