@@ -80,7 +80,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
     def _widget_name(self):
         # self has the fully qualified name, including 'form.widgets.'
         # Search one level up to find the shorter form
-        if not(getattr(self,'__parent__',None)):
+        if getattr(self, '__parent__', None) is None:
             return self.field.getName()
 
         possible_names = [k for k,v in self.__parent__.items() if v is self]
