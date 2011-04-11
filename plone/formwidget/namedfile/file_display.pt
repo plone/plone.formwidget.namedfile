@@ -21,7 +21,8 @@
                       filename_encoded view/filename_encoded;"
             tal:condition="python: exists and fieldname">
         <a tal:content="filename"
-           tal:attributes="href string:${context/absolute_url}/@@download/${fieldname}/${filename_encoded}">Filename</a>
+           tal:omit-tag="not:exists:context/absolute_url"
+           tal:attributes="href string:${context/absolute_url|nothing}/@@download/${fieldname}/${filename_encoded}">Filename</a>
         <span class="discreet"> &mdash; <span tal:define="sizekb view/file_size" tal:replace="sizekb">100</span> KB</span>
     </span>
     <span tal:condition="not:exists" class="discreet" i18n:translate="no_file">
