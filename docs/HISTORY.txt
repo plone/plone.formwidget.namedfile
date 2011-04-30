@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.0b11 (unreleased)
--------------------
+1.0 (2011-04-30)
+----------------
 
 * Allow field widget to display without absolute_url.
   [elro]
