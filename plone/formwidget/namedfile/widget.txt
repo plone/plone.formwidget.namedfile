@@ -239,7 +239,7 @@ characters.
   >>> from plone.namedfile import NamedFile, NamedImage
   >>> file_widget.value = NamedFile(data='My file data',
   ...                               filename=unicode('data_深.txt', 'utf-8'))
-  >>> image_widget.value = NamedImage(data='My image data', filename='faux.png')
+  >>> image_widget.value = NamedImage(data='My image data', filename=u'faux.png')
 
   >>> file_widget.update()
   >>> print file_widget.render()
@@ -406,8 +406,8 @@ If the widgets are rendered again, the newly uploaded files will be shown.
 However, if we provide the '.action' field, we get back the value currently
 stored in the field.
 
-  >>> content.file_field = NamedFile(data='My file data', filename='data.txt')
-  >>> content.image_field = NamedImage(data='My image data', filename='faux.png')
+  >>> content.file_field = NamedFile(data='My file data', filename=u'data.txt')
+  >>> content.image_field = NamedImage(data='My image data', filename=u'faux.png')
 
   >>> file_widget.value = content.file_field
   >>> image_widget.value = content.image_field
