@@ -73,21 +73,10 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if self.ignoreContext:
             return None
         if self.filename_encoded:
-            return "%s/++widget++%s/@@download/%s" % (self.request.getURL(), self._widget_name(), self.filename_encoded)
+            return "%s/++widget++%s/@@download/%s" % (self.request.getURL(), self.name, self.filename_encoded)
         else:
-            return "%s/++widget++%s/@@download" % (self.request.getURL(), self._widget_name())
+            return "%s/++widget++%s/@@download" % (self.request.getURL(), self.name)
 
-    def _widget_name(self):
-        # self has the fully qualified name, including 'form.widgets.'
-        # Search one level up to find the shorter form
-        if getattr(self, '__parent__', None) is None:
-            return self.field.getName()
-
-        possible_names = [k for k,v in self.__parent__.items() if v is self]
-        if len(possible_names) != 1:
-            raise ValueError("Didn't find a single possible widget, found %d" % len(possible_names))
-        return possible_names[0]
-    
     def action(self):
         action = self.request.get("%s.action" % self.name, "nochange")
         if hasattr(self.form, 'successMessage') and self.form.status == self.form.successMessage:

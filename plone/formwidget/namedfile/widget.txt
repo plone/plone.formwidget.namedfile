@@ -246,7 +246,7 @@ characters.
   <span class="named-file-widget required namedfile-field"
         id="widget.id.file">
       <span>
-          <a href="http://127.0.0.1/++widget++file_field/@@download/data_%E6%B7%B1.txt">data_深.txt</a>
+          <a href="http://127.0.0.1/++widget++widget.name.file/@@download/data_%E6%B7%B1.txt">data_深.txt</a>
           <span class="discreet"> &mdash;
               0 KB
           </span>
@@ -279,9 +279,9 @@ characters.
   <span class="named-image-widget required namedimage-field"
         id="widget.id.image">
       <span>
-          <img src="http://127.0.0.1/++widget++image_field/@@download/faux.png"
+          <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png"
                width="-1" /><br />
-          <a href="http://127.0.0.1/++widget++image_field/@@download/faux.png">faux.png</a>
+          <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png">faux.png</a>
           <span class="discreet"> &mdash;
               0 KB
           </span>
@@ -340,7 +340,7 @@ If the widgets are rendered again, the newly uploaded files will be shown.
   <span class="named-file-widget required namedfile-field"
         id="widget.id.file">
       <span>
-          <a href="http://127.0.0.1/++widget++file_field/@@download/test2.txt">test2.txt</a>
+          <a href="http://127.0.0.1/++widget++widget.name.file/@@download/test2.txt">test2.txt</a>
           <span class="discreet"> &mdash;
               0 KB
           </span>
@@ -373,9 +373,9 @@ If the widgets are rendered again, the newly uploaded files will be shown.
   <span class="named-image-widget required namedimage-field"
         id="widget.id.image">
       <span>
-          <img src="http://127.0.0.1/++widget++image_field/@@download/faux2.png"
+          <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png"
                width="128" /><br />
-          <a href="http://127.0.0.1/++widget++image_field/@@download/faux2.png">faux2.png</a>
+          <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png">faux2.png</a>
           <span class="discreet"> &mdash;
               0 KB
           </span>
