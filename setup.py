@@ -29,6 +29,9 @@ setup(name='plone.formwidget.namedfile',
           'z3c.form',
           'plone.z3cform >= 0.7.4',
       ],
+      extras_require = {
+          'test': ['z3c.form [test]'],
+      },
       entry_points="""
       [z3c.autoinclude.plugin]
       target = plone
