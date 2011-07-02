@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.1 (unreleased)
+1.0.1 (2011-07-02)
 ------------------
 
 * Don't need to ask parent for widget name anymore, since ++widget++ traverser
