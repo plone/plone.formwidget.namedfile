@@ -426,6 +426,48 @@ stored in the field.
   >>> image_widget.extract() is content.image_field
   True
 
+Download view
+-------------
+
+The download view extracts the image/file data, the widget template output uses
+this view to display the image itself or link to the file.
+
+  >>> from plone.formwidget.namedfile.widget import Download
+  >>> request = TestRequest()
+  >>> view = Download(image_widget, request)
+  >>> view()
+  'My image data'
+  >>> request.response.getHeader('Content-Disposition')
+  'attachment; filename="faux.png"'
+
+  >>> request = TestRequest()
+  >>> view = Download(file_widget, request)
+  >>> view()
+  'My file data'
+  >>> request.response.getHeader('Content-Disposition')
+  'attachment; filename="data.txt"'
+
+The URL will influence the name of the file as reported to the browser, but
+doesn't stop it being found.
+
+  >>> request = TestRequest()
+  >>> view = Download(file_widget, request)
+  >>> view = view.publishTraverse(request, 'daisy.txt')
+  >>> view()
+  'My file data'
+  >>> request.response.getHeader('Content-Disposition')
+  'attachment; filename="daisy.txt"'
+
+Any additional traversal will result in an error.
+
+  >>> request = TestRequest()
+  >>> view = Download(file_widget, request)
+  >>> view = view.publishTraverse(request, 'cows')
+  >>> view = view.publishTraverse(request, 'daisy.txt')
+  Traceback (most recent call last):
+  ...
+  NotFound: ... 'daisy.txt'
+
 The converter
 -------------
 
