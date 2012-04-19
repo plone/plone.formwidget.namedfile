@@ -176,10 +176,10 @@ class Download(BrowserView):
         if self.context.ignoreContext:
             raise NotFound("Cannot get the data file from a widget with no context")
         
-        context = aq_inner(self.context.context)
+        content = aq_inner(self.context.form.getContent())
         field = aq_inner(self.context.field)
         
-        dm = getMultiAdapter((context, field,), IDataManager)
+        dm = getMultiAdapter((content, field,), IDataManager)
         file_ = dm.get()
         if file_ is None:
             raise NotFound(self, self.filename, self.request)
