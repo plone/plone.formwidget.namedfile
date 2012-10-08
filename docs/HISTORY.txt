@@ -4,6 +4,9 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
+* Use download_url for display templates also
+  [lentinj]
+
 * Fix the download view for widgets whose form has a custom getContent method.
   [davisagli]
 
