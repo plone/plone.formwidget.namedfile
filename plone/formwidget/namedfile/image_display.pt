@@ -23,7 +23,7 @@
                          height view/height;
                          alt view/alt"
              tal:condition="python:exists and fieldname"
-             tal:attributes="src string:${context/absolute_url}/@@download/${fieldname}/${filename_encoded};
+             tal:attributes="src view/download_url;
                              height view/height;
                              width view/width;
                              alt view/alt"
