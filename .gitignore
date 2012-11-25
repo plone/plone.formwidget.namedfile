@@ -1,1 +1,3 @@
+*.py?
 *.mo
+plone.formwidget.namedfile.egg-info/
