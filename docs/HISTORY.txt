@@ -4,6 +4,9 @@ Changelog
 1.0.4 (unreleased)
 ------------------
 
+* added french translation
+  [tschanzt]
+
 * added danish translation
   https://github.com/plone/plone.formwidget.namedfile/pull/2
   [tmog]
