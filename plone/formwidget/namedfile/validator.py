@@ -9,11 +9,11 @@ class InvalidState(ValidationError):
 
 class NamedFileWidgetValidator(validator.SimpleFieldValidator):
     
-    def validate(self, value):
+    def validate(self, value, force=False):
         """See interfaces.IValidator"""
         action = self.request.get("%s.action" % self.widget.name, None)
         if action == 'replace' and value is None:
             raise InvalidState()
-        return super(NamedFileWidgetValidator, self).validate(value)
+        return super(NamedFileWidgetValidator, self).validate(value, force)
 
 validator.WidgetValidatorDiscriminators(NamedFileWidgetValidator, field=INamedField)
