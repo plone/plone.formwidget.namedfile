@@ -512,8 +512,11 @@ A data string is converted to the appropriate type:
   >>> image_converter.toFieldValue('random data')
   <plone.namedfile.file.NamedImage object at ...>
 
-A FileUpload object is converted to the appropriate type, preserving filename
-and content type, and possibly handling international characters in filenames.
+A FileUpload object is converted to the appropriate type, preserving filename,
+and possibly handling international characters in filenames.
+The content type sent by the browser will be ignored because it's unreliable
+- it's left to the implementation of the file field to determine the proper
+content type.
 
   >>> myfile = cStringIO.StringIO('File upload contents.')
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
@@ -524,8 +527,11 @@ and content type, and possibly handling international characters in filenames.
   'File upload contents.'
   >>> file_obj.filename
   u'rand\xf8m.txt'
-  >>> file_obj.contentType
-  'text/x-dummy'
+
+Content type from headers sent by browser should be ignored:
+
+  >>> file_obj.contentType != 'text/x-dummy'
+  True
 
   >>> myfile = cStringIO.StringIO('Random image content.')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='random.png', headers={'Content-Type': 'image/x-dummy'})
@@ -534,8 +540,9 @@ and content type, and possibly handling international characters in filenames.
   'Random image content.'
   >>> image_obj.filename
   u'random.png'
-  >>> image_obj.contentType
-  'image/x-dummy'
+  >>> image_obj.contentType != 'image/x-dummy'
+  True
+
 
 However, a zero-length, unnamed FileUpload results in the field's missing_value
 being returned.
