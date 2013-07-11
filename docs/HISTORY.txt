@@ -4,7 +4,8 @@ Changelog
 1.0.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add optional force parameter to the validate method to match a change
+  in the z3c.form API.
 
 
 1.0.6 (2013-05-26)
