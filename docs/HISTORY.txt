@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.7 (unreleased)
+1.0.7 (2013-08-13)
 ------------------
 
 - Add optional force parameter to the validate method to match a change
