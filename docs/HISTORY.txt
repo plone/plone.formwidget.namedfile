@@ -4,7 +4,10 @@ Changelog
 1.0.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- The context should be ignored, but not the value if explicitly set.
+  plone.multilingual will set the value for language-independent fields
+  when translating.
+  [regebro]
 
 
 1.0.7 (2013-08-13)
