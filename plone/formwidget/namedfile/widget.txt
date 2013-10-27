@@ -17,7 +17,7 @@ Like any widget, the file widgets provide the ``IWidget`` interface:
   True
   >>> verifyClass(interfaces.IWidget, NamedImageWidget)
   True
-  
+
 There are also more specific interfaces for each widget:
 
     >>> from plone.formwidget.namedfile.interfaces import INamedFileWidget
@@ -189,7 +189,7 @@ For this to work, we need a context and a data manager.
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
-  ...     
+  ...
   ...     def absolute_url(self):
   ...         return 'http://example.com/content1'
 
@@ -204,10 +204,10 @@ For this to work, we need a context and a data manager.
 
   >>> file_widget = NamedFileFieldWidget(IContent['file_field'], TestRequest())
   >>> image_widget = NamedImageFieldWidget(IContent['image_field'], TestRequest())
-  
+
   >>> file_widget.context = content
   >>> image_widget.context = content
-  
+
   >>> file_widget.id = 'widget.id.file'
   >>> file_widget.name = 'widget.name.file'
 
@@ -223,7 +223,7 @@ At first, there is no value, so the behaviour is much like before:
       <input type="file" id="widget.id.file-input"
              name="widget.name.file" />
   </span>
-  
+
   >>> image_widget.update()
   >>> print(image_widget.render())
   <span class="named-image-widget required namedimage-field"
@@ -248,7 +248,7 @@ characters.
       <span>
           <a href="http://127.0.0.1/++widget++widget.name.file/@@download/data_%E6%B7%B1.txt">data_深.txt</a>
           <span class="discreet"> &mdash;
-              0 KB
+              1 KB
           </span>
       </span>
       <div style="padding-top: 1em;">
@@ -283,7 +283,7 @@ characters.
                width="-1" /><br />
           <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png">faux.png</a>
           <span class="discreet"> &mdash;
-              0 KB
+              1 KB
           </span>
       </span>
       <div style="padding-top: 1em;">
@@ -402,7 +402,7 @@ If the widgets are rendered again, the newly uploaded files will be shown.
       </div>
   </span>
   <BLANKLINE>
-  
+
 However, if we provide the '.action' field, we get back the value currently
 stored in the field.
 
@@ -490,12 +490,12 @@ A value of None or '' results in the field's missing_value being returned.
   True
   >>> file_converter.toFieldValue(None) is IContent['file_field'].missing_value
   True
-  
+
   >>> image_converter.toFieldValue(u'') is IContent['image_field'].missing_value
   True
   >>> image_converter.toFieldValue(None) is IContent['image_field'].missing_value
   True
- 
+
 A named file/image instance is returned as-is:
 
   >>> file_converter.toFieldValue(content.file_field) is content.file_field
@@ -525,7 +525,7 @@ and content type, and possibly handling international characters in filenames.
   u'rand\xf8m.txt'
   >>> file_obj.contentType
   'text/x-dummy'
-  
+
   >>> myfile = cStringIO.StringIO('Random image content.')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='random.png', headers={'Content-Type': 'image/x-dummy'})
   >>> image_obj = image_converter.toFieldValue(FileUpload(aFieldStorage))
@@ -579,14 +579,14 @@ user).
   Traceback (most recent call last):
   ...
   InvalidState
-  
+
 If we provide a file, all is good.
 
   >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(file_obj) is None
   True
-  
+
 Similarly, if we really wanted to remove the file, we won't complain, unless
 we again make the field required.
 

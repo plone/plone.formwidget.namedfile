@@ -4,7 +4,7 @@ Changelog
 1.0.8 (unreleased)
 ------------------
 
-- Internationalized file size.
+- Internationalized size on file and image widget.
   [thomasdesvenain]
 
 
