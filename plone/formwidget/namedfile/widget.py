@@ -6,7 +6,6 @@ import urllib
 
 from zope.component import adapter, getMultiAdapter
 from zope.interface import implementer, implements, implementsOnly
-from zope.size import byteDisplay
 
 from z3c.form.interfaces import IFieldWidget, IFormLayer, IDataManager, NOVALUE
 from z3c.form.widget import FieldWidget
