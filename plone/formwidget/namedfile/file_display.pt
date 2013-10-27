@@ -13,9 +13,10 @@
                       onmouseout view/onmouseout;
                       onkeypress view/onkeypress;
                       onkeydown view/onkeydown;
-                      onkeyup view/onkeyup"
+                      onkeyup view/onkeyup;"
         tal:define="value view/value;
-                    exists python:value is not None;">
+                    exists python:value is not None;
+                    doc_type view/file_content_type;">
     <span tal:define="fieldname view/field/__name__ | nothing;
                       filename view/filename;
                       filename_encoded view/filename_encoded;"
@@ -24,6 +25,9 @@
            tal:omit-tag="not:exists:context/absolute_url"
            tal:attributes="href view/download_url">Filename</a>
         <span class="discreet"> &mdash;
+            <span tal:replace="doc_type"
+                  i18n:domain="plone"
+                  i18n:translate="">ContentType</span>,
             <span tal:define="sizekb view/file_size"
                   tal:replace="sizekb" i18n:translate="">100</span>
         </span>

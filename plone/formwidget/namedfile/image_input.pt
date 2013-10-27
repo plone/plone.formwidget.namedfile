@@ -25,7 +25,8 @@
                 filename view/filename;
                 exists python: view.value is not None;
                 action view/action;
-                allow_nochange view/allow_nochange;">
+                allow_nochange view/allow_nochange;
+                doc_type view/file_content_type;">
     <span tal:condition="python:exists and download_url and action=='nochange'">
         <img
             tal:attributes="src download_url;
@@ -36,6 +37,9 @@
             tal:attributes="href download_url"
             >Filename</a>
         <span class="discreet"> &mdash;
+            <span tal:replace="doc_type"
+                  i18n:domain="plone"
+                  i18n:translate="">ContentType</span>,
             <span tal:define="sizekb view/file_size" tal:replace="sizekb"
                   i18n:translate="">100</span>
         </span>

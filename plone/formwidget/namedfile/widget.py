@@ -1,3 +1,4 @@
+from Products.CMFCore.utils import getToolByName
 try:
     from  os import SEEK_END
 except ImportError:
@@ -56,6 +57,19 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return byteDisplay(self.value.getSize())
         else:
             return "0 KB"
+
+    @property
+    def file_content_type(self):
+        if not self.value:
+            return ""
+
+        content_type = self.value.contentType
+        mimetypes_registry = getToolByName(self.context, 'mimetypes_registry')
+        mimetypes = mimetypes_registry.lookup(content_type)
+        if len(mimetypes):
+            return mimetypes[0].name()
+        else:
+            return content_type
 
     @property
     def filename_encoded(self):
