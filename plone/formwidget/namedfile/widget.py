@@ -30,14 +30,14 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     klass = u'named-file-widget'
     value = None # don't default to a string
-    
+
     @property
     def allow_nochange(self):
         return not self.ignoreContext and \
                    self.field is not None and \
                    self.value is not None and \
                    self.value != self.field.missing_value
-    
+
     @property
     def filename(self):
         if self.field is not None and self.value == self.field.missing_value:
@@ -48,14 +48,14 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return safe_basename(self.value.filename)
         else:
             return None
-    
+
     @property
     def file_size(self):
         if INamed.providedBy(self.value):
-            return self.value.getSize() / 1024
+            return self.value.getSize()
         else:
             return 0
-    
+
     @property
     def filename_encoded(self):
         filename = self.filename
@@ -83,12 +83,12 @@ class NamedFileWidget(Explicit, file.FileWidget):
             # if form action completed successfully, we want nochange
             action = 'nochange'
         return action
-    
+
     def extract(self, default=NOVALUE):
         action = self.request.get("%s.action" % self.name, None)
         if self.request.get('PATH_INFO', '').endswith('kss_z3cform_inline_validation'):
             action = 'nochange'
-        
+
         if action == 'remove':
             return None
         elif action == 'nochange':
@@ -151,45 +151,45 @@ class NamedImageWidget(NamedFileWidget):
         return self.title
 
 class Download(BrowserView):
-    """Download a file, via ../context/form/++widget++/@@download/filename    
+    """Download a file, via ../context/form/++widget++/@@download/filename
     """
-    
+
     implements(IPublishTraverse)
-    
+
     def __init__(self, context, request):
         super(BrowserView, self).__init__(context, request)
         self.filename = None
-        
+
     def publishTraverse(self, request, name):
-        
+
         if self.filename is None: # ../@@download/filename
             self.filename = name
         else:
             raise NotFound(self, name, request)
-        
+
         return self
-    
+
     def __call__(self):
-        
+
         # TODO: Security check on form view/widget
-        
+
         if self.context.ignoreContext:
             raise NotFound("Cannot get the data file from a widget with no context")
-        
+
         if self.context.form is not None:
             content = aq_inner(self.context.form.getContent())
         else:
             content = aq_inner(self.context.context)
         field = aq_inner(self.context.field)
-        
+
         dm = getMultiAdapter((content, field,), IDataManager)
         file_ = dm.get()
         if file_ is None:
             raise NotFound(self, self.filename, self.request)
-        
+
         if not self.filename:
             self.filename = getattr(file_, 'filename', None)
-        
+
         set_headers(file_, self.request.response, filename=self.filename)
         return stream_data(file_)
 
