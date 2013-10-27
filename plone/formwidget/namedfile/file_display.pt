@@ -15,7 +15,8 @@
                       onkeydown view/onkeydown;
                       onkeyup view/onkeyup"
         tal:define="value view/value;
-                    exists python:value is not None">
+                    exists python:value is not None;
+                    plone view/@@plone">
     <span tal:define="fieldname view/field/__name__ | nothing;
                       filename view/filename;
                       filename_encoded view/filename_encoded;"
@@ -23,7 +24,9 @@
         <a tal:content="filename"
            tal:omit-tag="not:exists:context/absolute_url"
            tal:attributes="href view/download_url">Filename</a>
-        <span class="discreet"> &mdash; <span tal:define="sizekb view/file_size" tal:replace="sizekb">100</span> KB</span>
+        <span class="discreet"> &mdash;
+        <span tal:replace="python:plone.toLocalizedSize(view.file_size)">100 KB</span>
+        </span>
     </span>
     <span tal:condition="not:exists" class="discreet" i18n:translate="no_file">
         No file
