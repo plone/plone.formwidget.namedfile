@@ -1,3 +1,4 @@
+from Products.CMFCore.utils import getToolByName
 try:
     from  os import SEEK_END
 except ImportError:
@@ -56,6 +57,47 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return byteDisplay(self.value.getSize())
         else:
             return "0 KB"
+
+    @property
+    def _mimetype(self):
+        registry = getToolByName(self.context, 'mimetypes_registry', None)
+        if not registry:
+            return None
+
+        try:
+            content_type = self.value.contentType
+            mimetypes = registry.lookup(content_type)
+        except AttributeError:
+            mimetypes = registry.lookup(self.filename)
+
+        if len(mimetypes):
+            return mimetypes[0]
+        else:
+            return None
+
+    @property
+    def file_content_type(self):
+        if not self.value:
+            return ""
+
+        mimetype = self._mimetype
+        if mimetype:
+            return mimetype.name()
+        else:
+            return getattr(self.value, 'contentType', None)
+
+    @property
+    def file_icon(self):
+        if not self.value:
+            return None
+
+        mimetype = self._mimetype
+        if mimetype and mimetype.icon_path:
+            return "%s/%s" % (getToolByName(self.context, 'portal_url')(),
+                              mimetype.icon_path)
+        else:
+            return None
+
 
     @property
     def filename_encoded(self):

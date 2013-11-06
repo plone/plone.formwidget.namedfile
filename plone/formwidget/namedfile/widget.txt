@@ -248,6 +248,7 @@ characters.
       <span>
           <a href="http://127.0.0.1/++widget++widget.name.file/@@download/data_%E6%B7%B1.txt">data_深.txt</a>
           <span class="discreet"> &mdash;
+              text/plain,
               1 KB
           </span>
       </span>

@@ -15,7 +15,7 @@
                       onkeydown view/onkeydown;
                       onkeyup view/onkeyup"
         tal:define="value view/value;
-                    exists python:value is not None">
+                    exists python:value is not None;">
         <img tal:define="fieldname view/field/__name__ | nothing;
                          filename view/filename;
                          filename_encoded view/filename_encoded;

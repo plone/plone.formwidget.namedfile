@@ -4,6 +4,9 @@ Changelog
 1.0.8 (unreleased)
 ------------------
 
+- Display icon and content type name on widget.
+  [thomasdesvenain]
+
 - Internationalized size on file and image widget.
   [thomasdesvenain]
 
