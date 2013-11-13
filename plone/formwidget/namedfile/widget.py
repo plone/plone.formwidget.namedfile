@@ -63,12 +63,11 @@ class NamedFileWidget(Explicit, file.FileWidget):
         registry = getToolByName(self.context, 'mimetypes_registry', None)
         if not registry:
             return None
-
         try:
             content_type = self.value.contentType
             mimetypes = registry.lookup(content_type)
         except AttributeError:
-            mimetypes = registry.lookup(self.filename)
+            mimetypes = [registry.lookupExtension(self.filename)]
 
         if len(mimetypes):
             return mimetypes[0]

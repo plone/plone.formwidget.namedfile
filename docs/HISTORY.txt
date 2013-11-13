@@ -4,6 +4,12 @@ Changelog
 1.0.8 (unreleased)
 ------------------
 
+- The _mimetype property in NamedFileWidget would fail on attempting
+  to render after a validation failure when it tried to lookup a
+  mimetype with the wrong method. Result was a malformed mimetype
+  exception. Fixes #13798.
+  [smcmahon]
+
 - Display icon and content type name on widget.
   [thomasdesvenain]
 
