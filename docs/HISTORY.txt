@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.8 (unreleased)
+1.0.8 (2013-12-07)
 ------------------
 
 - The _mimetype property in NamedFileWidget would fail on attempting
