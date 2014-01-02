@@ -41,7 +41,7 @@ msgstr "Garder l'image existante"
 #. Default: "Remove existing image"
 #: plone.formwidget.namedfile/plone/formwidget/namedfile/image_input.pt:65
 msgid "image_remove"
-msgstr "Remplacer l'image existante"
+msgstr "Effacer l'image existante"
 
 #. Default: "Replace with new image"
 #: plone.formwidget.namedfile/plone/formwidget/namedfile/image_input.pt:77
