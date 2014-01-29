@@ -10,7 +10,7 @@ Changelog
 1.0.9 (2014-01-27)
 ------------------
 
-- Nothing changed yet.
+- Fix fr translation for "Remove image".
 
 
 1.0.8 (2013-12-07)
