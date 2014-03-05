@@ -6,6 +6,7 @@ import urllib
 
 from Acquisition import Explicit, aq_inner
 from ZPublisher.HTTPRequest import FileUpload
+from zope.component.hooks import getSite
 from zope.component import adapter, getMultiAdapter
 from zope.interface import implementer, implements, implementsOnly
 from zope.size import byteDisplay
@@ -93,7 +94,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
         mimetype = self._mimetype
         if mimetype and mimetype.icon_path:
-            return "%s/%s" % (getToolByName(self.context, 'portal_url')(),
+            return "%s/%s" % (getToolByName(getSite(), 'portal_url')(),
                               mimetype.icon_path)
         else:
             return None
