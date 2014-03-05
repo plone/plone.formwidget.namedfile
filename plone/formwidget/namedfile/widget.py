@@ -1,29 +1,28 @@
-from Products.CMFCore.utils import getToolByName
 try:
     from  os import SEEK_END
 except ImportError:
     from posixfile import SEEK_END
 import urllib
 
+from Acquisition import Explicit, aq_inner
+from ZPublisher.HTTPRequest import FileUpload
 from zope.component import adapter, getMultiAdapter
 from zope.interface import implementer, implements, implementsOnly
 from zope.size import byteDisplay
+from zope.publisher.interfaces import IPublishTraverse, NotFound
 
 from z3c.form.interfaces import IFieldWidget, IFormLayer, IDataManager, NOVALUE
 from z3c.form.widget import FieldWidget
 from z3c.form.browser import file
 
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
+from Products.MimetypesRegistry.common import MimeTypeException
 from plone.namedfile.interfaces import INamedFileField, INamedImageField, INamed, INamedImage
 from plone.namedfile.utils import safe_basename, set_headers, stream_data
 
 from plone.formwidget.namedfile.interfaces import INamedFileWidget, INamedImageWidget
 
-from Products.Five.browser import BrowserView
-from zope.publisher.interfaces import IPublishTraverse, NotFound
-
-from Acquisition import Explicit, aq_inner
-
-from ZPublisher.HTTPRequest import FileUpload
 
 class NamedFileWidget(Explicit, file.FileWidget):
     """A widget for a named file object
@@ -68,6 +67,8 @@ class NamedFileWidget(Explicit, file.FileWidget):
             mimetypes = registry.lookup(content_type)
         except AttributeError:
             mimetypes = [registry.lookupExtension(self.filename)]
+        except MimeTypeException:
+            return None
 
         if len(mimetypes):
             return mimetypes[0]

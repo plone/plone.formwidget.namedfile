@@ -1,3 +1,5 @@
 *.py?
 *.mo
 plone.formwidget.namedfile.egg-info/
+.project
+.pydevproject
