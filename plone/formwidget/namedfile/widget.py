@@ -1,6 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 try:
-    from  os import SEEK_END
+    from os import SEEK_END
 except ImportError:
     from posixfile import SEEK_END
 import urllib
@@ -13,10 +13,14 @@ from z3c.form.interfaces import IFieldWidget, IFormLayer, IDataManager, NOVALUE
 from z3c.form.widget import FieldWidget
 from z3c.form.browser import file
 
-from plone.namedfile.interfaces import INamedFileField, INamedImageField, INamed, INamedImage
+from plone.namedfile.interfaces import INamedFileField
+from plone.namedfile.interfaces import INamedImageField
+from plone.namedfile.interfaces import INamed
+from plone.namedfile.interfaces import INamedImage
 from plone.namedfile.utils import safe_basename, set_headers, stream_data
 
-from plone.formwidget.namedfile.interfaces import INamedFileWidget, INamedImageWidget
+from plone.formwidget.namedfile.interfaces import INamedFileWidget
+from plone.formwidget.namedfile.interfaces import INamedImageWidget
 
 from Products.Five.browser import BrowserView
 from zope.publisher.interfaces import IPublishTraverse, NotFound
@@ -25,20 +29,22 @@ from Acquisition import Explicit, aq_inner
 
 from ZPublisher.HTTPRequest import FileUpload
 
+
 class NamedFileWidget(Explicit, file.FileWidget):
+
     """A widget for a named file object
     """
     implementsOnly(INamedFileWidget)
 
     klass = u'named-file-widget'
-    value = None # don't default to a string
+    value = None  # don't default to a string
 
     @property
     def allow_nochange(self):
         return not self.ignoreContext and \
-                   self.field is not None and \
-                   self.value is not None and \
-                   self.value != self.field.missing_value
+            self.field is not None and \
+            self.value is not None and \
+            self.value != self.field.missing_value
 
     @property
     def filename(self):
@@ -97,7 +103,6 @@ class NamedFileWidget(Explicit, file.FileWidget):
         else:
             return None
 
-
     @property
     def filename_encoded(self):
         filename = self.filename
@@ -115,20 +120,25 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if self.ignoreContext:
             return None
         if self.filename_encoded:
-            return "%s/++widget++%s/@@download/%s" % (self.request.getURL(), self.name, self.filename_encoded)
+            return "%s/++widget++%s/@@download/%s" % (self.request.getURL(),
+                                                      self.name,
+                                                      self.filename_encoded)
         else:
-            return "%s/++widget++%s/@@download" % (self.request.getURL(), self.name)
+            return "%s/++widget++%s/@@download" % (self.request.getURL(),
+                                                   self.name)
 
     def action(self):
         action = self.request.get("%s.action" % self.name, "nochange")
-        if hasattr(self.form, 'successMessage') and self.form.status == self.form.successMessage:
+        if hasattr(self.form, 'successMessage') and \
+                self.form.status == self.form.successMessage:
             # if form action completed successfully, we want nochange
             action = 'nochange'
         return action
 
     def extract(self, default=NOVALUE):
         action = self.request.get("%s.action" % self.name, None)
-        if self.request.get('PATH_INFO', '').endswith('kss_z3cform_inline_validation'):
+        path = self.request.get('PATH_INFO', '')
+        if path.endswith('kss_z3cform_inline_validation'):
             action = 'nochange'
 
         if action == 'remove':
@@ -144,14 +154,16 @@ class NamedFileWidget(Explicit, file.FileWidget):
         value = super(NamedFileWidget, self).extract(default)
         if isinstance(value, FileUpload):
             value.seek(0, SEEK_END)
-            empty = value.tell()==0
+            empty = value.tell() == 0
             value.seek(0)
             if empty and not value.filename:
                 return default
             value.seek(0)
         return value
 
+
 class NamedImageWidget(NamedFileWidget):
+
     """A widget for a named file object
     """
     implementsOnly(INamedImageWidget)
@@ -192,7 +204,9 @@ class NamedImageWidget(NamedFileWidget):
     def alt(self):
         return self.title
 
+
 class Download(BrowserView):
+
     """Download a file, via ../context/form/++widget++/@@download/filename
     """
 
@@ -204,7 +218,7 @@ class Download(BrowserView):
 
     def publishTraverse(self, request, name):
 
-        if self.filename is None: # ../@@download/filename
+        if self.filename is None:  # ../@@download/filename
             self.filename = name
         else:
             raise NotFound(self, name, request)
@@ -216,7 +230,8 @@ class Download(BrowserView):
         # TODO: Security check on form view/widget
 
         if self.context.ignoreContext:
-            raise NotFound("Cannot get the data file from a widget with no context")
+            raise NotFound(
+                "Cannot get the data file from a widget with no context")
 
         if self.context.form is not None:
             content = aq_inner(self.context.form.getContent())
@@ -235,10 +250,12 @@ class Download(BrowserView):
         set_headers(file_, self.request.response, filename=self.filename)
         return stream_data(file_)
 
+
 @implementer(IFieldWidget)
 @adapter(INamedFileField, IFormLayer)
 def NamedFileFieldWidget(field, request):
     return FieldWidget(field, NamedFileWidget(request))
+
 
 @implementer(IFieldWidget)
 @adapter(INamedImageField, IFormLayer)
