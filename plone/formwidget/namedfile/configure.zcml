@@ -8,7 +8,7 @@
     <include package="z3c.form" file="meta.zcml" />
     <include package="z3c.form" />
     <include package="plone.namedfile" />
-    
+
     <i18n:registerTranslations directory="locales" />
 
     <adapter factory=".converter.NamedDataConverter" />
@@ -20,7 +20,7 @@
             interface=".interfaces.INamedFileWidget"
         />
     </class>
-    
+
     <class class=".widget.NamedImageWidget">
         <require
             permission="zope.Public"
@@ -33,23 +33,9 @@
 
     <z3c:widgetTemplate
         mode="display"
-        widget=".interfaces.INamedFileWidget"
-        layer="z3c.form.interfaces.IFormLayer"
-        template="file_display.pt"
-        />
-    
-    <z3c:widgetTemplate
-        mode="display"
         widget=".interfaces.INamedImageWidget"
         layer="z3c.form.interfaces.IFormLayer"
         template="image_display.pt"
-        />
-
-    <z3c:widgetTemplate
-        mode="input"
-        widget=".interfaces.INamedFileWidget"
-        layer="z3c.form.interfaces.IFormLayer"
-        template="file_input.pt"
         />
 
     <z3c:widgetTemplate
@@ -62,7 +48,7 @@
     <browser:page
         name="download"
         for=".interfaces.INamedFileWidget"
-        class=".widget.Download"
+        class=".browser.Download"
         permission="zope2.View"
         />
 
