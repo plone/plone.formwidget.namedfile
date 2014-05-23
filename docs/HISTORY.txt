@@ -10,6 +10,9 @@ Changelog
 - Avoid error if widget is not used in acquisition context.
   [thomasdesvenain]
 
+- Add Italian translation
+  [giacomos]
+
 1.0.9 (2014-01-27)
 ------------------
 
