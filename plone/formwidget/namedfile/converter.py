@@ -26,22 +26,17 @@ class NamedDataConverter(BaseDataConverter):
             return value
         elif isinstance(value, FileUpload):
             
-            headers = value.headers
             filename = safe_basename(value.filename)
             
             if filename is not None and not isinstance(filename, unicode):
                 # Work-around for
                 # https://bugs.launchpad.net/zope2/+bug/499696
                 filename = filename.decode('utf-8')
-            
-            contentType = 'application/octet-stream'
-            if headers:
-                contentType = headers.get('Content-Type', contentType)
-            
+
             value.seek(0)
             data = value.read()
             if data or filename:
-                return self.field._type(data=data, contentType=contentType, filename=filename)
+                return self.field._type(data=data, filename=filename)
             else:
                 return self.field.missing_value
         
