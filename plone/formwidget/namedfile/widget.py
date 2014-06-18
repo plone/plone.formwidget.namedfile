@@ -35,10 +35,9 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     @property
     def allow_nochange(self):
-        return not self.ignoreContext and \
-                   self.field is not None and \
-                   self.value is not None and \
-                   self.value != self.field.missing_value
+        return self.field is not None and \
+               self.value is not None and \
+               self.value != self.field.missing_value
 
     @property
     def filename(self):
@@ -136,6 +135,8 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if action == 'remove':
             return None
         elif action == 'nochange':
+            if self.value is not None:
+                return self.value
             if self.ignoreContext:
                 return default
             dm = getMultiAdapter((self.context, self.field,), IDataManager)

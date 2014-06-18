@@ -8,6 +8,12 @@ Changelog
   See https://github.com/plone/plone.formwidget.namedfile/issues/9
   [lgraf]
 
+- The context should be ignored, but not the value if explicitly set.
+  plone.multilingual will set the value for language-independent fields
+  when translating.
+  [regebro]
+
+
 1.0.10 (2014-05-26)
 -------------------
 
@@ -19,6 +25,7 @@ Changelog
 
 - Add Italian translation
   [giacomos]
+
 
 1.0.9 (2014-01-27)
 ------------------
