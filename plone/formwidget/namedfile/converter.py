@@ -18,16 +18,16 @@ class NamedDataConverter(BaseDataConverter):
         return value
 
     def toFieldValue(self, value):
-        
+
         if value is None or value == '':
             return self.field.missing_value
 
         if INamed.providedBy(value):
             return value
         elif isinstance(value, FileUpload):
-            
+
             filename = safe_basename(value.filename)
-            
+
             if filename is not None and not isinstance(filename, unicode):
                 # Work-around for
                 # https://bugs.launchpad.net/zope2/+bug/499696
@@ -39,6 +39,6 @@ class NamedDataConverter(BaseDataConverter):
                 return self.field._type(data=data, filename=filename)
             else:
                 return self.field.missing_value
-        
+
         else:
             return self.field._type(data=str(value))
