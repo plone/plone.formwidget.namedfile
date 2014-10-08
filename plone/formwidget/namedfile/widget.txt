@@ -439,14 +439,14 @@ this view to display the image itself or link to the file.
   >>> view()
   'My image data'
   >>> request.response.getHeader('Content-Disposition')
-  'attachment; filename="faux.png"'
+  "attachment; filename*=UTF-8''faux.png"
 
   >>> request = TestRequest()
   >>> view = Download(file_widget, request)
   >>> view()
   'My file data'
   >>> request.response.getHeader('Content-Disposition')
-  'attachment; filename="data.txt"'
+  "attachment; filename*=UTF-8''data.txt"
 
 The URL will influence the name of the file as reported to the browser, but
 doesn't stop it being found.
@@ -457,7 +457,7 @@ doesn't stop it being found.
   >>> view()
   'My file data'
   >>> request.response.getHeader('Content-Disposition')
-  'attachment; filename="daisy.txt"'
+  "attachment; filename*=UTF-8''daisy.txt"
 
 Any additional traversal will result in an error.
 
