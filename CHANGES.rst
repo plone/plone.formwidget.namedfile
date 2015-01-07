@@ -4,7 +4,8 @@ Changelog
 1.0.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- PEP 8.
+  [thet]
 
 
 1.0.11 (2014-09-29)

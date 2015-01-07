@@ -1,11 +1,12 @@
+from plone.formwidget.namedfile import MessageFactory as _
+from plone.namedfile.interfaces import INamedField
 from z3c.form import validator
 from zope.schema import ValidationError
 
-from plone.namedfile.interfaces import INamedField
-from plone.formwidget.namedfile import MessageFactory as _
 
 class InvalidState(ValidationError):
     __doc__ = _(u'No file provided.')
+
 
 class NamedFileWidgetValidator(validator.SimpleFieldValidator):
 
@@ -16,4 +17,7 @@ class NamedFileWidgetValidator(validator.SimpleFieldValidator):
             raise InvalidState()
         return super(NamedFileWidgetValidator, self).validate(value, force)
 
-validator.WidgetValidatorDiscriminators(NamedFileWidgetValidator, field=INamedField)
+validator.WidgetValidatorDiscriminators(
+    NamedFileWidgetValidator,
+    field=INamedField
+)

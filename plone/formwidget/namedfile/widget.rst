@@ -7,7 +7,7 @@ rendering NamedFile objects from plone.namedfile. The NamedImageWidget is used
 for NamedImage objects. This includes their sub-classes NamedBlobFile and
 NamedBlobImage.
 
-Like any widget, the file widgets provide the ``IWidget`` interface:
+Like any widget, the file widgets provide the ``IWidget`` interface::
 
   >>> from zope.interface.verify import verifyClass
   >>> from z3c.form import interfaces
@@ -18,7 +18,7 @@ Like any widget, the file widgets provide the ``IWidget`` interface:
   >>> verifyClass(interfaces.IWidget, NamedImageWidget)
   True
 
-There are also more specific interfaces for each widget:
+There are also more specific interfaces for each widget::
 
     >>> from plone.formwidget.namedfile.interfaces import INamedFileWidget
     >>> from plone.formwidget.namedfile.interfaces import INamedImageWidget
@@ -28,7 +28,7 @@ There are also more specific interfaces for each widget:
     >>> verifyClass(INamedImageWidget, NamedImageWidget)
     True
 
-The widgets can be instantiated only using the request:
+The widgets can be instantiated only using the request::
 
   >>> from z3c.form.testing import TestRequest
   >>> request = TestRequest()
@@ -36,7 +36,7 @@ The widgets can be instantiated only using the request:
   >>> file_widget = NamedFileWidget(request)
   >>> image_widget = NamedImageWidget(request)
 
-Before rendering a widget, one has to set the name and id of the widget:
+Before rendering a widget, one has to set the name and id of the widget::
 
   >>> file_widget.id = 'widget.id.file'
   >>> file_widget.name = 'widget.name.file'
@@ -44,7 +44,7 @@ Before rendering a widget, one has to set the name and id of the widget:
   >>> image_widget.id = 'widget.id.image'
   >>> image_widget.name = 'widget.name.image'
 
-We also need to register the templates for the widgets:
+We also need to register the templates for the widgets::
 
   >>> import zope.component
   >>> from zope.pagetemplate.interfaces import IPageTemplate
@@ -66,7 +66,7 @@ We also need to register the templates for the widgets:
   ...     IPageTemplate, name=interfaces.INPUT_MODE)
 
 If we render the widget as this we get an input element in a simple wrapper.
-Later, we will show more advanced functionality when using a field-widget.
+Later, we will show more advanced functionality when using a field-widget::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
@@ -82,7 +82,7 @@ Later, we will show more advanced functionality when using a field-widget.
              name="widget.name.image" />
   </span>
 
-We can extract simple file data from the widget like this:
+We can extract simple file data from the widget like this::
 
   >>> import cStringIO
   >>> myfile = cStringIO.StringIO('My file contents.')
@@ -97,7 +97,7 @@ We can extract simple file data from the widget like this:
   >>> image_widget.extract()
   <cStringIO.StringI object at ...>
 
-If nothing is found in the request, the default is returned:
+If nothing is found in the request, the default is returned::
 
   >>> file_widget.request = TestRequest()
   >>> file_widget.update()
@@ -109,12 +109,12 @@ If nothing is found in the request, the default is returned:
   >>> image_widget.extract()
   <NO_VALUE>
 
-We can also handle file-upload objects.
+We can also handle file-upload objects::
 
   >>> import cStringIO
   >>> from ZPublisher.HTTPRequest import FileUpload
 
-Let's define a FieldStorage stub:
+Let's define a FieldStorage stub::
 
   >>> class FieldStorageStub:
   ...     def __init__(self, file, headers={}, filename='foo.bar'):
@@ -122,7 +122,7 @@ Let's define a FieldStorage stub:
   ...         self.headers = headers
   ...         self.filename = filename
 
-Now build a FileUpload:
+Now build a FileUpload::
 
   >>> myfile = cStringIO.StringIO('File upload contents.')
   >>> aFieldStorage = FieldStorageStub(myfile)
@@ -138,7 +138,7 @@ Now build a FileUpload:
   >>> image_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
 
-The rendering is unchanged.
+The rendering is unchanged::
 
   >>> print(file_widget.render())
   <span class="named-file-widget" id="widget.id.file">
@@ -152,7 +152,7 @@ The rendering is unchanged.
              name="widget.name.image" />
   </span>
 
-Empty, unnamed FileUploads are treated as having no value:
+Empty, unnamed FileUploads are treated as having no value::
 
   >>> emptyfile = cStringIO.StringIO('')
   >>> aFieldStorage = FieldStorageStub(emptyfile, filename='')
@@ -176,7 +176,7 @@ If the widgets are used as field widgets for the fields in plone.namedfile,
 we get more interesting behaviour: the user may either select to provide a
 new file, or keep the existing one.
 
-For this to work, we need a context and a data manager.
+For this to work, we need a context and a data manager::
 
   >>> from plone.namedfile import field
   >>> from zope.interface import implements, Interface
@@ -214,7 +214,7 @@ For this to work, we need a context and a data manager.
   >>> image_widget.id = 'widget.id.image'
   >>> image_widget.name = 'widget.name.image'
 
-At first, there is no value, so the behaviour is much like before:
+At first, there is no value, so the behaviour is much like before::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
@@ -234,7 +234,7 @@ At first, there is no value, so the behaviour is much like before:
 
 However, if we now set a value, we will have the option of keeping it,
 or changing it.  The filename can handle unicode and international
-characters.
+characters::
 
   >>> from plone.namedfile import NamedFile, NamedImage
   >>> file_widget.value = NamedFile(data='My file data',
@@ -315,7 +315,7 @@ default to -1 since we didn't upload a real image)
 
 Notice how there are radio buttons to decide whether to upload a new file or
 keep the existing one. If the '.action' field is not submitted or is
-empty, the behaviour is the same as before:
+empty, the behaviour is the same as before::
 
   >>> myfile = cStringIO.StringIO('File upload contents.')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='test2.txt')
@@ -335,7 +335,7 @@ empty, the behaviour is the same as before:
   >>> image_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
 
-If the widgets are rendered again, the newly uploaded files will be shown.
+If the widgets are rendered again, the newly uploaded files will be shown::
 
   >>> print(file_widget.render())
   <span class="named-file-widget required namedfile-field"
@@ -405,7 +405,7 @@ If the widgets are rendered again, the newly uploaded files will be shown.
   <BLANKLINE>
 
 However, if we provide the '.action' field, we get back the value currently
-stored in the field.
+stored in the field::
 
   >>> content.file_field = NamedFile(data='My file data', filename=u'data.txt')
   >>> content.image_field = NamedImage(data='My image data', filename=u'faux.png')
@@ -431,7 +431,7 @@ Download view
 -------------
 
 The download view extracts the image/file data, the widget template output uses
-this view to display the image itself or link to the file.
+this view to display the image itself or link to the file::
 
   >>> from plone.formwidget.namedfile.widget import Download
   >>> request = TestRequest()
@@ -449,7 +449,7 @@ this view to display the image itself or link to the file.
   "attachment; filename*=UTF-8''data.txt"
 
 The URL will influence the name of the file as reported to the browser, but
-doesn't stop it being found.
+doesn't stop it being found::
 
   >>> request = TestRequest()
   >>> view = Download(file_widget, request)
@@ -459,7 +459,7 @@ doesn't stop it being found.
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''daisy.txt"
 
-Any additional traversal will result in an error.
+Any additional traversal will result in an error::
 
   >>> request = TestRequest()
   >>> view = Download(file_widget, request)
@@ -474,7 +474,7 @@ The converter
 
 This package comes with a data converter that can convert a file upload
 instance to a named file. It is registered to work on all named file/image
-instances and the two named file/image widgets.
+instances and the two named file/image widgets::
 
   >>> from plone.formwidget.namedfile.converter import NamedDataConverter
   >>> provideAdapter(NamedDataConverter)
@@ -485,7 +485,7 @@ instances and the two named file/image widgets.
   >>> file_converter = getMultiAdapter((IContent['file_field'], file_widget), IDataConverter)
   >>> image_converter = getMultiAdapter((IContent['image_field'], image_widget), IDataConverter)
 
-A value of None or '' results in the field's missing_value being returned.
+A value of None or '' results in the field's missing_value being returned::
 
   >>> file_converter.toFieldValue(u'') is IContent['file_field'].missing_value
   True
@@ -497,14 +497,14 @@ A value of None or '' results in the field's missing_value being returned.
   >>> image_converter.toFieldValue(None) is IContent['image_field'].missing_value
   True
 
-A named file/image instance is returned as-is:
+A named file/image instance is returned as-is::
 
   >>> file_converter.toFieldValue(content.file_field) is content.file_field
   True
   >>> image_converter.toFieldValue(content.image_field) is content.image_field
   True
 
-A data string is converted to the appropriate type:
+A data string is converted to the appropriate type::
 
   >>> file_converter.toFieldValue('some file content')
   <plone.namedfile.file.NamedFile object at ...>
@@ -516,7 +516,7 @@ A FileUpload object is converted to the appropriate type, preserving filename,
 and possibly handling international characters in filenames.
 The content type sent by the browser will be ignored because it's unreliable
 - it's left to the implementation of the file field to determine the proper
-content type.
+content type::
 
   >>> myfile = cStringIO.StringIO('File upload contents.')
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
@@ -528,7 +528,7 @@ content type.
   >>> file_obj.filename
   u'rand\xf8m.txt'
 
-Content type from headers sent by browser should be ignored:
+Content type from headers sent by browser should be ignored::
 
   >>> file_obj.contentType != 'text/x-dummy'
   True
@@ -545,7 +545,7 @@ Content type from headers sent by browser should be ignored:
 
 
 However, a zero-length, unnamed FileUpload results in the field's missing_value
-being returned.
+being returned::
 
   >>> myfile = cStringIO.StringIO('')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='', headers={'Content-Type': 'application/octet-stream'})
@@ -560,12 +560,12 @@ The validator
 -------------
 
 If the user clicked 'replace' but did not provide a file, we want to get a
-validation error.
+validation error::
 
   >>> from plone.formwidget.namedfile.validator import NamedFileWidgetValidator
 
 If 'action' is omitted and the value is None, we should get a validation error
-only when the field is required.
+only when the field is required::
 
   >>> request = TestRequest(form={'widget.name.file': myfile})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
@@ -579,7 +579,7 @@ only when the field is required.
 
 However, if it is set to 'replace' and there is no value provided, we get the
 InvalidState exception from validator.py (its docstring is displayed to the
-user).
+user)::
 
   >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
@@ -588,7 +588,7 @@ user).
   ...
   InvalidState
 
-If we provide a file, all is good.
+If we provide a file, all is good::
 
   >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
@@ -596,7 +596,7 @@ If we provide a file, all is good.
   True
 
 Similarly, if we really wanted to remove the file, we won't complain, unless
-we again make the field required.
+we again make the field required::
 
   >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'remove'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)

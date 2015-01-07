@@ -1,28 +1,39 @@
-try:
-    from  os import SEEK_END
-except ImportError:
-    from posixfile import SEEK_END
-import urllib
-
-from Acquisition import Explicit, aq_inner
-from ZPublisher.HTTPRequest import FileUpload
-from zope.component.hooks import getSite
-from zope.component import adapter, getMultiAdapter
-from zope.interface import implementer, implements, implementsOnly
-from zope.size import byteDisplay
-from zope.publisher.interfaces import IPublishTraverse, NotFound
-
-from z3c.form.interfaces import IFieldWidget, IFormLayer, IDataManager, NOVALUE
-from z3c.form.widget import FieldWidget
-from z3c.form.browser import file
-
+from Acquisition import Explicit
+from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.MimetypesRegistry.common import MimeTypeException
-from plone.namedfile.interfaces import INamedFileField, INamedImageField, INamed, INamedImage
-from plone.namedfile.utils import safe_basename, set_headers, stream_data
+from ZPublisher.HTTPRequest import FileUpload
+from plone.formwidget.namedfile.interfaces import INamedFileWidget
+from plone.formwidget.namedfile.interfaces import INamedImageWidget
+from plone.namedfile.interfaces import INamed
+from plone.namedfile.interfaces import INamedFileField
+from plone.namedfile.interfaces import INamedImage
+from plone.namedfile.interfaces import INamedImageField
+from plone.namedfile.utils import safe_basename
+from plone.namedfile.utils import set_headers
+from plone.namedfile.utils import stream_data
+from z3c.form.browser import file
+from z3c.form.interfaces import IDataManager
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IFormLayer
+from z3c.form.interfaces import NOVALUE
+from z3c.form.widget import FieldWidget
+from zope.component import adapter
+from zope.component import getMultiAdapter
+from zope.component.hooks import getSite
+from zope.interface import implementer
+from zope.interface import implements
+from zope.interface import implementsOnly
+from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import NotFound
+from zope.size import byteDisplay
+import urllib
 
-from plone.formwidget.namedfile.interfaces import INamedFileWidget, INamedImageWidget
+try:
+    from os import SEEK_END
+except ImportError:
+    from posixfile import SEEK_END
 
 
 class NamedFileWidget(Explicit, file.FileWidget):
@@ -31,13 +42,13 @@ class NamedFileWidget(Explicit, file.FileWidget):
     implementsOnly(INamedFileWidget)
 
     klass = u'named-file-widget'
-    value = None # don't default to a string
+    value = None  # don't default to a string
 
     @property
     def allow_nochange(self):
         return self.field is not None and \
-               self.value is not None and \
-               self.value != self.field.missing_value
+            self.value is not None and \
+            self.value != self.field.missing_value
 
     @property
     def filename(self):
@@ -98,7 +109,6 @@ class NamedFileWidget(Explicit, file.FileWidget):
         else:
             return None
 
-
     @property
     def filename_encoded(self):
         filename = self.filename
@@ -116,20 +126,24 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if self.ignoreContext:
             return None
         if self.filename_encoded:
-            return "%s/++widget++%s/@@download/%s" % (self.request.getURL(), self.name, self.filename_encoded)
+            return "%s/++widget++%s/@@download/%s" % (
+                self.request.getURL(), self.name, self.filename_encoded)
         else:
-            return "%s/++widget++%s/@@download" % (self.request.getURL(), self.name)
+            return "%s/++widget++%s/@@download" % (
+                self.request.getURL(), self.name)
 
     def action(self):
         action = self.request.get("%s.action" % self.name, "nochange")
-        if hasattr(self.form, 'successMessage') and self.form.status == self.form.successMessage:
+        if hasattr(self.form, 'successMessage')\
+                and self.form.status == self.form.successMessage:
             # if form action completed successfully, we want nochange
             action = 'nochange'
         return action
 
     def extract(self, default=NOVALUE):
         action = self.request.get("%s.action" % self.name, None)
-        if self.request.get('PATH_INFO', '').endswith('kss_z3cform_inline_validation'):
+        if self.request.get(
+                'PATH_INFO', '').endswith('kss_z3cform_inline_validation'):
             action = 'nochange'
 
         if action == 'remove':
@@ -147,12 +161,13 @@ class NamedFileWidget(Explicit, file.FileWidget):
         value = super(NamedFileWidget, self).extract(default)
         if isinstance(value, FileUpload):
             value.seek(0, SEEK_END)
-            empty = value.tell()==0
+            empty = value.tell() == 0
             value.seek(0)
             if empty and not value.filename:
                 return default
             value.seek(0)
         return value
+
 
 class NamedImageWidget(NamedFileWidget):
     """A widget for a named file object
@@ -195,6 +210,7 @@ class NamedImageWidget(NamedFileWidget):
     def alt(self):
         return self.title
 
+
 class Download(BrowserView):
     """Download a file, via ../context/form/++widget++/@@download/filename
     """
@@ -207,7 +223,7 @@ class Download(BrowserView):
 
     def publishTraverse(self, request, name):
 
-        if self.filename is None: # ../@@download/filename
+        if self.filename is None:  # ../@@download/filename
             self.filename = name
         else:
             raise NotFound(self, name, request)
@@ -219,7 +235,8 @@ class Download(BrowserView):
         # TODO: Security check on form view/widget
 
         if self.context.ignoreContext:
-            raise NotFound("Cannot get the data file from a widget with no context")
+            raise NotFound(
+                "Cannot get the data file from a widget with no context")
 
         if self.context.form is not None:
             content = aq_inner(self.context.form.getContent())
@@ -238,10 +255,12 @@ class Download(BrowserView):
         set_headers(file_, self.request.response, filename=self.filename)
         return stream_data(file_)
 
+
 @implementer(IFieldWidget)
 @adapter(INamedFileField, IFormLayer)
 def NamedFileFieldWidget(field, request):
     return FieldWidget(field, NamedFileWidget(request))
+
 
 @implementer(IFieldWidget)
 @adapter(INamedImageField, IFormLayer)

@@ -1,13 +1,10 @@
-from zope.component import adapts
-
-from z3c.form.converter import BaseDataConverter
-
+from ZPublisher.HTTPRequest import FileUpload
+from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.namedfile.interfaces import INamedField, INamed
 from plone.namedfile.utils import safe_basename
+from z3c.form.converter import BaseDataConverter
+from zope.component import adapts
 
-from plone.formwidget.namedfile.interfaces import INamedFileWidget
-
-from ZPublisher.HTTPRequest import FileUpload
 
 class NamedDataConverter(BaseDataConverter):
     """Converts from a file-upload to a NamedFile variant.

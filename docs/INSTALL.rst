@@ -16,7 +16,7 @@ plone.formwidget.namedfile Installation
 Alternatively, if you are using zc.buildout and the plone.recipe.zope2instance
 recipe to manage your project, you can do this:
 
- * Add ``plone.formwidget.namedfile`` to the list of eggs to install, e.g.:
+ * Add ``plone.formwidget.namedfile`` to the list of eggs to install, e.g.::
 
     [buildout]
     ...
@@ -24,7 +24,7 @@ recipe to manage your project, you can do this:
         ...
         plone.formwidget.namedfile
 
-  * Tell the plone.recipe.zope2instance recipe to install a ZCML slug:
+  * Tell the plone.recipe.zope2instance recipe to install a ZCML slug::
 
     [instance]
     recipe = plone.recipe.zope2instance
@@ -32,7 +32,7 @@ recipe to manage your project, you can do this:
     zcml =
         plone.formwidget.namedfile
 
-  * Re-run buildout, e.g. with:
+  * Re-run buildout, e.g. with::
 
     $ ./bin/buildout
 
