@@ -4,8 +4,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.MimetypesRegistry.common import MimeTypeException
 from ZPublisher.HTTPRequest import FileUpload
+from plone.formwidget.namedfile.converter import b64decode_file
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
+from plone.namedfile.file import NamedFile
+from plone.namedfile.file import NamedImage
 from plone.namedfile.interfaces import INamed
 from plone.namedfile.interfaces import INamedFileField
 from plone.namedfile.interfaces import INamedImage
@@ -27,6 +30,7 @@ from zope.interface import implements
 from zope.interface import implementsOnly
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
+from zope.schema.interfaces import IASCII
 from zope.size import byteDisplay
 import urllib
 
@@ -231,7 +235,6 @@ class Download(BrowserView):
         return self
 
     def __call__(self):
-
         # TODO: Security check on form view/widget
 
         if self.context.ignoreContext:
@@ -246,6 +249,16 @@ class Download(BrowserView):
 
         dm = getMultiAdapter((content, field,), IDataManager)
         file_ = dm.get()
+
+        if isinstance(file_, basestring) and IASCII.providedBy(field):
+            """Encoded data.
+            """
+            filename, data = b64decode_file(file_)
+            if INamedImageWidget.providedBy(self.context):
+                file_ = NamedImage(data=data, filename=filename)
+            else:
+                file_ = NamedFile(data=data, filename=filename)
+
         if file_ is None:
             raise NotFound(self, self.filename, self.request)
 
