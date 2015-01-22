@@ -4,6 +4,11 @@ Changelog
 1.0.12 (unreleased)
 -------------------
 
+- Add Base64 data converter for NamedImage and NamedFile widgets on ASCII
+  fields with base64 encoded data and filename. Now the NamedImage and
+  NamedFile widgets can be used with ``zope.schema.ASCII`` fields.
+  [thet]
+
 - PEP 8.
   [thet]
 

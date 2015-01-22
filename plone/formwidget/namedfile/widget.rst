@@ -427,6 +427,7 @@ stored in the field::
   >>> image_widget.extract() is content.image_field
   True
 
+
 Download view
 -------------
 
@@ -468,6 +469,7 @@ Any additional traversal will result in an error::
   Traceback (most recent call last):
   ...
   NotFound: ... 'daisy.txt'
+
 
 The converter
 -------------
@@ -553,8 +555,150 @@ being returned::
   >>> field_value is IContent['file_field'].missing_value
   True
   >>> field_value = image_converter.toFieldValue(FileUpload(aFieldStorage))
-  >>> field_value is IContent['file_field'].missing_value
+  >>> field_value is IContent['image_field'].missing_value
   True
+
+
+The Base64Converter for ASCII fields
+------------------------------------
+
+There is another converter, which converts between a NamedFile or file upload
+instance and base64 encoded data, which can be stored in a ASCII field::
+
+  >>> from zope import schema
+  >>> from zope.interface import implements, Interface
+  >>> class IASCIIContent(Interface):
+  ...     file_field = schema.ASCII(title=u"File")
+  ...     image_field = schema.ASCII(title=u"Image")
+
+  >>> from plone.formwidget.namedfile.converter import Base64Converter
+  >>> provideAdapter(Base64Converter)
+
+  >>> from zope.component import getMultiAdapter
+  >>> from z3c.form.interfaces import IDataConverter
+
+  >>> ascii_file_converter = getMultiAdapter(
+  ...     (IASCIIContent['file_field'], file_widget),
+  ...     IDataConverter
+  ... )
+  >>> ascii_image_converter = getMultiAdapter(
+  ...     (IASCIIContent['image_field'], image_widget),
+  ...     IDataConverter
+  ... )
+
+A value of None or '' results in the field's missing_value being returned::
+
+  >>> ascii_file_converter.toFieldValue(u'') is IASCIIContent['file_field'].missing_value
+  True
+  >>> ascii_file_converter.toFieldValue(None) is IASCIIContent['file_field'].missing_value
+  True
+
+  >>> ascii_image_converter.toFieldValue(u'') is IASCIIContent['image_field'].missing_value
+  True
+  >>> ascii_image_converter.toFieldValue(None) is IASCIIContent['image_field'].missing_value
+  True
+
+A named file/image instance is returned as Base 64 encoded string in the
+following form::
+
+  filenameb64:BASE64_ENCODED_FILENAME;data64:BASE64_ENCODED_DATA
+
+Like so::
+
+  >>> ascii_file_converter.toFieldValue(
+  ...     NamedFile(data='testfile', filename=u'test.txt'))
+  'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU='
+  >>> ascii_image_converter.toFieldValue(
+  ...     NamedImage(data='testimage', filename=u'test.png'))
+  'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl'
+
+A Base 64 encoded structure like descibed above is converted to the appropriate
+type::
+
+  >>> afile = ascii_file_converter.toWidgetValue(
+  ...     'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU=')
+  >>> afile
+  <plone.namedfile.file.NamedFile object at ...>
+  >>> afile.data
+  'testfile'
+  >>> afile.filename
+  u'test.txt'
+
+  >>> aimage = ascii_image_converter.toWidgetValue(
+  ...     'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl')
+  >>> aimage
+  <plone.namedfile.file.NamedImage object at ...>
+  >>> aimage.data
+  'testimage'
+  >>> aimage.filename
+  u'test.png'
+
+Finally, some tests with image uploads converted to the field value.
+
+Convert a file upload to the Base 64 encoded field value and handle the
+filename too::
+
+
+  >>> myfile = cStringIO.StringIO('File upload contents.')
+  >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
+  >>> aFieldStorage = FieldStorageStub(myfile, filename='rand\xc3\xb8m.txt',
+  ...     headers={'Content-Type': 'text/x-dummy'})
+  >>> ascii_file_converter.toFieldValue(FileUpload(aFieldStorage))
+  'filenameb64:cmFuZMO4bS50eHQ=;datab64:RmlsZSB1cGxvYWQgY29udGVudHMu'
+
+A zero-length, unnamed FileUpload results in the field's missing_value
+being returned::
+
+  >>> myfile = cStringIO.StringIO('')
+  >>> aFieldStorage = FieldStorageStub(myfile, filename='', headers={'Content-Type': 'application/octet-stream'})
+  >>> field_value = ascii_file_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> field_value is IASCIIContent['file_field'].missing_value
+  True
+  >>> field_value = ascii_image_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> field_value is IASCIIContent['image_field'].missing_value
+  True
+
+
+The Download view on ASCII fields
+---------------------------------
+::
+
+  >>> class ASCIIContent(object):
+  ...     implements(IASCIIContent)
+  ...     def __init__(self, file, image):
+  ...         self.file_field = file
+  ...         self.image_field = image
+  ...
+  ...     def absolute_url(self):
+  ...         return 'http://example.com/content2'
+
+  >>> content = ASCIIContent(
+  ...     NamedFile(data="testfile", filename=u"test.txt"),
+  ...     NamedImage(data="testimage", filename=u"test.png"))
+
+  >>> from z3c.form.widget import FieldWidget
+
+  >>> ascii_file_widget = FieldWidget(IASCIIContent['file_field'], NamedFileWidget(TestRequest()))
+  >>> ascii_file_widget.context = content
+
+  >>> ascii_image_widget = FieldWidget(IASCIIContent['image_field'], NamedImageWidget(TestRequest()))
+  >>> ascii_image_widget.context = content
+
+  >>> request = TestRequest()
+  >>> view = Download(ascii_file_widget, request)
+  >>> view()
+  'testfile'
+
+  >>> request.response.getHeader('Content-Disposition')
+  "attachment; filename*=UTF-8''test.txt"
+  
+  >>> view = Download(ascii_image_widget, request)
+  >>> view()
+  'testimage'
+
+  >>> request.response.getHeader('Content-Disposition')
+  "attachment; filename*=UTF-8''test.png"
+
 
 The validator
 -------------

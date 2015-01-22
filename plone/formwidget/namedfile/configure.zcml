@@ -12,6 +12,7 @@
   <i18n:registerTranslations directory="locales" />
 
   <adapter factory=".converter.NamedDataConverter" />
+  <adapter factory=".converter.Base64Converter" />
   <adapter factory=".validator.NamedFileWidgetValidator" />
 
   <class class=".widget.NamedFileWidget">
