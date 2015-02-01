@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.12 (unreleased)
+1.0.12 (2015-02-01)
 -------------------
 
 - Add Base64 data converter for NamedImage and NamedFile widgets on ASCII
