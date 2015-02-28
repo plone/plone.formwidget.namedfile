@@ -54,9 +54,10 @@ def b64encode_file(filename, data):
         filename = filename.encode('utf-8')
     filenameb64 = base64.standard_b64encode(filename or '')
     datab64 = base64.standard_b64encode(data)
-    return "filenameb64:{};datab64:{}".format(
+    filename = "filenameb64:%s;datab64:%s" % (
         filenameb64, datab64
-    ).encode('ascii')
+    )
+    return filename.encode('ascii')
 
 
 def b64decode_file(value):
