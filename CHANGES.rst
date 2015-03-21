@@ -4,7 +4,8 @@ Changelog
 1.0.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Do not use format() since it will break for Python 2.6.
+  [timo]
 
 
 1.0.12 (2015-02-01)
