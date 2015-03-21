@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.13 (unreleased)
+1.0.13 (2015-03-21)
 -------------------
 
 - Do not use format() since it will break for Python 2.6.
