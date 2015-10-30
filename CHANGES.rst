@@ -4,7 +4,10 @@ Changelog
 1.0.14 (unreleased)
 -------------------
 
+New:
+
 - Add Finnish translations [petri]
+
 
 1.0.13 (2015-03-21)
 -------------------
