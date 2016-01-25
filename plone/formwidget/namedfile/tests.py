@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from z3c.form import testing
 import doctest
 import unittest
