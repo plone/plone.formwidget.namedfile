@@ -11,6 +11,12 @@ New:
 
 - Add Finnish translations [petri]
 
+Fixes:
+
+- Replace deprecated ``zope.testing.doctestunit`` import with ``doctest``
+  module from stdlib.
+  [thet]
+
 
 1.0.13 (2015-03-21)
 -------------------
