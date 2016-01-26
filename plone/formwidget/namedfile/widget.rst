@@ -243,72 +243,20 @@ characters::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <span class="named-file-widget required namedfile-field"
-        id="widget.id.file">
-      <span>
-          <a href="http://127.0.0.1/++widget++widget.name.file/@@download/data_%E6%B7%B1.txt">data_深.txt</a>
-          <span class="discreet"> &mdash;
-              text/plain,
-              1 KB
-          </span>
-      </span>
-      <div style="padding-top: 1em;">
-          <input type="radio" value="nochange"
-                 class="noborder" checked="checked"
-                 name="widget.name.file.action"
-                 onclick="document.getElementById('widget.id.file-input').disabled=true"
-                 id="widget.id.file-nochange" />
-          <label for="widget.id.file-nochange">Keep existing file</label>
-  <BLANKLINE>
-          <br />
-          <input type="radio" value="replace" class="noborder"
-                 name="widget.name.file.action"
-                 onclick="document.getElementById('widget.id.file-input').disabled=false"
-                 id="widget.id.file-replace" />
-          <label for="widget.id.file-replace">Replace with new file</label>
-      </div>
-      <div style="padding-left: 1.5em; padding-top: 0.5em;">
-          <input type="file" id="widget.id.file-input"
-                 name="widget.name.file" />
-          <script type="text/javascript">document.getElementById('widget.id.file-input').disabled=true;</script>
-      </div>
-  </span>
-  <BLANKLINE>
+  <... class="named-file-widget required namedfile-field" id="widget.id.file">...
+  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/data_%E6%B7%B1.txt">data_深.txt</a>...
+  <input type="radio"... id="widget.id.file-nochange"...
+  <input type="radio"... id="widget.id.file-replace"...
+  <input type="file"... id="widget.id.file-input"...
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <span class="named-image-widget required namedimage-field"
-        id="widget.id.image">
-      <span>
-          <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png"
-               width="-1" /><br />
-          <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png">faux.png</a>
-          <span class="discreet"> &mdash;
-              1 KB
-          </span>
-      </span>
-      <div style="padding-top: 1em;">
-          <input type="radio" value="nochange"
-                 class="noborder" checked="checked"
-                 name="widget.name.image.action"
-                 onclick="document.getElementById('widget.id.image-input').disabled=true"
-                 id="widget.id.image-nochange" />
-          <label for="widget.id.image-nochange">Keep existing image</label>
-  <BLANKLINE>
-          <br />
-          <input type="radio" value="replace" class="noborder"
-                 name="widget.name.image.action"
-                 onclick="document.getElementById('widget.id.image-input').disabled=false"
-                 id="widget.id.image-replace" />
-          <label for="widget.id.image-replace">Replace with new image</label>
-      </div>
-      <div style="padding-left: 1.5em; padding-top: 0.5em;">
-          <input type="file" id="widget.id.image-input"
-                 name="widget.name.image" />
-          <script type="text/javascript">document.getElementById('widget.id.image-input').disabled=true;</script>
-      </div>
-  </span>
-  <BLANKLINE>
+  <... class="named-image-widget required namedimage-field" id="widget.id.image">...
+  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png" width="-1" />...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png">faux.png</a>...
+  <input type="radio"... id="widget.id.image-nochange"...
+  <input type="radio"... id="widget.id.image-replace"...
+  <input type="file"... id="widget.id.image-input"...
 
 (the image height and width are taken from the NamedImage instance, and here
 default to -1 since we didn't upload a real image)
@@ -338,71 +286,19 @@ empty, the behaviour is the same as before::
 If the widgets are rendered again, the newly uploaded files will be shown::
 
   >>> print(file_widget.render())
-  <span class="named-file-widget required namedfile-field"
-        id="widget.id.file">
-      <span>
-          <a href="http://127.0.0.1/++widget++widget.name.file/@@download/test2.txt">test2.txt</a>
-          <span class="discreet"> &mdash;
-              0 KB
-          </span>
-      </span>
-      <div style="padding-top: 1em;">
-          <input type="radio" value="nochange"
-                 class="noborder" checked="checked"
-                 name="widget.name.file.action"
-                 onclick="document.getElementById('widget.id.file-input').disabled=true"
-                 id="widget.id.file-nochange" />
-          <label for="widget.id.file-nochange">Keep existing file</label>
-  <BLANKLINE>
-          <br />
-          <input type="radio" value="replace" class="noborder"
-                 name="widget.name.file.action"
-                 onclick="document.getElementById('widget.id.file-input').disabled=false"
-                 id="widget.id.file-replace" />
-          <label for="widget.id.file-replace">Replace with new file</label>
-      </div>
-      <div style="padding-left: 1.5em; padding-top: 0.5em;">
-          <input type="file" id="widget.id.file-input"
-                 name="widget.name.file" />
-          <script type="text/javascript">document.getElementById('widget.id.file-input').disabled=true;</script>
-      </div>
-  </span>
-  <BLANKLINE>
-
+  <... class="named-file-widget required namedfile-field" id="widget.id.file">...
+  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/test2.txt">test2.txt</a>...
+  <input type="radio"... id="widget.id.file-nochange"...
+  <input type="radio"... id="widget.id.file-replace"...
+  <input type="file"... id="widget.id.file-input"...
 
   >>> print(image_widget.render())
-  <span class="named-image-widget required namedimage-field"
-        id="widget.id.image">
-      <span>
-          <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png"
-               width="128" /><br />
-          <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png">faux2.png</a>
-          <span class="discreet"> &mdash;
-              0 KB
-          </span>
-      </span>
-      <div style="padding-top: 1em;">
-          <input type="radio" value="nochange"
-                 class="noborder" checked="checked"
-                 name="widget.name.image.action"
-                 onclick="document.getElementById('widget.id.image-input').disabled=true"
-                 id="widget.id.image-nochange" />
-          <label for="widget.id.image-nochange">Keep existing image</label>
-  <BLANKLINE>
-          <br />
-          <input type="radio" value="replace" class="noborder"
-                 name="widget.name.image.action"
-                 onclick="document.getElementById('widget.id.image-input').disabled=false"
-                 id="widget.id.image-replace" />
-          <label for="widget.id.image-replace">Replace with new image</label>
-      </div>
-      <div style="padding-left: 1.5em; padding-top: 0.5em;">
-          <input type="file" id="widget.id.image-input"
-                 name="widget.name.image" />
-          <script type="text/javascript">document.getElementById('widget.id.image-input').disabled=true;</script>
-      </div>
-  </span>
-  <BLANKLINE>
+  <... class="named-image-widget required namedimage-field" id="widget.id.image">...
+  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png" width="128" />...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png">faux2.png</a>...
+  <input type="radio"... id="widget.id.image-nochange"...
+  <input type="radio"... id="widget.id.image-replace"...
+  <input type="file"... id="widget.id.image-input"...
 
 However, if we provide the '.action' field, we get back the value currently
 stored in the field::
