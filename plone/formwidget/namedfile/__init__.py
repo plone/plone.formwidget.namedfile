@@ -2,6 +2,6 @@ from plone.formwidget.namedfile.widget import NamedFileFieldWidget  # noqa
 from plone.formwidget.namedfile.widget import NamedFileWidget  # noqa
 from plone.formwidget.namedfile.widget import NamedImageFieldWidget  # noqa
 from plone.formwidget.namedfile.widget import NamedImageWidget  # noqa
-import zope.i18nmessageid
+from zope.i18nmessageid import MessageFactory
 
-MessageFactory = zope.i18nmessageid.MessageFactory('plone.formwidget.namedfile')
+_ = MessageFactory('plone')

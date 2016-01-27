@@ -1,5 +1,5 @@
 <span
-    i18n:domain="plone.formwidget.namedfile"
+    i18n:domain="plone"
     tal:attributes="id view/id;
                     class view/klass;
                     style view/style;
@@ -43,7 +43,6 @@
             >Filename</a>
         <span class="discreet"> &mdash;<tal:doc_type condition="doc_type">
             <span tal:replace="doc_type"
-                  i18n:domain="plone"
                   i18n:translate="">ContentType</span>,</tal:doc_type>
             <span tal:define="sizekb view/file_size" tal:replace="sizekb"
                   i18n:translate="">100</span>

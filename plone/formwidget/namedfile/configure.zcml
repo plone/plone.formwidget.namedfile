@@ -3,7 +3,7 @@
     xmlns:z3c="http://namespaces.zope.org/z3c"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="plone.formwidget.namedfile">
+    i18n_domain="plone">
 
   <include package="z3c.form" file="meta.zcml" />
   <include package="z3c.form" />
