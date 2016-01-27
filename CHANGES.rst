@@ -5,6 +5,9 @@ Changelog
 -------------------
 
 New:
+- Use plone i18n domain
+  See https://github.com/plone/plone.formwidget.namedfile/pull/18
+  [staeff] 
 
 - Add Finnish translations [petri]
 
