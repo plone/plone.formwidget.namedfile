@@ -9,7 +9,16 @@ New:
   See https://github.com/plone/plone.formwidget.namedfile/pull/18
   [staeff] 
 
-- Add Finnish translations [petri]
+- Add Finnish translations.
+  [petri]
+
+Fixes:
+
+- Specify doctest encoding and make doctest more robust against formating changes.
+  [thet]
+
+- Replace deprecated ``zope.testing.doctestunit`` import with ``doctest`` module from stdlib.
+  [thet]
 
 
 1.0.13 (2015-03-21)

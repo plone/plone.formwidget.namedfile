@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from z3c.form.interfaces import IFileWidget
 from zope import schema
 

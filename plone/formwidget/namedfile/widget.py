@@ -1,9 +1,6 @@
-from Acquisition import Explicit
+# -*- coding: utf-8 -*-
 from Acquisition import aq_inner
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
-from Products.MimetypesRegistry.common import MimeTypeException
-from ZPublisher.HTTPRequest import FileUpload
+from Acquisition import Explicit
 from plone.formwidget.namedfile.converter import b64decode_file
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
@@ -16,6 +13,9 @@ from plone.namedfile.interfaces import INamedImageField
 from plone.namedfile.utils import safe_basename
 from plone.namedfile.utils import set_headers
 from plone.namedfile.utils import stream_data
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
+from Products.MimetypesRegistry.common import MimeTypeException
 from z3c.form.browser import file
 from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IFieldWidget
@@ -32,6 +32,7 @@ from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from zope.schema.interfaces import IASCII
 from zope.size import byteDisplay
+from ZPublisher.HTTPRequest import FileUpload
 import urllib
 
 try:

@@ -1,4 +1,5 @@
-from plone.formwidget.namedfile import MessageFactory as _
+# -*- coding: utf-8 -*-
+from plone.formwidget.namedfile import _
 from plone.namedfile.interfaces import INamedField
 from z3c.form import validator
 from zope.schema import ValidationError

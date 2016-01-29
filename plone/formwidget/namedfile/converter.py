@@ -1,4 +1,4 @@
-from ZPublisher.HTTPRequest import FileUpload
+# -*- coding: utf-8 -*-
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
 from plone.namedfile.file import NamedFile
@@ -9,6 +9,7 @@ from plone.namedfile.utils import safe_basename
 from z3c.form.converter import BaseDataConverter
 from zope.component import adapts
 from zope.schema.interfaces import IASCII
+from ZPublisher.HTTPRequest import FileUpload
 import base64
 
 
