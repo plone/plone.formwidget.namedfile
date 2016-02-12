@@ -6,7 +6,7 @@ Changelog
 
 New:
 
-- Use plone i18n domain
+- Use plone i18n domain.
   See https://github.com/plone/plone.formwidget.namedfile/pull/18
   [staeff]
 
@@ -15,7 +15,7 @@ New:
 
 Fixes:
 
-- Specify doctest encoding and make doctest more robust against formating changes.
+- Specify doctest encoding and make doctest more robust against formatting changes.
   [thet]
 
 - Replace deprecated ``zope.testing.doctestunit`` import with ``doctest`` module from stdlib.
