@@ -555,6 +555,249 @@ being returned::
   True
 
 
+Rendering ASCII field widgets
+-----------------------------
+
+The widgets let the user to upload file and image data and select, if previous data should be kept, deleted or overwritten.
+
+First, let's do the setup::
+
+  >>> class ASCIIContent(object):
+  ...     implements(IASCIIContent)
+  ...     def __init__(self, file, image):
+  ...         self.file_field = file
+  ...         self.image_field = image
+  ...
+  ...     def absolute_url(self):
+  ...         return 'http://example.com/content1'
+
+  >>> content = ASCIIContent(None, None)
+
+  >>> from z3c.form.datamanager import AttributeField
+  >>> from zope.component import provideAdapter
+  >>> provideAdapter(AttributeField)
+
+  >>> from plone.formwidget.namedfile import NamedFileFieldWidget
+  >>> from plone.formwidget.namedfile import NamedImageFieldWidget
+
+  >>> def setup_widget(widget_type, context, set_widget_value=False):
+  ...     if widget_type == 'image':
+  ...         widget = NamedImageFieldWidget
+  ...     else:
+  ...         widget = NamedFileFieldWidget
+  ...     widget = widget(
+  ...         IASCIIContent['{0}_field'.format(widget_type)],
+  ...         TestRequest()
+  ...     )
+  ...     widget.context = context
+  ...     widget.id = 'widget.id.{0}'.format(widget_type)
+  ...     widget.name = 'widget.name.{0}'.format(widget_type)
+  ...
+  ...     if set_widget_value:
+  ...         converter = globals()['ascii_{0}_converter'.format(widget_type)]
+  ...         value = getattr(context, '{0}_field'.format(widget_type))
+  ...         widget.value = converter.toWidgetValue(value)
+  ...
+  ...     return widget
+
+  >>> file_widget = setup_widget('file', content, True)
+  >>> image_widget = setup_widget('image', content)
+
+
+Our content has no value yet::
+
+  >>> file_widget.update()
+  >>> print(file_widget.render())
+  <span class="named-file-widget required ascii-field" id="widget.id.file">
+      <input type="file" id="widget.id.file-input" name="widget.name.file" />
+  </span>
+
+  >>> image_widget.update()
+  >>> print(image_widget.render())
+  <span class="named-image-widget required ascii-field" id="widget.id.image">
+      <input type="file" id="widget.id.image-input" name="widget.name.image" />
+  </span>
+
+
+Let's upload data::
+
+  >>> data = cStringIO.StringIO('file 1 content.')
+  >>> field_storage = FieldStorageStub(data, filename='file1.txt')
+  >>> upload = FileUpload(field_storage)
+
+  >>> file_widget.request = TestRequest(form={'widget.name.file': upload})
+  >>> file_widget.update()
+  >>> uploaded = file_widget.extract()
+  >>> uploaded
+  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+
+  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field
+  'filenameb64:ZmlsZTEudHh0;datab64:ZmlsZSAxIGNvbnRlbnQu'
+
+
+  >>> data = cStringIO.StringIO('image 1 content.')
+  >>> field_storage = FieldStorageStub(data, filename='image1.png')
+  >>> upload = FileUpload(field_storage)
+
+  >>> image_widget.request = TestRequest(form={'widget.name.image': upload})
+  >>> image_widget.update()
+  >>> uploaded = image_widget.extract()
+  >>> uploaded
+  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+
+  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.image_field
+  'filenameb64:aW1hZ2UxLnBuZw==;datab64:aW1hZ2UgMSBjb250ZW50Lg=='
+
+
+Prepare for a new request cycle::
+
+  >>> file_widget = setup_widget('file', content, True)
+  >>> image_widget = setup_widget('image', content, True)
+
+
+The upload shows up in the rendered widget::
+
+  >>> file_widget.update()
+  >>> print(file_widget.render())
+  <... class="named-file-widget required ascii-field" id="widget.id.file">...
+  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/file1.txt">file1.txt</a>...
+  <input type="radio"... id="widget.id.file-nochange"...
+  <input type="radio"... id="widget.id.file-replace"...
+  <input type="file"... id="widget.id.file-input"...
+
+  >>> image_widget.update()
+  >>> print(image_widget.render())
+  <... class="named-image-widget required ascii-field" id="widget.id.image">...
+  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/image1.png"...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/image1.png">image1.png</a>...
+  <input type="radio"... id="widget.id.image-nochange"...
+  <input type="radio"... id="widget.id.image-replace"...
+  <input type="file"... id="widget.id.image-input"...
+
+
+Prepare for a new request cycle::
+
+  >>> file_widget = setup_widget('file', content)
+  >>> image_widget = setup_widget('image', content)
+
+
+Now overwrite with other data::
+
+  >>> data = cStringIO.StringIO('random file content')
+  >>> field_storage = FieldStorageStub(data, filename='plone.pdf')
+  >>> upload = FileUpload(field_storage)
+
+  >>> file_widget.request = TestRequest(form={'widget.name.file': upload, 'widget.name.file.action': 'replace'})
+  >>> file_widget.update()
+  >>> uploaded = file_widget.extract()
+  >>> uploaded
+  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+
+  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field
+  'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
+
+
+  >>> data = cStringIO.StringIO('no image')
+  >>> field_storage = FieldStorageStub(data, filename='logo.tiff')
+  >>> upload = FileUpload(field_storage)
+
+  >>> image_widget.request = TestRequest(form={'widget.name.image': upload, 'widget.name.image.action': 'replace'})
+  >>> image_widget.update()
+  >>> uploaded = image_widget.extract()
+  >>> uploaded
+  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+
+  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.image_field
+  'filenameb64:bG9nby50aWZm;datab64:bm8gaW1hZ2U='
+
+
+Prepare for a new request cycle::
+
+  >>> file_widget = setup_widget('file', content, True)
+  >>> image_widget = setup_widget('image', content, True)
+
+
+The new image/file shows up in the rendered widget::
+
+  >>> file_widget.update()
+  >>> print(file_widget.render())
+  <... class="named-file-widget required ascii-field" id="widget.id.file">...
+  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/plone.pdf">plone.pdf</a>...
+  <input type="radio"... id="widget.id.file-nochange"...
+  <input type="radio"... id="widget.id.file-replace"...
+  <input type="file"... id="widget.id.file-input"...
+
+  >>> image_widget.update()
+  >>> print(image_widget.render())
+  <... class="named-image-widget required ascii-field" id="widget.id.image">...
+  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff"...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff">logo.tiff</a>...
+  <input type="radio"... id="widget.id.image-nochange"...
+  <input type="radio"... id="widget.id.image-replace"...
+  <input type="file"... id="widget.id.image-input"...
+
+
+Prepare for a new request cycle::
+
+  >>> file_widget = setup_widget('file', content)
+  >>> image_widget = setup_widget('image', content)
+
+#  >>> interact(locals())
+
+Resubmit, but keep the data::
+
+  >>> file_widget.request = TestRequest(form={'widget.name.file': '', 'widget.name.file.action': 'nochange'})
+  >>> file_widget.update()
+  >>> uploaded = file_widget.extract()
+  >>> uploaded
+  <plone.namedfile.file.NamedFile object at ...>
+
+  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field
+  'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
+
+
+  >>> image_widget.request = TestRequest(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
+  >>> image_widget.update()
+  >>> uploaded = image_widget.extract()
+  >>> uploaded
+  <plone.namedfile.file.NamedFile object at ...>
+
+  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.image_field
+  'filenameb64:bG9nby50aWZm;datab64:bm8gaW1hZ2U='
+
+
+Prepare for a new request cycle::
+
+  >>> file_widget = setup_widget('file', content, True)
+  >>> image_widget = setup_widget('image', content, True)
+
+
+The previous image/file should be kept::
+
+  >>> file_widget.update()
+  >>> print(file_widget.render())
+  <... class="named-file-widget required ascii-field" id="widget.id.file">...
+  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/plone.pdf">plone.pdf</a>...
+  <input type="radio"... id="widget.id.file-nochange"...
+  <input type="radio"... id="widget.id.file-replace"...
+  <input type="file"... id="widget.id.file-input"...
+
+  >>> image_widget.update()
+  >>> print(image_widget.render())
+  <... class="named-image-widget required ascii-field" id="widget.id.image">...
+  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff"...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff">logo.tiff</a>...
+  <input type="radio"... id="widget.id.image-nochange"...
+  <input type="radio"... id="widget.id.image-replace"...
+  <input type="file"... id="widget.id.image-input"...
+
+
 The Download view on ASCII fields
 ---------------------------------
 ::
@@ -587,7 +830,7 @@ The Download view on ASCII fields
 
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''test.txt"
-  
+
   >>> view = Download(ascii_image_widget, request)
   >>> view()
   'testimage'

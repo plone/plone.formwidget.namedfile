@@ -10,7 +10,9 @@ New:
 
 Fixes:
 
-- *add item here*
+- Fix issue, where NamedFileWidget and NamedImageWidget on ``zope.schema.ASCII`` fields cleared the field values on resubmit with action ``nochange``.
+  Fixes: plone/Products.CMFPlone#1144
+  [thet]
 
 
 1.0.14 (2016-02-12)
