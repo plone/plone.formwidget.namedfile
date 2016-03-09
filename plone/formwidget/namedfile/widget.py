@@ -41,6 +41,19 @@ except ImportError:
     from posixfile import SEEK_END
 
 
+def _make_namedfile(value, field, widget):
+    """Return a NamedImage or NamedFile instance, if it isn't already one -
+    e.g. when it's base64 encoded data.
+    """
+    if isinstance(value, basestring) and IASCII.providedBy(field):
+        filename, data = b64decode_file(value)
+        if INamedImageWidget.providedBy(widget):
+            value = NamedImage(data=data, filename=filename)
+        else:
+            value = NamedFile(data=data, filename=filename)
+    return value
+
+
 class NamedFileWidget(Explicit, file.FileWidget):
     """A widget for a named file object
     """
@@ -160,7 +173,9 @@ class NamedFileWidget(Explicit, file.FileWidget):
                 return default
             dm = getMultiAdapter((self.context, self.field,), IDataManager)
             # For sub-widgets to function use a query() not get()
-            return dm.query(default)
+            data = dm.query(default)
+            data = _make_namedfile(data, self.field, self.context)
+            return data
 
         # empty unnamed FileUploads should not count as a value
         value = super(NamedFileWidget, self).extract(default)
@@ -250,15 +265,7 @@ class Download(BrowserView):
 
         dm = getMultiAdapter((content, field,), IDataManager)
         file_ = dm.get()
-
-        if isinstance(file_, basestring) and IASCII.providedBy(field):
-            """Encoded data.
-            """
-            filename, data = b64decode_file(file_)
-            if INamedImageWidget.providedBy(self.context):
-                file_ = NamedImage(data=data, filename=filename)
-            else:
-                file_ = NamedFile(data=data, filename=filename)
+        file_ = _make_namedfile(file_, field, self.context)
 
         if file_ is None:
             raise NotFound(self, self.filename, self.request)

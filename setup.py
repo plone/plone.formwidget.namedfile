@@ -35,7 +35,10 @@ setup(
         'z3c.form',
     ],
     extras_require={
-        'test': ['z3c.form [test]'],
+        'test': [
+            'z3c.form [test]',
+            # 'interlude'
+        ],
     },
     entry_points="""
     [z3c.autoinclude.plugin]
