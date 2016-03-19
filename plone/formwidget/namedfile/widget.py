@@ -211,20 +211,22 @@ class NamedImageWidget(NamedFileWidget):
             return None
 
     @property
-    def thumb_width(self):
-        width = self.width
-        if not width:
-            return 128
-        else:
-            return min(width, 128)
+    def thumb_tag(self):
+        """ Return a img tag with a url to the preview scale and the width and
+            height of a thumbnail scale.
 
-    @property
-    def thumb_height(self):
-        height = self.height
-        if not height:
-            return 128
-        else:
-            return min(height, 128)
+            This way on retina screens the image is displayed in screen pixels.
+            On non-retina screens the browser will downsize them as used to.
+        """
+        # This breaks tests because context doesn't have an attribute
+        # restrictedTraverse. How to deal with this? It works like a charm in
+        # real life.
+        scales = self.context.restrictedTraverse('@@images')
+        thumb_scale = scales.scale('image', scale='thumb')
+        preview_scale = scales.scale('image', scale='preview')
+        if preview_scale is not None and thumb_scale is not None:
+            return preview_scale.tag(width=thumb_scale.width,
+                                     height=thumb_scale.height)
 
     @property
     def alt(self):

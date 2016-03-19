@@ -11,6 +11,8 @@ Incompatibilities:
 New:
 
 - Use ``plone.app.testing`` in tests.  [maurits]
+- Fix #21 Edit form renders image in full size, use thumb instead.
+  [jladage]
 
 Fixes:
 

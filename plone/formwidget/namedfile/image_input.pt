@@ -29,10 +29,9 @@
                 doc_type view/file_content_type;
                 icon view/file_icon;">
     <span tal:condition="python:exists and download_url and action=='nochange'">
-        <img
-            tal:attributes="src download_url;
-                            width view/thumb_width"
-            /><br />
+      <a tal:attributes="href download_url">
+          <img tal:replace="structure view/thumb_tag"/>
+      </a><br />
         <img tal:condition="icon" src="" alt=""
              tal:attributes="src icon;
                              alt doc_type;
