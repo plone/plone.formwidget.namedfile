@@ -36,8 +36,7 @@ setup(
     ],
     extras_require={
         'test': [
-            'z3c.form [test]',
-            # 'interlude'
+            'plone.app.testing',
         ],
     },
     entry_points="""

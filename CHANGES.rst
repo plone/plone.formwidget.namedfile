@@ -10,7 +10,7 @@ Incompatibilities:
 
 New:
 
-- *add item here*
+- Use ``plone.app.testing`` in tests.  [maurits]
 
 Fixes:
 
