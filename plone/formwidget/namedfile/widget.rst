@@ -237,9 +237,11 @@ or changing it.  The filename can handle unicode and international
 characters::
 
   >>> from plone.namedfile import NamedFile, NamedImage
+  >>> from plone.formwidget.namedfile.testing import get_file
+  >>> image_data = get_file('image.jpg').read()
   >>> file_widget.value = NamedFile(data='My file data',
   ...                               filename=unicode('data_深.txt', 'utf-8'))
-  >>> image_widget.value = NamedImage(data='My image data', filename=u'faux.png')
+  >>> image_widget.value = NamedImage(data=image_data, filename=u'faux.jpg')
 
   >>> file_widget.update()
   >>> print(file_widget.render())
@@ -252,7 +254,7 @@ characters::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required namedimage-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png" >faux.png</a>...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.jpg" >faux.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
@@ -272,8 +274,7 @@ empty, the behaviour is the same as before::
   >>> file_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
 
-  >>> myfile = cStringIO.StringIO('Random image content.')
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='faux2.png')
+  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
 
   >>> image_widget.request = TestRequest(form={'widget.name.image': myUpload})
@@ -292,8 +293,8 @@ If the widgets are rendered again, the newly uploaded files will be shown::
 
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required namedimage-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png" width="128" />...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png" >faux2.png</a>...
+  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.jpg" width="128" />...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.jpg" >faux2.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
@@ -302,7 +303,7 @@ However, if we provide the '.action' field, we get back the value currently
 stored in the field::
 
   >>> content.file_field = NamedFile(data='My file data', filename=u'data.txt')
-  >>> content.image_field = NamedImage(data='My image data', filename=u'faux.png')
+  >>> content.image_field = NamedImage(data=image_data, filename=u'faux.jpg')
 
   >>> file_widget.value = content.file_field
   >>> image_widget.value = content.image_field
@@ -312,8 +313,7 @@ stored in the field::
   >>> file_widget.extract() is content.file_field
   True
 
-  >>> myfile = cStringIO.StringIO('Random image content.')
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='faux2.png')
+  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
 
   >>> image_widget.request = TestRequest(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
@@ -331,10 +331,10 @@ this view to display the image itself or link to the file::
   >>> from plone.formwidget.namedfile.widget import Download
   >>> request = TestRequest()
   >>> view = Download(image_widget, request)
-  >>> view()
-  'My image data'
+  >>> view() == image_data
+  True
   >>> request.response.getHeader('Content-Disposition')
-  "attachment; filename*=UTF-8''faux.png"
+  "attachment; filename*=UTF-8''faux.jpg"
 
   >>> request = TestRequest()
   >>> view = Download(file_widget, request)
@@ -429,11 +429,10 @@ Content type from headers sent by browser should be ignored::
   >>> file_obj.contentType != 'text/x-dummy'
   True
 
-  >>> myfile = cStringIO.StringIO('Random image content.')
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='random.png', headers={'Content-Type': 'image/x-dummy'})
+  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='random.png', headers={'Content-Type': 'image/x-dummy'})
   >>> image_obj = image_converter.toFieldValue(FileUpload(aFieldStorage))
-  >>> image_obj.data
-  'Random image content.'
+  >>> image_obj.data == image_data
+  True
   >>> image_obj.filename
   u'random.png'
   >>> image_obj.contentType != 'image/x-dummy'
@@ -811,7 +810,7 @@ The Download view on ASCII fields
 
   >>> content = ASCIIContent(
   ...     NamedFile(data="testfile", filename=u"test.txt"),
-  ...     NamedImage(data="testimage", filename=u"test.png"))
+  ...     NamedImage(data="testimage", filename=u"test.jpg"))
 
   >>> from z3c.form.widget import FieldWidget
 
@@ -834,7 +833,7 @@ The Download view on ASCII fields
   'testimage'
 
   >>> request.response.getHeader('Content-Disposition')
-  "attachment; filename*=UTF-8''test.png"
+  "attachment; filename*=UTF-8''test.jpg"
 
 
 The validator
