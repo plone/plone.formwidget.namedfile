@@ -180,12 +180,14 @@ For this to work, we need a context and a data manager::
 
   >>> from plone.namedfile import field
   >>> from zope.interface import implements, Interface
+  >>> from plone.namedfile.interfaces import IImageScaleTraversable
+  >>> from zope.annotation.interfaces import IAttributeAnnotatable
   >>> class IContent(Interface):
   ...     file_field = field.NamedFile(title=u"File")
   ...     image_field = field.NamedImage(title=u"Image")
 
   >>> class Content(object):
-  ...     implements(IContent)
+  ...     implements(IContent, IImageScaleTraversable, IAttributeAnnotatable)
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
@@ -559,7 +561,7 @@ The widgets let the user to upload file and image data and select, if previous d
 First, let's do the setup::
 
   >>> class ASCIIContent(object):
-  ...     implements(IASCIIContent)
+  ...     implements(IASCIIContent, IImageScaleTraversable, IAttributeAnnotatable)
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image

@@ -218,13 +218,13 @@ class NamedImageWidget(NamedFileWidget):
             This way on retina screens the image is displayed in screen pixels.
             On non-retina screens the browser will downsize them as used to.
         """
-        # This breaks tests because context doesn't have an attribute
-        # restrictedTraverse. How to deal with this? It works like a charm in
-        # real life.
-        scales = self.context.restrictedTraverse('@@images')
-        thumb_scale = scales.scale('image', scale='thumb')
-        preview_scale = scales.scale('image', scale='preview')
+        scales = getMultiAdapter(
+            (self.context, self.request), name='images')
+        fieldname = self.field.getName()
+        thumb_scale = scales.scale(fieldname, scale='thumb')
+        preview_scale = scales.scale(fieldname, scale='preview')
         if preview_scale is not None and thumb_scale is not None:
+            import pdb; pdb.set_trace()
             return preview_scale.tag(width=thumb_scale.width,
                                      height=thumb_scale.height)
 
