@@ -114,7 +114,7 @@ We can also handle file-upload objects::
   >>> import cStringIO
   >>> from ZPublisher.HTTPRequest import FileUpload
 
-Let's define a FieldStorage stub::
+Let's define a FieldStorage stub for easy use with the FileUpload::
 
   >>> class FieldStorageStub:
   ...     def __init__(self, file, headers={}, filename='foo.bar'):
@@ -178,6 +178,7 @@ new file, or keep the existing one.
 
 For this to work, we need a context and a data manager::
 
+  >>> from DateTime import DateTime
   >>> from plone.namedfile import field
   >>> from zope.interface import implements, Interface
   >>> from plone.namedfile.interfaces import IImageScaleTraversable
@@ -191,9 +192,14 @@ For this to work, we need a context and a data manager::
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
+  ...         # modification time is needed for a check in scaling:
+  ...         self._p_mtime = DateTime()
   ...
   ...     def absolute_url(self):
   ...         return 'http://example.com/content1'
+  ...
+  ...     def Title(self):
+  ...         return 'A content item'
 
   >>> content = Content(None, None)
 
@@ -241,8 +247,9 @@ characters::
   >>> image_data = get_file('image.jpg').read()
   >>> file_widget.value = NamedFile(data='My file data',
   ...                               filename=unicode('data_深.txt', 'utf-8'))
-  >>> image_widget.value = NamedImage(data=image_data, filename=u'faux.jpg')
-
+  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux.jpg')
+  >>> myUpload = FileUpload(aFieldStorage)
+  >>> image_widget.request = TestRequest(form={'widget.name.image': myUpload})
   >>> file_widget.update()
   >>> print(file_widget.render())
   <... id="widget.id.file" class="named-file-widget required namedfile-field">...
@@ -259,7 +266,7 @@ characters::
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
 
-Since we did not upload a real image, no scale is shown.
+Note: since we did not save anything, no scale is shown.
 
 Notice how there are radio buttons to decide whether to upload a new file or
 keep the existing one. If the '.action' field is not submitted or is
@@ -274,9 +281,12 @@ empty, the behaviour is the same as before::
   >>> file_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
 
+Set the current image, which is shown as thumb on the page, and then
+setup the widget with a new value::
+
+  >>> content.image_field = NamedImage(data=image_data, filename=u'faux.jpg')
   >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
-
   >>> image_widget.request = TestRequest(form={'widget.name.image': myUpload})
   >>> image_widget.update()
   >>> image_widget.extract()
@@ -291,9 +301,11 @@ If the widgets are rendered again, the newly uploaded files will be shown::
   <input type="radio"... id="widget.id.file-replace"...
   <input type="file"... id="widget.id.file-input"...
 
+  >>> print(image_widget.thumb_tag)
+  <img src="http://example.com/content1/@@images/...jpeg" alt="A content item" title="A content item" height="51" width="128" />
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required namedimage-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.jpg" width="128" />...
+  <img src="http://example.com/content1/@@images/...jpeg" alt="A content item" title="A content item" height="51" width="128" />...
   <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.jpg" >faux2.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
@@ -564,9 +576,14 @@ First, let's do the setup::
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
+  ...         # modification time is needed for a check in scaling:
+  ...         self._p_mtime = DateTime()
   ...
   ...     def absolute_url(self):
   ...         return 'http://example.com/content1'
+  ...
+  ...     def Title(self):
+  ...         return 'A content item'
 
   >>> content = ASCIIContent(None, None)
 
