@@ -230,7 +230,6 @@ class NamedImageWidget(NamedFileWidget):
         thumb_scale = scales.scale(fieldname, scale='thumb')
         preview_scale = scales.scale(fieldname, scale='preview')
         if preview_scale is not None and thumb_scale is not None:
-            # This is never reached in tests so far...
             return preview_scale.tag(width=thumb_scale.width,
                                      height=thumb_scale.height)
         return u''
