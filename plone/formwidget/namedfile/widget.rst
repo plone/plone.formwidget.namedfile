@@ -649,9 +649,12 @@ Let's upload data::
   >>> content.file_field
   'filenameb64:ZmlsZTEudHh0;datab64:ZmlsZSAxIGNvbnRlbnQu'
 
+Check that we have a good image that PIL can handle:
 
-  >>> data = cStringIO.StringIO('image 1 content.')
-  >>> field_storage = FieldStorageStub(data, filename='image1.png')
+  >>> import PIL.Image
+  >>> PIL.Image.open(get_file('image.jpg'))
+  <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=500x200 at ...>
+  >>> field_storage = FieldStorageStub(get_file('image.jpg'), filename='image.jpg')
   >>> upload = FileUpload(field_storage)
 
   >>> image_widget.request = TestRequest(form={'widget.name.image': upload})
@@ -660,10 +663,16 @@ Let's upload data::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
 
-  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
-  >>> content.image_field
-  'filenameb64:aW1hZ2UxLnBuZw==;datab64:aW1hZ2UgMSBjb250ZW50Lg=='
+  >>> content.image_field = ascii_image_converter.toFieldValue(uploaded)
+  >>> print(content.image_field)
+  filenameb64:aW1hZ2UuanBn;datab64:/9j/4AAQSkZJRgABAQEAYABgAAD/...
 
+Note that PIL cannot open this ascii image, so we cannot scale it::
+
+  >>> PIL.Image.open(cStringIO.StringIO(content.image_field))
+  Traceback (most recent call last):
+  ...
+  IOError: cannot identify image file <cStringIO.StringI object at ...>
 
 Prepare for a new request cycle::
 
@@ -684,12 +693,14 @@ The upload shows up in the rendered widget::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/image1.png"...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/image1.png" >image1.png</a>...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/image.jpg" >image.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
 
+Like we said, we cannot scale this ascii image, so the thumb tag is empty::
+
+  >>> print(image_widget.thumb_tag)
 
 Prepare for a new request cycle::
 
@@ -748,7 +759,6 @@ The new image/file shows up in the rendered widget::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff"...
   <a href="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
@@ -805,7 +815,6 @@ The previous image/file should be kept::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff"...
   <a href="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
