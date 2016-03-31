@@ -2,7 +2,7 @@
 from setuptools import setup
 from setuptools import find_packages
 
-version = '1.0.16.dev0'
+version = '1.1.0.dev0'
 
 setup(
     name='plone.formwidget.namedfile',
@@ -36,8 +36,7 @@ setup(
     ],
     extras_require={
         'test': [
-            'z3c.form [test]',
-            # 'interlude'
+            'plone.app.testing',
         ],
     },
     entry_points="""

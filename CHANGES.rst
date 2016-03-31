@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.0.16 (unreleased)
--------------------
+1.1.0 (unreleased)
+------------------
 
 Incompatibilities:
 
@@ -10,7 +10,7 @@ Incompatibilities:
 
 New:
 
-- *add item here*
+- Use ``plone.app.testing`` in tests.  [maurits]
 
 Fixes:
 
