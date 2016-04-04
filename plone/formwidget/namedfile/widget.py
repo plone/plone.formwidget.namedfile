@@ -23,6 +23,7 @@ from z3c.form.interfaces import IFormLayer
 from z3c.form.interfaces import NOVALUE
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
+from zope.component import ComponentLookupError
 from zope.component import getMultiAdapter
 from zope.component.hooks import getSite
 from zope.interface import implementer
@@ -211,20 +212,27 @@ class NamedImageWidget(NamedFileWidget):
             return None
 
     @property
-    def thumb_width(self):
-        width = self.width
-        if not width:
-            return 128
-        else:
-            return min(width, 128)
+    def thumb_tag(self):
+        """ Return a img tag with a url to the preview scale and the width and
+            height of a thumbnail scale.
 
-    @property
-    def thumb_height(self):
-        height = self.height
-        if not height:
-            return 128
-        else:
-            return min(height, 128)
+            This way on retina screens the image is displayed in screen pixels.
+            On non-retina screens the browser will downsize them as used to.
+        """
+        try:
+            scales = getMultiAdapter(
+                (self.context, self.request), name='images')
+        except ComponentLookupError:
+            # For example in the @@site-controlpanel after uploading an image,
+            # because the context is a RecordsProxy.
+            return u''
+        fieldname = self.field.getName()
+        thumb_scale = scales.scale(fieldname, scale='thumb')
+        preview_scale = scales.scale(fieldname, scale='preview')
+        if preview_scale is not None and thumb_scale is not None:
+            return preview_scale.tag(width=thumb_scale.width,
+                                     height=thumb_scale.height)
+        return u''
 
     @property
     def alt(self):

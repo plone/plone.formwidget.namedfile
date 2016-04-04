@@ -1,14 +1,23 @@
 Changelog
 =========
 
-1.1.0 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
 Incompatibilities:
 
-- *add item here*
+- Removed no longer needed ``thumb_width`` and ``thumb_height`` from
+  the image widget.  ``width`` and ``height`` are still there.
+  [jladage, maurits]
 
 New:
+
+- On the edit form, show a thumbnail instead of rendering the image in
+  full size.  To make this prettier on retina screens, we actually
+  load the larger preview scale and let it use the width and height of
+  the thumbnail.
+  Fixes https://github.com/plone/plone.formwidget.namedfile/issues/21
+  [jladage, maurits]
 
 - Use ``plone.app.testing`` in tests.  [maurits]
 

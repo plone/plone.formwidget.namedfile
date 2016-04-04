@@ -114,7 +114,7 @@ We can also handle file-upload objects::
   >>> import cStringIO
   >>> from ZPublisher.HTTPRequest import FileUpload
 
-Let's define a FieldStorage stub::
+Let's define a FieldStorage stub for easy use with the FileUpload::
 
   >>> class FieldStorageStub:
   ...     def __init__(self, file, headers={}, filename='foo.bar'):
@@ -178,20 +178,28 @@ new file, or keep the existing one.
 
 For this to work, we need a context and a data manager::
 
+  >>> from DateTime import DateTime
   >>> from plone.namedfile import field
   >>> from zope.interface import implements, Interface
+  >>> from plone.namedfile.interfaces import IImageScaleTraversable
+  >>> from zope.annotation.interfaces import IAttributeAnnotatable
   >>> class IContent(Interface):
   ...     file_field = field.NamedFile(title=u"File")
   ...     image_field = field.NamedImage(title=u"Image")
 
   >>> class Content(object):
-  ...     implements(IContent)
+  ...     implements(IContent, IImageScaleTraversable, IAttributeAnnotatable)
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
+  ...         # modification time is needed for a check in scaling:
+  ...         self._p_mtime = DateTime()
   ...
   ...     def absolute_url(self):
   ...         return 'http://example.com/content1'
+  ...
+  ...     def Title(self):
+  ...         return 'A content item'
 
   >>> content = Content(None, None)
 
@@ -235,10 +243,13 @@ or changing it.  The filename can handle unicode and international
 characters::
 
   >>> from plone.namedfile import NamedFile, NamedImage
+  >>> from plone.formwidget.namedfile.testing import get_file
+  >>> image_data = get_file('image.jpg').read()
   >>> file_widget.value = NamedFile(data='My file data',
   ...                               filename=unicode('data_深.txt', 'utf-8'))
-  >>> image_widget.value = NamedImage(data='My image data', filename=u'faux.png')
-
+  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux.jpg')
+  >>> myUpload = FileUpload(aFieldStorage)
+  >>> image_widget.request = TestRequest(form={'widget.name.image': myUpload})
   >>> file_widget.update()
   >>> print(file_widget.render())
   <... id="widget.id.file" class="named-file-widget required namedfile-field">...
@@ -250,12 +261,12 @@ characters::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required namedimage-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.png" >faux.png</a>...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.jpg" >faux.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
 
-Since we did not upload a real image, no scale is shown.
+Note: since we did not save anything, no scale is shown.
 
 Notice how there are radio buttons to decide whether to upload a new file or
 keep the existing one. If the '.action' field is not submitted or is
@@ -270,10 +281,12 @@ empty, the behaviour is the same as before::
   >>> file_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
 
-  >>> myfile = cStringIO.StringIO('Random image content.')
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='faux2.png')
-  >>> myUpload = FileUpload(aFieldStorage)
+Set the current image, which is shown as thumb on the page, and then
+setup the widget with a new value::
 
+  >>> content.image_field = NamedImage(data=image_data, filename=u'faux.jpg')
+  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
+  >>> myUpload = FileUpload(aFieldStorage)
   >>> image_widget.request = TestRequest(form={'widget.name.image': myUpload})
   >>> image_widget.update()
   >>> image_widget.extract()
@@ -288,10 +301,12 @@ If the widgets are rendered again, the newly uploaded files will be shown::
   <input type="radio"... id="widget.id.file-replace"...
   <input type="file"... id="widget.id.file-input"...
 
+  >>> print(image_widget.thumb_tag)
+  <img src="http://example.com/content1/@@images/...jpeg" alt="A content item" title="A content item" height="51" width="128" />
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required namedimage-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png" width="128" />...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.png" >faux2.png</a>...
+  <img src="http://example.com/content1/@@images/...jpeg" alt="A content item" title="A content item" height="51" width="128" />...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.jpg" >faux2.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
@@ -300,7 +315,7 @@ However, if we provide the '.action' field, we get back the value currently
 stored in the field::
 
   >>> content.file_field = NamedFile(data='My file data', filename=u'data.txt')
-  >>> content.image_field = NamedImage(data='My image data', filename=u'faux.png')
+  >>> content.image_field = NamedImage(data=image_data, filename=u'faux.jpg')
 
   >>> file_widget.value = content.file_field
   >>> image_widget.value = content.image_field
@@ -310,8 +325,7 @@ stored in the field::
   >>> file_widget.extract() is content.file_field
   True
 
-  >>> myfile = cStringIO.StringIO('Random image content.')
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='faux2.png')
+  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
 
   >>> image_widget.request = TestRequest(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
@@ -329,10 +343,10 @@ this view to display the image itself or link to the file::
   >>> from plone.formwidget.namedfile.widget import Download
   >>> request = TestRequest()
   >>> view = Download(image_widget, request)
-  >>> view()
-  'My image data'
+  >>> view() == image_data
+  True
   >>> request.response.getHeader('Content-Disposition')
-  "attachment; filename*=UTF-8''faux.png"
+  "attachment; filename*=UTF-8''faux.jpg"
 
   >>> request = TestRequest()
   >>> view = Download(file_widget, request)
@@ -427,11 +441,10 @@ Content type from headers sent by browser should be ignored::
   >>> file_obj.contentType != 'text/x-dummy'
   True
 
-  >>> myfile = cStringIO.StringIO('Random image content.')
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='random.png', headers={'Content-Type': 'image/x-dummy'})
+  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='random.png', headers={'Content-Type': 'image/x-dummy'})
   >>> image_obj = image_converter.toFieldValue(FileUpload(aFieldStorage))
-  >>> image_obj.data
-  'Random image content.'
+  >>> image_obj.data == image_data
+  True
   >>> image_obj.filename
   u'random.png'
   >>> image_obj.contentType != 'image/x-dummy'
@@ -559,13 +572,18 @@ The widgets let the user to upload file and image data and select, if previous d
 First, let's do the setup::
 
   >>> class ASCIIContent(object):
-  ...     implements(IASCIIContent)
+  ...     implements(IASCIIContent, IImageScaleTraversable, IAttributeAnnotatable)
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
+  ...         # modification time is needed for a check in scaling:
+  ...         self._p_mtime = DateTime()
   ...
   ...     def absolute_url(self):
   ...         return 'http://example.com/content1'
+  ...
+  ...     def Title(self):
+  ...         return 'A content item'
 
   >>> content = ASCIIContent(None, None)
 
@@ -631,9 +649,12 @@ Let's upload data::
   >>> content.file_field
   'filenameb64:ZmlsZTEudHh0;datab64:ZmlsZSAxIGNvbnRlbnQu'
 
+Check that we have a good image that PIL can handle:
 
-  >>> data = cStringIO.StringIO('image 1 content.')
-  >>> field_storage = FieldStorageStub(data, filename='image1.png')
+  >>> import PIL.Image
+  >>> PIL.Image.open(get_file('image.jpg'))
+  <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=500x200 at ...>
+  >>> field_storage = FieldStorageStub(get_file('image.jpg'), filename='image.jpg')
   >>> upload = FileUpload(field_storage)
 
   >>> image_widget.request = TestRequest(form={'widget.name.image': upload})
@@ -642,10 +663,16 @@ Let's upload data::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
 
-  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
-  >>> content.image_field
-  'filenameb64:aW1hZ2UxLnBuZw==;datab64:aW1hZ2UgMSBjb250ZW50Lg=='
+  >>> content.image_field = ascii_image_converter.toFieldValue(uploaded)
+  >>> print(content.image_field)
+  filenameb64:aW1hZ2UuanBn;datab64:/9j/4AAQSkZJRgABAQEAYABgAAD/...
 
+Note that PIL cannot open this ascii image, so we cannot scale it::
+
+  >>> PIL.Image.open(cStringIO.StringIO(content.image_field))
+  Traceback (most recent call last):
+  ...
+  IOError: cannot identify image file <cStringIO.StringI object at ...>
 
 Prepare for a new request cycle::
 
@@ -666,12 +693,14 @@ The upload shows up in the rendered widget::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/image1.png"...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/image1.png" >image1.png</a>...
+  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/image.jpg" >image.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
 
+Like we said, we cannot scale this ascii image, so the thumb tag is empty::
+
+  >>> print(image_widget.thumb_tag)
 
 Prepare for a new request cycle::
 
@@ -730,7 +759,6 @@ The new image/file shows up in the rendered widget::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff"...
   <a href="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
@@ -787,7 +815,6 @@ The previous image/file should be kept::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <img src="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff"...
   <a href="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
@@ -809,7 +836,7 @@ The Download view on ASCII fields
 
   >>> content = ASCIIContent(
   ...     NamedFile(data="testfile", filename=u"test.txt"),
-  ...     NamedImage(data="testimage", filename=u"test.png"))
+  ...     NamedImage(data="testimage", filename=u"test.jpg"))
 
   >>> from z3c.form.widget import FieldWidget
 
@@ -832,7 +859,7 @@ The Download view on ASCII fields
   'testimage'
 
   >>> request.response.getHeader('Content-Disposition')
-  "attachment; filename*=UTF-8''test.png"
+  "attachment; filename*=UTF-8''test.jpg"
 
 
 The validator

@@ -4,7 +4,14 @@ from plone.app.testing import IntegrationTesting
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 
+import os
 import unittest
+
+
+def get_file(filename):
+    """Return contents of the file with the given name."""
+    filename = os.path.join(os.path.dirname(__file__), filename)
+    return open(filename, 'r')
 
 
 class PloneFormwidgetNamedfileLayer(PloneSandboxLayer):

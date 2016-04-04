@@ -25,14 +25,5 @@ class INamedImageWidget(INamedFileWidget):
 
     width = schema.Int(title=u"Image width", min=0, required=False)
     height = schema.Int(title=u"Image height", min=0, required=False)
-
-    thumb_width = schema.Int(
-        title=u"Thumbnail image width",
-        min=0,
-        required=False)
-    thumb_height = schema.Int(
-        title=u"Thuimbnail image height",
-        min=0,
-        required=False)
-
+    thumb_tag = schema.Text(title=u"Thumbnail image tag", required=False)
     alt = schema.TextLine(title=u"Image alternative text", required=False)
