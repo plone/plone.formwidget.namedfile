@@ -207,8 +207,9 @@ For this to work, we need a context and a data manager::
 
   >>> content = Content(None, None)
 
-  >>> def make_request(*args, **kwargs):
-  ...     return TestRequest(SCRIPT_NAME=content.path.lstrip('/'), *args, **kwargs)
+  >>> def make_request(path=None, **kwargs):
+  ...     path = path or content.path
+  ...     return TestRequest(SCRIPT_NAME=path.lstrip('/'), **kwargs)
 
   >>> from z3c.form.datamanager import AttributeField
   >>> from zope.component import provideAdapter
@@ -922,3 +923,47 @@ we again make the field required::
   Traceback (most recent call last):
   ...
   RequiredMissing...
+
+
+The Download URL
+----------------
+
+The download URL has the following format::
+
+  $CONTEXT_URL/[$FORM/]++widget++$FIELD/@@download[/$FILENAME]
+
+The download URL without a form and without a value::
+
+  >>> content = Content(None, None)
+  >>> file_widget = NamedFileFieldWidget(IContent['file_field'], make_request())
+  >>> file_widget.context = content
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/++widget++file_field/@@download'
+
+Now we add a value::
+
+  >>> content.file_field = NamedFile(data='My file data', filename=u'data.txt')
+  >>> file_widget.value = content.file_field
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/++widget++file_field/@@download/data.txt'
+
+And a form::
+
+  >>> class TestForm(object):
+  ...     pass
+  >>> form = TestForm()
+  >>> form.__name__ = 'test-form'
+  >>> file_widget.form = form
+  >>> file_widget.request = make_request(content.path + '/' + form.__name__)
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/test-form/++widget++file_field/@@download/data.txt'
+
+The download URL stays the same even if the request URL does not point to
+the context and/or form the widget is bound to. For example: we're rendering
+a custom view of a folder which lists all the contained files. The code for this
+view would get all ``Content`` instances on the folder and then use our widget
+(maybe inside a form) to display the information about each file::
+
+  >>> file_widget.request = make_request('/folder-1/custom-folder-view')
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/test-form/++widget++file_field/@@download/data.txt'
