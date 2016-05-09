@@ -21,10 +21,6 @@ New:
 
 - Use ``plone.app.testing`` in tests.  [maurits]
 
-Fixes:
-
-- *add item here*
-
 
 1.0.15 (2016-03-22)
 -------------------
