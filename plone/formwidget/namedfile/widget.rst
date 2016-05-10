@@ -967,3 +967,17 @@ view would get all ``Content`` instances on the folder and then use our widget
   >>> file_widget.request = make_request('/folder-1/custom-folder-view')
   >>> file_widget.download_url
   'http://127.0.0.1/content1/test-form/++widget++file_field/@@download/data.txt'
+
+Some times the context does not have an URL i.e ``context.absolute_url`` is
+not implemented. In these cases the download URL will be::
+
+  $REQUEST_URL/++widget++$FIELD/@@download[/$FILENAME]
+
+Like in this case::
+
+  >>> class Context(object):
+  ...     pass
+  >>> file_widget.context = Context()
+  >>> file_widget.request = make_request('/some/path')
+  >>> file_widget.download_url
+  'http://127.0.0.1/some/path/++widget++file_field/@@download/data.txt'
