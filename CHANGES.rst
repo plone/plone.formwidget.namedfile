@@ -12,7 +12,7 @@ Incompatibilities:
 
 - Make the download URL independent of the request URL. The format of the
   URL will always be:
-  ``$CONTEXT_URL/[$FORM/]++widget++$FIELD/@@download[/$FILENAME]``
+  ``$CONTEXT_URL/[$FORM/]++widget++$WIDGET/@@download[/$FILENAME]``
   [rafaelbco]
 
 New:

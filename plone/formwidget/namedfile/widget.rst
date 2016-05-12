@@ -930,13 +930,15 @@ The Download URL
 
 The download URL has the following format::
 
-  $CONTEXT_URL/[$FORM/]++widget++$FIELD/@@download[/$FILENAME]
+  $CONTEXT_URL/[$FORM/]++widget++$WIDGET/@@download[/$FILENAME]
 
 The download URL without a form and without a value::
 
   >>> content = Content(None, None)
   >>> file_widget = NamedFileFieldWidget(IContent['file_field'], make_request())
   >>> file_widget.context = content
+  >>> file_widget.name
+  file_field
   >>> file_widget.download_url
   'http://127.0.0.1/content1/++widget++file_field/@@download'
 
@@ -971,7 +973,7 @@ view would get all ``Content`` instances on the folder and then use our widget
 Some times the context does not have an URL i.e ``context.absolute_url`` is
 not implemented. In these cases the download URL will be::
 
-  $REQUEST_URL/++widget++$FIELD/@@download[/$FILENAME]
+  $REQUEST_URL/++widget++$WIDGET/@@download[/$FILENAME]
 
 Like in this case::
 
@@ -981,3 +983,9 @@ Like in this case::
   >>> file_widget.request = make_request('/some/path')
   >>> file_widget.download_url
   'http://127.0.0.1/some/path/++widget++file_field/@@download/data.txt'
+
+If we change the name of the widget the download URL will reflect that::
+
+  >>> file_widget.name = 'my_widget'
+  >>> file_widget.download_url
+  'http://127.0.0.1/some/path/++widget++my_widget/@@download/data.txt'
