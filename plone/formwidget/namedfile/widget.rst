@@ -938,7 +938,7 @@ The download URL without a form and without a value::
   >>> file_widget = NamedFileFieldWidget(IContent['file_field'], make_request())
   >>> file_widget.context = content
   >>> file_widget.name
-  file_field
+  'file_field'
   >>> file_widget.download_url
   'http://127.0.0.1/content1/++widget++file_field/@@download'
 
