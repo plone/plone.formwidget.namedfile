@@ -31,7 +31,9 @@ There are also more specific interfaces for each widget::
 The widgets can be instantiated only using the request::
 
   >>> from z3c.form.testing import TestRequest
-  >>> request = TestRequest()
+  >>> def make_request(**kwargs):
+  ...     return TestRequest(**kwargs)
+  >>> request = make_request()
 
   >>> file_widget = NamedFileWidget(request)
   >>> image_widget = NamedImageWidget(request)
@@ -87,24 +89,24 @@ We can extract simple file data from the widget like this::
   >>> import cStringIO
   >>> myfile = cStringIO.StringIO('My file contents.')
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': myfile})
+  >>> file_widget.request = make_request(form={'widget.name.file': myfile})
   >>> file_widget.update()
   >>> file_widget.extract()
   <cStringIO.StringI object at ...>
 
-  >>> image_widget.request = TestRequest(form={'widget.name.image': myfile})
+  >>> image_widget.request = make_request(form={'widget.name.image': myfile})
   >>> image_widget.update()
   >>> image_widget.extract()
   <cStringIO.StringI object at ...>
 
 If nothing is found in the request, the default is returned::
 
-  >>> file_widget.request = TestRequest()
+  >>> file_widget.request = make_request()
   >>> file_widget.update()
   >>> file_widget.extract()
   <NO_VALUE>
 
-  >>> image_widget.request = TestRequest()
+  >>> image_widget.request = make_request()
   >>> image_widget.update()
   >>> image_widget.extract()
   <NO_VALUE>
@@ -128,12 +130,12 @@ Now build a FileUpload::
   >>> aFieldStorage = FieldStorageStub(myfile)
   >>> myUpload = FileUpload(aFieldStorage)
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': myUpload})
+  >>> file_widget.request = make_request(form={'widget.name.file': myUpload})
   >>> file_widget.update()
   >>> file_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
 
-  >>> image_widget.request = TestRequest(form={'widget.name.image': myUpload})
+  >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
   >>> image_widget.update()
   >>> image_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
@@ -158,12 +160,12 @@ Empty, unnamed FileUploads are treated as having no value::
   >>> aFieldStorage = FieldStorageStub(emptyfile, filename='')
   >>> myEmptyUpload = FileUpload(aFieldStorage)
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': myEmptyUpload})
+  >>> file_widget.request = make_request(form={'widget.name.file': myEmptyUpload})
   >>> file_widget.update()
   >>> file_widget.extract()
   <NO_VALUE>
 
-  >>> image_widget.request = TestRequest(form={'widget.name.image': myEmptyUpload})
+  >>> image_widget.request = make_request(form={'widget.name.image': myEmptyUpload})
   >>> image_widget.update()
   >>> image_widget.extract()
   <NO_VALUE>
@@ -187,6 +189,7 @@ For this to work, we need a context and a data manager::
   ...     file_field = field.NamedFile(title=u"File")
   ...     image_field = field.NamedImage(title=u"Image")
 
+  >>> root_url = TestRequest().getURL()
   >>> class Content(object):
   ...     implements(IContent, IImageScaleTraversable, IAttributeAnnotatable)
   ...     def __init__(self, file, image):
@@ -194,14 +197,19 @@ For this to work, we need a context and a data manager::
   ...         self.image_field = image
   ...         # modification time is needed for a check in scaling:
   ...         self._p_mtime = DateTime()
+  ...         self.path = '/content1'
   ...
   ...     def absolute_url(self):
-  ...         return 'http://example.com/content1'
+  ...         return root_url + self.path
   ...
   ...     def Title(self):
   ...         return 'A content item'
 
   >>> content = Content(None, None)
+
+  >>> def make_request(path=None, **kwargs):
+  ...     path = path or content.path
+  ...     return TestRequest(SCRIPT_NAME=path.lstrip('/'), **kwargs)
 
   >>> from z3c.form.datamanager import AttributeField
   >>> from zope.component import provideAdapter
@@ -210,8 +218,8 @@ For this to work, we need a context and a data manager::
   >>> from plone.formwidget.namedfile import NamedFileFieldWidget
   >>> from plone.formwidget.namedfile import NamedImageFieldWidget
 
-  >>> file_widget = NamedFileFieldWidget(IContent['file_field'], TestRequest())
-  >>> image_widget = NamedImageFieldWidget(IContent['image_field'], TestRequest())
+  >>> file_widget = NamedFileFieldWidget(IContent['file_field'], make_request())
+  >>> image_widget = NamedImageFieldWidget(IContent['image_field'], make_request())
 
   >>> file_widget.context = content
   >>> image_widget.context = content
@@ -249,11 +257,11 @@ characters::
   ...                               filename=unicode('data_深.txt', 'utf-8'))
   >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
-  >>> image_widget.request = TestRequest(form={'widget.name.image': myUpload})
+  >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
   >>> file_widget.update()
   >>> print(file_widget.render())
   <... id="widget.id.file" class="named-file-widget required namedfile-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/data_%E6%B7%B1.txt" >data_深.txt</a>...
+  <a href="http://127.0.0.1/content1/++widget++widget.name.file/@@download/data_%E6%B7%B1.txt" >data_深.txt</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
   <input type="file"... id="widget.id.file-input"...
@@ -261,7 +269,7 @@ characters::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required namedimage-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux.jpg" >faux.jpg</a>...
+  <a href="http://127.0.0.1/content1/++widget++widget.name.image/@@download/faux.jpg" >faux.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
@@ -276,7 +284,7 @@ empty, the behaviour is the same as before::
   >>> aFieldStorage = FieldStorageStub(myfile, filename='test2.txt')
   >>> myUpload = FileUpload(aFieldStorage)
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': myUpload})
+  >>> file_widget.request = make_request(form={'widget.name.file': myUpload})
   >>> file_widget.update()
   >>> file_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
@@ -287,7 +295,7 @@ setup the widget with a new value::
   >>> content.image_field = NamedImage(data=image_data, filename=u'faux.jpg')
   >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
-  >>> image_widget.request = TestRequest(form={'widget.name.image': myUpload})
+  >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
   >>> image_widget.update()
   >>> image_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload instance at ...>
@@ -296,17 +304,17 @@ If the widgets are rendered again, the newly uploaded files will be shown::
 
   >>> print(file_widget.render())
   <... id="widget.id.file" class="named-file-widget required namedfile-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/test2.txt" >test2.txt</a>...
+  <a href="http://127.0.0.1/content1/++widget++widget.name.file/@@download/test2.txt" >test2.txt</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
   <input type="file"... id="widget.id.file-input"...
 
   >>> print(image_widget.thumb_tag)
-  <img src="http://example.com/content1/@@images/...jpeg" alt="A content item" title="A content item" height="51" width="128" />
+  <img src="http://127.0.0.1/content1/@@images/...jpeg" alt="A content item" title="A content item" height="51" width="128" />
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required namedimage-field">...
-  <img src="http://example.com/content1/@@images/...jpeg" alt="A content item" title="A content item" height="51" width="128" />...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/faux2.jpg" >faux2.jpg</a>...
+  <img src="http://127.0.0.1/content1/@@images/...jpeg" alt="A content item" title="A content item" height="51" width="128" />...
+  <a href="http://127.0.0.1/content1/++widget++widget.name.image/@@download/faux2.jpg" >faux2.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
@@ -320,7 +328,7 @@ stored in the field::
   >>> file_widget.value = content.file_field
   >>> image_widget.value = content.image_field
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': '', 'widget.name.file.action': 'nochange'})
+  >>> file_widget.request = make_request(form={'widget.name.file': '', 'widget.name.file.action': 'nochange'})
   >>> file_widget.update()
   >>> file_widget.extract() is content.file_field
   True
@@ -328,7 +336,7 @@ stored in the field::
   >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
 
-  >>> image_widget.request = TestRequest(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
+  >>> image_widget.request = make_request(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
   >>> image_widget.update()
   >>> image_widget.extract() is content.image_field
   True
@@ -341,14 +349,14 @@ The download view extracts the image/file data, the widget template output uses
 this view to display the image itself or link to the file::
 
   >>> from plone.formwidget.namedfile.widget import Download
-  >>> request = TestRequest()
+  >>> request = make_request()
   >>> view = Download(image_widget, request)
   >>> view() == image_data
   True
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''faux.jpg"
 
-  >>> request = TestRequest()
+  >>> request = make_request()
   >>> view = Download(file_widget, request)
   >>> view()
   'My file data'
@@ -358,7 +366,7 @@ this view to display the image itself or link to the file::
 The URL will influence the name of the file as reported to the browser, but
 doesn't stop it being found::
 
-  >>> request = TestRequest()
+  >>> request = make_request()
   >>> view = Download(file_widget, request)
   >>> view = view.publishTraverse(request, 'daisy.txt')
   >>> view()
@@ -368,7 +376,7 @@ doesn't stop it being found::
 
 Any additional traversal will result in an error::
 
-  >>> request = TestRequest()
+  >>> request = make_request()
   >>> view = Download(file_widget, request)
   >>> view = view.publishTraverse(request, 'cows')
   >>> view = view.publishTraverse(request, 'daisy.txt')
@@ -578,9 +586,10 @@ First, let's do the setup::
   ...         self.image_field = image
   ...         # modification time is needed for a check in scaling:
   ...         self._p_mtime = DateTime()
+  ...         self.path = '/content2'
   ...
   ...     def absolute_url(self):
-  ...         return 'http://example.com/content1'
+  ...         return root_url + self.path
   ...
   ...     def Title(self):
   ...         return 'A content item'
@@ -601,7 +610,7 @@ First, let's do the setup::
   ...         widget = NamedFileFieldWidget
   ...     widget = widget(
   ...         IASCIIContent['{0}_field'.format(widget_type)],
-  ...         TestRequest()
+  ...         make_request()
   ...     )
   ...     widget.context = context
   ...     widget.id = 'widget.id.{0}'.format(widget_type)
@@ -639,7 +648,7 @@ Let's upload data::
   >>> field_storage = FieldStorageStub(data, filename='file1.txt')
   >>> upload = FileUpload(field_storage)
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': upload})
+  >>> file_widget.request = make_request(form={'widget.name.file': upload})
   >>> file_widget.update()
   >>> uploaded = file_widget.extract()
   >>> uploaded
@@ -657,7 +666,7 @@ Check that we have a good image that PIL can handle:
   >>> field_storage = FieldStorageStub(get_file('image.jpg'), filename='image.jpg')
   >>> upload = FileUpload(field_storage)
 
-  >>> image_widget.request = TestRequest(form={'widget.name.image': upload})
+  >>> image_widget.request = make_request(form={'widget.name.image': upload})
   >>> image_widget.update()
   >>> uploaded = image_widget.extract()
   >>> uploaded
@@ -685,7 +694,7 @@ The upload shows up in the rendered widget::
   >>> file_widget.update()
   >>> print(file_widget.render())
   <... id="widget.id.file" class="named-file-widget required ascii-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/file1.txt" >file1.txt</a>...
+  <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/file1.txt" >file1.txt</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
   <input type="file"... id="widget.id.file-input"...
@@ -693,7 +702,7 @@ The upload shows up in the rendered widget::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/image.jpg" >image.jpg</a>...
+  <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/image.jpg" >image.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
@@ -714,7 +723,7 @@ Now overwrite with other data::
   >>> field_storage = FieldStorageStub(data, filename='plone.pdf')
   >>> upload = FileUpload(field_storage)
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': upload, 'widget.name.file.action': 'replace'})
+  >>> file_widget.request = make_request(form={'widget.name.file': upload, 'widget.name.file.action': 'replace'})
   >>> file_widget.update()
   >>> uploaded = file_widget.extract()
   >>> uploaded
@@ -729,7 +738,7 @@ Now overwrite with other data::
   >>> field_storage = FieldStorageStub(data, filename='logo.tiff')
   >>> upload = FileUpload(field_storage)
 
-  >>> image_widget.request = TestRequest(form={'widget.name.image': upload, 'widget.name.image.action': 'replace'})
+  >>> image_widget.request = make_request(form={'widget.name.image': upload, 'widget.name.image.action': 'replace'})
   >>> image_widget.update()
   >>> uploaded = image_widget.extract()
   >>> uploaded
@@ -751,7 +760,7 @@ The new image/file shows up in the rendered widget::
   >>> file_widget.update()
   >>> print(file_widget.render())
   <... id="widget.id.file" class="named-file-widget required ascii-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
+  <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
   <input type="file"... id="widget.id.file-input"...
@@ -759,7 +768,7 @@ The new image/file shows up in the rendered widget::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
+  <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
@@ -774,7 +783,7 @@ Prepare for a new request cycle::
 
 Resubmit, but keep the data::
 
-  >>> file_widget.request = TestRequest(form={'widget.name.file': '', 'widget.name.file.action': 'nochange'})
+  >>> file_widget.request = make_request(form={'widget.name.file': '', 'widget.name.file.action': 'nochange'})
   >>> file_widget.update()
   >>> uploaded = file_widget.extract()
   >>> uploaded
@@ -785,7 +794,7 @@ Resubmit, but keep the data::
   'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
 
 
-  >>> image_widget.request = TestRequest(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
+  >>> image_widget.request = make_request(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
   >>> image_widget.update()
   >>> uploaded = image_widget.extract()
   >>> uploaded
@@ -807,7 +816,7 @@ The previous image/file should be kept::
   >>> file_widget.update()
   >>> print(file_widget.render())
   <... id="widget.id.file" class="named-file-widget required ascii-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
+  <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
   <input type="file"... id="widget.id.file-input"...
@@ -815,7 +824,7 @@ The previous image/file should be kept::
   >>> image_widget.update()
   >>> print(image_widget.render())
   <... id="widget.id.image" class="named-image-widget required ascii-field">...
-  <a href="http://127.0.0.1/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
+  <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
@@ -830,9 +839,10 @@ The Download view on ASCII fields
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
+  ...         self.path = '/content3'
   ...
   ...     def absolute_url(self):
-  ...         return 'http://example.com/content2'
+  ...         return root_url + self.path
 
   >>> content = ASCIIContent(
   ...     NamedFile(data="testfile", filename=u"test.txt"),
@@ -840,13 +850,13 @@ The Download view on ASCII fields
 
   >>> from z3c.form.widget import FieldWidget
 
-  >>> ascii_file_widget = FieldWidget(IASCIIContent['file_field'], NamedFileWidget(TestRequest()))
+  >>> ascii_file_widget = FieldWidget(IASCIIContent['file_field'], NamedFileWidget(make_request()))
   >>> ascii_file_widget.context = content
 
-  >>> ascii_image_widget = FieldWidget(IASCIIContent['image_field'], NamedImageWidget(TestRequest()))
+  >>> ascii_image_widget = FieldWidget(IASCIIContent['image_field'], NamedImageWidget(make_request()))
   >>> ascii_image_widget.context = content
 
-  >>> request = TestRequest()
+  >>> request = make_request()
   >>> view = Download(ascii_file_widget, request)
   >>> view()
   'testfile'
@@ -873,7 +883,7 @@ validation error::
 If 'action' is omitted and the value is None, we should get a validation error
 only when the field is required::
 
-  >>> request = TestRequest(form={'widget.name.file': myfile})
+  >>> request = make_request(form={'widget.name.file': myfile})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(None) is None
   Traceback (most recent call last):
@@ -887,7 +897,7 @@ However, if it is set to 'replace' and there is no value provided, we get the
 InvalidState exception from validator.py (its docstring is displayed to the
 user)::
 
-  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
+  >>> request = make_request(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(None)
   Traceback (most recent call last):
@@ -896,7 +906,7 @@ user)::
 
 If we provide a file, all is good::
 
-  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
+  >>> request = make_request(form={'widget.name.file': myfile, 'widget.name.file.action': 'replace'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(file_obj) is None
   True
@@ -904,7 +914,7 @@ If we provide a file, all is good::
 Similarly, if we really wanted to remove the file, we won't complain, unless
 we again make the field required::
 
-  >>> request = TestRequest(form={'widget.name.file': myfile, 'widget.name.file.action': 'remove'})
+  >>> request = make_request(form={'widget.name.file': myfile, 'widget.name.file.action': 'remove'})
   >>> validator = NamedFileWidgetValidator(content, request, None, IContent['file_field'], file_widget)
   >>> validator.validate(None) is None
   True
@@ -913,3 +923,69 @@ we again make the field required::
   Traceback (most recent call last):
   ...
   RequiredMissing...
+
+
+The Download URL
+----------------
+
+The download URL has the following format::
+
+  $CONTEXT_URL/[$FORM/]++widget++$WIDGET/@@download[/$FILENAME]
+
+The download URL without a form and without a value::
+
+  >>> content = Content(None, None)
+  >>> file_widget = NamedFileFieldWidget(IContent['file_field'], make_request())
+  >>> file_widget.context = content
+  >>> file_widget.name
+  'file_field'
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/++widget++file_field/@@download'
+
+Now we add a value::
+
+  >>> content.file_field = NamedFile(data='My file data', filename=u'data.txt')
+  >>> file_widget.value = content.file_field
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/++widget++file_field/@@download/data.txt'
+
+And a form::
+
+  >>> class TestForm(object):
+  ...     pass
+  >>> form = TestForm()
+  >>> form.__name__ = 'test-form'
+  >>> file_widget.form = form
+  >>> file_widget.request = make_request(content.path + '/' + form.__name__)
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/test-form/++widget++file_field/@@download/data.txt'
+
+The download URL stays the same even if the request URL does not point to
+the context and/or form the widget is bound to. For example: we're rendering
+a custom view of a folder which lists all the contained files. The code for this
+view would get all ``Content`` instances on the folder and then use our widget
+(maybe inside a form) to display the information about each file::
+
+  >>> file_widget.request = make_request('/folder-1/custom-folder-view')
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/test-form/++widget++file_field/@@download/data.txt'
+
+Some times the context does not have an URL i.e ``context.absolute_url`` is
+not implemented. In these cases the download URL will be::
+
+  $REQUEST_URL/++widget++$WIDGET/@@download[/$FILENAME]
+
+Like in this case::
+
+  >>> class Context(object):
+  ...     pass
+  >>> file_widget.context = Context()
+  >>> file_widget.request = make_request('/some/path')
+  >>> file_widget.download_url
+  'http://127.0.0.1/some/path/++widget++file_field/@@download/data.txt'
+
+If we change the name of the widget the download URL will reflect that::
+
+  >>> file_widget.name = 'my_widget'
+  >>> file_widget.download_url
+  'http://127.0.0.1/some/path/++widget++my_widget/@@download/data.txt'

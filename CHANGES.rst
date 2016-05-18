@@ -26,6 +26,11 @@ Incompatibilities:
   the image widget.  ``width`` and ``height`` are still there.
   [jladage, maurits]
 
+- Make the download URL independent of the request URL. The format of the
+  URL will always be:
+  ``$CONTEXT_URL/[$FORM/]++widget++$WIDGET/@@download[/$FILENAME]``
+  [rafaelbco]
+
 New:
 
 - On the edit form, show a thumbnail instead of rendering the image in

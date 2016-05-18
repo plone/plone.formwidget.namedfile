@@ -140,16 +140,27 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     @property
     def download_url(self):
-        if self.field is None:
+        if (self.field is None) or self.ignoreContext:
             return None
-        if self.ignoreContext:
-            return None
-        if self.filename_encoded:
-            return "%s/++widget++%s/@@download/%s" % (
-                self.request.getURL(), self.name, self.filename_encoded)
+
+        url_parts = []
+
+        absolute_url_method = getattr(self.context, 'absolute_url', None)
+        if absolute_url_method:
+            url_parts.extend([
+                absolute_url_method(),
+                getattr(self.form, '__name__', None),
+            ])
         else:
-            return "%s/++widget++%s/@@download" % (
-                self.request.getURL(), self.name)
+            url_parts.append(self.request.getURL())
+
+        url_parts.extend([
+            '++widget++' + self.name,
+            '@@download',
+            self.filename_encoded
+        ])
+
+        return '/'.join(p for p in url_parts if p)
 
     def action(self):
         action = self.request.get("%s.action" % self.name, "nochange")
