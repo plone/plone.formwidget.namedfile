@@ -14,7 +14,10 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Make the download URL independent of the request URL. The format of the
+  URL will always be:
+  ``$CONTEXT_URL/[$FORM/]++widget++$WIDGET/@@download[/$FILENAME]``
+  [rafaelbco]
 
 
 2.0.0 (2016-05-09)
@@ -25,11 +28,6 @@ Incompatibilities:
 - Removed no longer needed ``thumb_width`` and ``thumb_height`` from
   the image widget.  ``width`` and ``height`` are still there.
   [jladage, maurits]
-
-- Make the download URL independent of the request URL. The format of the
-  URL will always be:
-  ``$CONTEXT_URL/[$FORM/]++widget++$WIDGET/@@download[/$FILENAME]``
-  [rafaelbco]
 
 New:
 
