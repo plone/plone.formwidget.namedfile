@@ -27,8 +27,8 @@ from zope.component import ComponentLookupError
 from zope.component import getMultiAdapter
 from zope.component.hooks import getSite
 from zope.interface import implementer
-from zope.interface import implements
-from zope.interface import implementsOnly
+from zope.interface import implementer
+from zope.interface import implementer_only
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from zope.schema.interfaces import IASCII
@@ -55,10 +55,10 @@ def _make_namedfile(value, field, widget):
     return value
 
 
+@implementer_only(INamedFileWidget)
 class NamedFileWidget(Explicit, file.FileWidget):
     """A widget for a named file object
     """
-    implementsOnly(INamedFileWidget)
 
     klass = u'named-file-widget'
     value = None  # don't default to a string
@@ -201,10 +201,10 @@ class NamedFileWidget(Explicit, file.FileWidget):
         return value
 
 
+@implementer_only(INamedImageWidget)
 class NamedImageWidget(NamedFileWidget):
     """A widget for a named file object
     """
-    implementsOnly(INamedImageWidget)
 
     klass = u'named-image-widget'
 
@@ -250,11 +250,10 @@ class NamedImageWidget(NamedFileWidget):
         return self.title
 
 
+@implementer(IPublishTraverse)
 class Download(BrowserView):
     """Download a file, via ../context/form/++widget++/@@download/filename
     """
-
-    implements(IPublishTraverse)
 
     def __init__(self, context, request):
         super(BrowserView, self).__init__(context, request)
