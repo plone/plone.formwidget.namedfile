@@ -20,7 +20,8 @@ from z3c.form.browser import file
 from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IFormLayer
-from z3c.form.interfaces import NOVALUE
+from z3c.form.interfaces import NO_VALUE
+from z3c.form.interfaces import NOT_CHANGED
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
 from zope.component import ComponentLookupError
@@ -170,7 +171,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
             action = 'nochange'
         return action
 
-    def extract(self, default=NOVALUE):
+    def extract(self, default=NO_VALUE):
         action = self.request.get("%s.action" % self.name, None)
         if self.request.get(
                 'PATH_INFO', '').endswith('kss_z3cform_inline_validation'):
@@ -179,8 +180,8 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if action == 'remove':
             return None
         elif action == 'nochange':
-            if self.value is not None:
-                return self.value
+            if self.allow_nochange:
+                return NOT_CHANGED
             if self.ignoreContext:
                 return default
             dm = getMultiAdapter((self.context, self.field,), IDataManager)

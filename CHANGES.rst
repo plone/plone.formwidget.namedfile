@@ -14,7 +14,9 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- The `'nochange'` action should result in the `NOT_CHANGED` value
+  when applicable (when this is allowable).
+  [malthe]
 
 
 2.0.2 (2016-08-15)
