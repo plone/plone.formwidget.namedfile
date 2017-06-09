@@ -17,6 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.MimetypesRegistry.common import MimeTypeException
 from z3c.form.browser import file
+from z3c.form.group import Group
 from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IFormLayer
@@ -147,10 +148,18 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
         absolute_url_method = getattr(self.context, 'absolute_url', None)
         if absolute_url_method:
-            url_parts.extend([
-                absolute_url_method(),
-                getattr(self.form, '__name__', None),
-            ])
+            if isinstance(self.form, Group):
+                url_parts.extend([
+                    absolute_url_method(),
+                    getattr(
+                        getattr(self.form, '__parent__', None),
+                        '__name__', None),
+                ])
+            else:
+                url_parts.extend([
+                    absolute_url_method(),
+                    getattr(self.form, '__name__', None),
+                ])
         else:
             url_parts.append(self.request.getURL())
 

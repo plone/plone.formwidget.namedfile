@@ -14,7 +14,9 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix issue where display widget failed to render file fields located
+  on form fieldsets, because of broken generated download url
+  [datakurre]
 
 
 2.0.2 (2016-08-15)
