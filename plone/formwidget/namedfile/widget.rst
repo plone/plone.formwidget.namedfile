@@ -970,6 +970,17 @@ view would get all ``Content`` instances on the folder and then use our widget
   >>> file_widget.download_url
   'http://127.0.0.1/content1/test-form/++widget++file_field/@@download/data.txt'
 
+The download URL also stays the same also when the field belongs to a group of
+a group form. This behavior assumes that groups are used to map fieldsets on a
+form (and not a group of separate objects)::
+
+  >>> from z3c.form.group import Group
+  >>> group = Group(content, file_widget.request, form)
+  >>> group.__name__ = 'test-fieldset'
+  >>> file_widget.form = group
+  >>> file_widget.download_url
+  'http://127.0.0.1/content1/test-form/++widget++file_field/@@download/data.txt'
+
 Some times the context does not have an URL i.e ``context.absolute_url`` is
 not implemented. In these cases the download URL will be::
 
