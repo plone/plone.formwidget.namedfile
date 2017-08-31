@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- remove mention of "retina" (https://github.com/plone/Products.CMFPlone/issues/2123)
+  [tkimnguyen]
 
 
 2.0.3 (2017-07-03)

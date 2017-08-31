@@ -236,8 +236,8 @@ class NamedImageWidget(NamedFileWidget):
         """ Return a img tag with a url to the preview scale and the width and
             height of a thumbnail scale.
 
-            This way on retina screens the image is displayed in screen pixels.
-            On non-retina screens the browser will downsize them as used to.
+            This way on high pixel density screens the image is displayed in screen pixels.
+            On non-high pixel density screens the browser will downsize them as used to.
         """
         try:
             scales = getMultiAdapter(
