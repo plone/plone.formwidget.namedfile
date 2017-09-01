@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fixing UnicodeError when the @@z3cform_validate_field view sends
+  a filename with type unicode. (collective.easyform in our case)
 
 
 2.0.3 (2017-07-03)
