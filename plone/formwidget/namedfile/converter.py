@@ -45,6 +45,8 @@ class NamedDataConverter(BaseDataConverter):
                 return self.field.missing_value
 
         else:
+            if isinstance(value, unicode):
+                value = value.encode('utf-8')
             return self.field._type(data=str(value))
 
 
