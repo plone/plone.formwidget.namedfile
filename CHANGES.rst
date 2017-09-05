@@ -1,22 +1,14 @@
 Changelog
 =========
 
-2.0.4 (unreleased)
+2.0.4 (2017-09-05)
 ------------------
-
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
 
 Bug fixes:
 
 - Fixing UnicodeError when the @@z3cform_validate_field view sends
   a filename with type unicode. (collective.easyform in our case)
-
+  [karalics]
 
 2.0.3 (2017-07-03)
 ------------------
