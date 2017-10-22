@@ -16,6 +16,7 @@ from plone.namedfile.utils import stream_data
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.MimetypesRegistry.common import MimeTypeException
+from six.moves import urllib
 from z3c.form.browser import file
 from z3c.form.group import Group
 from z3c.form.interfaces import IDataManager
@@ -28,14 +29,13 @@ from zope.component import ComponentLookupError
 from zope.component import getMultiAdapter
 from zope.component.hooks import getSite
 from zope.interface import implementer
-from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from zope.schema.interfaces import IASCII
 from zope.size import byteDisplay
 from ZPublisher.HTTPRequest import FileUpload
-import urllib
+
 
 try:
     from os import SEEK_END
@@ -137,7 +137,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
         else:
             if isinstance(filename, unicode):
                 filename = filename.encode('utf-8')
-            return urllib.quote_plus(filename)
+            return urllib.parse.quote_plus(filename)
 
     @property
     def download_url(self):

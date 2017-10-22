@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup
 from setuptools import find_packages
+from setuptools import setup
+
 
 version = '2.0.6.dev0'
 
@@ -30,6 +31,7 @@ setup(
         'setuptools',
         'plone.namedfile',
         'plone.z3cform >= 0.7.4',
+        'six',
         'z3c.form',
     ],
     extras_require={

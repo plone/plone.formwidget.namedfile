@@ -22,6 +22,8 @@ Bug fixes:
 
 Bug fixes:
 
+- Imports are Python3 compatible
+  [ale-rt]
 - remove mention of "retina" (https://github.com/plone/Products.CMFPlone/issues/2123)
   [tkimnguyen]
 
