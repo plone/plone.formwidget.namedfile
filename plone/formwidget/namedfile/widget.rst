@@ -118,7 +118,7 @@ We can also handle file-upload objects::
 
 Let's define a FieldStorage stub for easy use with the FileUpload::
 
-  >>> class FieldStorageStub:
+  >>> class FieldStorageStub(object):
   ...     def __init__(self, file, headers={}, filename='foo.bar'):
   ...         self.file = file
   ...         self.headers = headers
@@ -134,12 +134,12 @@ Now build a FileUpload::
   >>> file_widget.request = make_request(form={'widget.name.file': myUpload})
   >>> file_widget.update()
   >>> file_widget.extract()
-  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+  <ZPublisher.HTTPRequest.FileUpload object at ...>
 
   >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
   >>> image_widget.update()
   >>> image_widget.extract()
-  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+  <ZPublisher.HTTPRequest.FileUpload object at ...>
 
 The rendering is unchanged::
 
@@ -288,7 +288,7 @@ empty, the behaviour is the same as before::
   >>> file_widget.request = make_request(form={'widget.name.file': myUpload})
   >>> file_widget.update()
   >>> file_widget.extract()
-  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+  <ZPublisher.HTTPRequest.FileUpload object at ...>
 
 Set the current image, which is shown as thumb on the page, and then
 setup the widget with a new value::
@@ -299,7 +299,7 @@ setup the widget with a new value::
   >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
   >>> image_widget.update()
   >>> image_widget.extract()
-  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+  <ZPublisher.HTTPRequest.FileUpload object at ...>
 
 If the widgets are rendered again, the newly uploaded files will be shown::
 
@@ -653,7 +653,7 @@ Let's upload data::
   >>> file_widget.update()
   >>> uploaded = file_widget.extract()
   >>> uploaded
-  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+  <ZPublisher.HTTPRequest.FileUpload object at ...>
 
   >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
   >>> content.file_field
@@ -671,7 +671,7 @@ Check that we have a good image that PIL can handle:
   >>> image_widget.update()
   >>> uploaded = image_widget.extract()
   >>> uploaded
-  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+  <ZPublisher.HTTPRequest.FileUpload object at ...>
 
   >>> content.image_field = ascii_image_converter.toFieldValue(uploaded)
   >>> print(content.image_field)
@@ -728,7 +728,7 @@ Now overwrite with other data::
   >>> file_widget.update()
   >>> uploaded = file_widget.extract()
   >>> uploaded
-  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+  <ZPublisher.HTTPRequest.FileUpload object at ...>
 
   >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
   >>> content.file_field
@@ -743,7 +743,7 @@ Now overwrite with other data::
   >>> image_widget.update()
   >>> uploaded = image_widget.extract()
   >>> uploaded
-  <ZPublisher.HTTPRequest.FileUpload instance at ...>
+  <ZPublisher.HTTPRequest.FileUpload object at ...>
 
   >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
   >>> content.image_field
