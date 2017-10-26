@@ -123,6 +123,7 @@ Let's define a FieldStorage stub for easy use with the FileUpload::
   ...         self.file = file
   ...         self.headers = headers
   ...         self.filename = filename
+  ...         self.name = filename
 
 Now build a FileUpload::
 
