@@ -14,7 +14,10 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Don't show options to keep or replace the file when the file reference is a FileUpload instance.
+  Also show a warning to re-add the file, if a file was uploaded but another error occured.
+  Fixes: https://github.com/collective/collective.easyform/issues/92
+  [thet]
 
 
 2.0.5 (2017-11-26)
