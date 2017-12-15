@@ -28,7 +28,7 @@
                 allow_nochange view/allow_nochange;
                 doc_type view/file_content_type;
                 icon view/file_icon;">
-    <span tal:condition="python:exists and download_url and action=='nochange'">
+    <span tal:condition="python:view.file_exists and download_url and action=='nochange'">
       <a tal:attributes="href download_url">
           <img tal:replace="structure view/thumb_tag"/>
       </a><br />

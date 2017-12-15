@@ -17,6 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.MimetypesRegistry.common import MimeTypeException
 from z3c.form.browser import file
+from z3c.form.error import ErrorViewSnippet
 from z3c.form.group import Group
 from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IFieldWidget
@@ -28,14 +29,15 @@ from zope.component import ComponentLookupError
 from zope.component import getMultiAdapter
 from zope.component.hooks import getSite
 from zope.interface import implementer
-from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from zope.schema.interfaces import IASCII
 from zope.size import byteDisplay
 from ZPublisher.HTTPRequest import FileUpload
+
 import urllib
+
 
 try:
     from os import SEEK_END
@@ -56,19 +58,54 @@ def _make_namedfile(value, field, widget):
     return value
 
 
+class ReAddError(ValueError):
+    """Error to be shown, when the widget is rendered with FileUpload as value.
+    This happens, when the editor uploaded some file but the form has any other
+    error. In this case the editor needs to re-upload the file.
+    """
+
+
+class ReAddErrorViewSnippet(ErrorViewSnippet):
+    def render(self):
+        return u"There was an error and we couldn't restore your file-upload."\
+            u" Please re-add the file."
+
+
 @implementer_only(INamedFileWidget)
 class NamedFileWidget(Explicit, file.FileWidget):
     """A widget for a named file object
     """
-
     klass = u'named-file-widget'
     value = None  # don't default to a string
 
+    def update(self, *args, **kwargs):
+        super(NamedFileWidget, self).update(*args, **kwargs)
+        if isinstance(self.value, FileUpload):
+            self.error = ReAddErrorViewSnippet(
+                ReAddError,      # error
+                self.request,    # request
+                None,            # widget
+                None,            # field
+                None,            # form
+                None             # content
+            )
+    
+    def file_exists(self):
+        """True, if the file already exists.
+        It doesn't exist for an IAddForm, even if the value is not empty and
+        refers to a ZPublisher.HTTPRequest.FileUpload object.
+        There is no way to securely refer to a temporary file on the servers
+        filesystem for subsequent requests.
+        """
+        if self.value is None\
+                or self.value == self.field.missing_value\
+                or isinstance(self.value, FileUpload):
+            return False
+        return True
+
     @property
     def allow_nochange(self):
-        return self.field is not None and \
-            self.value is not None and \
-            self.value != self.field.missing_value
+        return self.field is not None and self.file_exists
 
     @property
     def filename(self):
