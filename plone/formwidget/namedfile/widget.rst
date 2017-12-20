@@ -145,12 +145,22 @@ The rendering is unchanged::
 
   >>> print(file_widget.render())
   <span id="widget.id.file" class="named-file-widget">
+      <input type="hidden" name="widget.name.file.file_upload_id" value="...
+      <span>
+        File already uploaded:
+        foo.bar
+      </span>
       <input type="file" id="widget.id.file-input"
              name="widget.name.file" />
   </span>
 
   >>> print(image_widget.render())
   <span id="widget.id.image" class="named-image-widget">
+      <input type="hidden" name="widget.name.image.file_upload_id" value="...
+      <span>
+        Image already uploaded:
+        foo.bar
+      </span>
       <input type="file" id="widget.id.image-input"
              name="widget.name.image" />
   </span>
@@ -659,7 +669,7 @@ Let's upload data::
   >>> content.file_field
   'filenameb64:ZmlsZTEudHh0;datab64:ZmlsZSAxIGNvbnRlbnQu'
 
-Check that we have a good image that PIL can handle:
+Check that we have a good image that PIL can handle::
 
   >>> import PIL.Image
   >>> PIL.Image.open(get_file('image.jpg'))

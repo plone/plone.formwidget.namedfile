@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import doctest
-import unittest
 from plone.formwidget.namedfile.testing import INTEGRATION_TESTING
 from plone.testing import layered
+
+import doctest
+import unittest
 
 
 def test_suite():

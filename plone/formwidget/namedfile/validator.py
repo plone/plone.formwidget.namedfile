@@ -18,6 +18,7 @@ class NamedFileWidgetValidator(validator.SimpleFieldValidator):
             raise InvalidState()
         return super(NamedFileWidgetValidator, self).validate(value, force)
 
+
 validator.WidgetValidatorDiscriminators(
     NamedFileWidgetValidator,
     field=INamedField

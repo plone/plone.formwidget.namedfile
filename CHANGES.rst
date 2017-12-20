@@ -16,6 +16,8 @@ Bug fixes:
 
 - Prepare for Python 2 / 3 compatibility
   [ale-rt, pbauer]
+- On form validation errors after submitting, keep the already uploaded image.
+  [thet]
 
 
 2.0.5 (2017-11-26)

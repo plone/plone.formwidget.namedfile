@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from z3c.form.interfaces import IFileWidget
 from zope import schema
+from zope.interface import Interface
 
 
 class INamedFileWidget(IFileWidget):
@@ -27,3 +28,9 @@ class INamedImageWidget(INamedFileWidget):
     height = schema.Int(title=u"Image height", min=0, required=False)
     thumb_tag = schema.Text(title=u"Thumbnail image tag", required=False)
     alt = schema.TextLine(title=u"Image alternative text", required=False)
+
+
+class IFileUploadMap(Interface):
+    """Temporary storage adapter for file uploads.
+    To be used to not need to re-upload files after form submission errors.
+    """
