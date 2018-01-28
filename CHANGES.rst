@@ -14,16 +14,14 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Prepare for Python 2 / 3 compatibility
+  [ale-rt, pbauer]
 
 
 2.0.5 (2017-11-26)
 ------------------
 
 Bug fixes:
-
-- Prepare for Python 2 / 3 compatibility
-  [ale-rt, pbauer]
 
 - remove mention of "retina" (https://github.com/plone/Products.CMFPlone/issues/2123)
   [tkimnguyen]
