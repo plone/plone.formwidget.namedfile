@@ -36,6 +36,7 @@ from zope.schema.interfaces import IASCII
 from zope.size import byteDisplay
 from ZPublisher.HTTPRequest import FileUpload
 
+import six
 
 try:
     from os import SEEK_END
@@ -47,7 +48,7 @@ def _make_namedfile(value, field, widget):
     """Return a NamedImage or NamedFile instance, if it isn't already one -
     e.g. when it's base64 encoded data.
     """
-    if isinstance(value, basestring) and IASCII.providedBy(field):
+    if isinstance(value, six.string_types) and IASCII.providedBy(field):
         filename, data = b64decode_file(value)
         if INamedImageWidget.providedBy(widget):
             value = NamedImage(data=data, filename=filename)
@@ -135,7 +136,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if filename is None:
             return None
         else:
-            if isinstance(filename, unicode):
+            if isinstance(filename, six.text_type):
                 filename = filename.encode('utf-8')
             return urllib.parse.quote_plus(filename)
 
