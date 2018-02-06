@@ -10,7 +10,9 @@ from z3c.form.converter import BaseDataConverter
 from zope.component import adapts
 from zope.schema.interfaces import IASCII
 from ZPublisher.HTTPRequest import FileUpload
+
 import base64
+import six
 
 
 class NamedDataConverter(BaseDataConverter):
@@ -32,7 +34,8 @@ class NamedDataConverter(BaseDataConverter):
 
             filename = safe_basename(value.filename)
 
-            if filename is not None and not isinstance(filename, unicode):
+            if filename is not None and not isinstance(
+                    filename, six.text_type):
                 # Work-around for
                 # https://bugs.launchpad.net/zope2/+bug/499696
                 filename = filename.decode('utf-8')
@@ -45,7 +48,7 @@ class NamedDataConverter(BaseDataConverter):
                 return self.field.missing_value
 
         else:
-            if isinstance(value, unicode):
+            if isinstance(value, six.text_type):
                 value = value.encode('utf-8')
             return self.field._type(data=str(value))
 
@@ -53,7 +56,7 @@ class NamedDataConverter(BaseDataConverter):
 def b64encode_file(filename, data):
     # encode filename and data using the standard alphabet, so that ";" can be
     # used as delimiter.
-    if isinstance(filename, unicode):
+    if isinstance(filename, six.text_type):
         filename = filename.encode('utf-8')
     filenameb64 = base64.standard_b64encode(filename or '')
     datab64 = base64.standard_b64encode(data)
@@ -84,7 +87,7 @@ class Base64Converter(BaseDataConverter):
 
     def toWidgetValue(self, value):
 
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             return None
 
         filename, data = b64decode_file(value)
