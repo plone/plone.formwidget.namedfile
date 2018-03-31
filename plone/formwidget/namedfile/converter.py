@@ -34,8 +34,7 @@ class NamedDataConverter(BaseDataConverter):
 
             filename = safe_basename(value.filename)
 
-            if filename is not None and not isinstance(
-                    filename, six.text_type):
+            if filename is not None and isinstance(filename, six.binary_type):
                 # Work-around for
                 # https://bugs.launchpad.net/zope2/+bug/499696
                 filename = filename.decode('utf-8')
