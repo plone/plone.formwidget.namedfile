@@ -49,7 +49,7 @@ class NamedDataConverter(BaseDataConverter):
         else:
             if isinstance(value, six.text_type):
                 value = value.encode('utf-8')
-            return self.field._type(data=str(value))
+            return self.field._type(data=value)
 
 
 def b64encode_file(filename, data):
@@ -59,20 +59,20 @@ def b64encode_file(filename, data):
         filename = filename.encode('utf-8')
     filenameb64 = base64.standard_b64encode(filename or '')
     datab64 = base64.standard_b64encode(data)
-    filename = "filenameb64:%s;datab64:%s" % (
+    filename = b"filenameb64:%s;datab64:%s" % (
         filenameb64, datab64
     )
-    return filename.encode('ascii')
+    return filename
 
 
 def b64decode_file(value):
-    filename, data = value.split(';')
+    filename, data = value.split(b';')
 
-    filename = filename.split(':')[1]
+    filename = filename.split(b':')[1]
     filename = base64.standard_b64decode(filename)
     filename = filename.decode('utf-8')
 
-    data = data.split(':')[1]
+    data = data.split(b':')[1]
     data = base64.standard_b64decode(data)
 
     return filename, data
@@ -86,7 +86,7 @@ class Base64Converter(BaseDataConverter):
 
     def toWidgetValue(self, value):
 
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, (six.text_type, six.binary_type)):
             return None
 
         filename, data = b64decode_file(value)
