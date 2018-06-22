@@ -66,6 +66,8 @@ def b64encode_file(filename, data):
 
 
 def b64decode_file(value):
+    if isinstance(value, six.text_type):
+        value = value.encode('utf8')
     filename, data = value.split(b';')
 
     filename = filename.split(b':')[1]
