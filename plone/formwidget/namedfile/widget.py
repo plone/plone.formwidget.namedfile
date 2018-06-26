@@ -15,7 +15,7 @@ from plone.namedfile.utils import set_headers
 from plone.namedfile.utils import stream_data
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
-from Products.MimetypesRegistry.common import MimeTypeException
+from Products.MimetypesRegistry.interfaces import MimeTypeException
 from six.moves import urllib
 from z3c.form.browser import file
 from z3c.form.group import Group
@@ -237,8 +237,10 @@ class NamedImageWidget(NamedFileWidget):
         """ Return a img tag with a url to the preview scale and the width and
             height of a thumbnail scale.
 
-            This way on high pixel density screens the image is displayed in screen pixels.
-            On non-high pixel density screens the browser will downsize them as used to.
+            This way on high pixel density screens the image is displayed in
+            screen pixels.
+            On non-high pixel density screens the browser will downsize them
+            as used to.
         """
         try:
             scales = getMultiAdapter(
