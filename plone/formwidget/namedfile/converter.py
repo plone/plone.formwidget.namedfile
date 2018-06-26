@@ -8,7 +8,7 @@ from plone.namedfile.interfaces import INamedField
 from plone.namedfile.utils import safe_basename
 from z3c.form.converter import BaseDataConverter
 from zope.component import adapts
-from zope.schema.interfaces import IASCII
+from zope.schema.interfaces import IBytes
 from ZPublisher.HTTPRequest import FileUpload
 
 import base64
@@ -81,10 +81,10 @@ def b64decode_file(value):
 
 
 class Base64Converter(BaseDataConverter):
-    """Converts between ASCII fields with base64 encoded data and a filename
+    """Converts between Bytes fields with base64 encoded data and a filename
     and INamedImage/INamedFile values.
     """
-    adapts(IASCII, INamedFileWidget)
+    adapts(IBytes, INamedFileWidget)
 
     def toWidgetValue(self, value):
 

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from z3c.form.interfaces import IFileWidget
+from z3c.form.interfaces import IWidget
 from zope import schema
 
 
-class INamedFileWidget(IFileWidget):
+class INamedFileWidget(IWidget):
     """A widget for a named file field
     """
 
