@@ -472,17 +472,17 @@ being returned::
   True
 
 
-The Base64Converter for ASCII fields
+The Base64Converter for Bytes fields
 ------------------------------------
 
 There is another converter, which converts between a NamedFile or file upload
-instance and base64 encoded data, which can be stored in a ASCII field::
+instance and base64 encoded data, which can be stored in a Bytes field::
 
   >>> from zope import schema
   >>> from zope.interface import implementer, Interface
-  >>> class IASCIIContent(Interface):
-  ...     file_field = schema.ASCII(title=u"File")
-  ...     image_field = schema.ASCII(title=u"Image")
+  >>> class IBytesContent(Interface):
+  ...     file_field = schema.Bytes(title=u"File")
+  ...     image_field = schema.Bytes(title=u"Image")
 
   >>> from plone.formwidget.namedfile.converter import Base64Converter
   >>> provideAdapter(Base64Converter)
@@ -490,25 +490,25 @@ instance and base64 encoded data, which can be stored in a ASCII field::
   >>> from zope.component import getMultiAdapter
   >>> from z3c.form.interfaces import IDataConverter
 
-  >>> ascii_file_converter = getMultiAdapter(
-  ...     (IASCIIContent['file_field'], file_widget),
+  >>> bytes_file_converter = getMultiAdapter(
+  ...     (IBytesContent['file_field'], file_widget),
   ...     IDataConverter
   ... )
-  >>> ascii_image_converter = getMultiAdapter(
-  ...     (IASCIIContent['image_field'], image_widget),
+  >>> bytes_image_converter = getMultiAdapter(
+  ...     (IBytesContent['image_field'], image_widget),
   ...     IDataConverter
   ... )
 
 A value of None or '' results in the field's missing_value being returned::
 
-  >>> ascii_file_converter.toFieldValue(u'') is IASCIIContent['file_field'].missing_value
+  >>> bytes_file_converter.toFieldValue(u'') is IBytesContent['file_field'].missing_value
   True
-  >>> ascii_file_converter.toFieldValue(None) is IASCIIContent['file_field'].missing_value
+  >>> bytes_file_converter.toFieldValue(None) is IBytesContent['file_field'].missing_value
   True
 
-  >>> ascii_image_converter.toFieldValue(u'') is IASCIIContent['image_field'].missing_value
+  >>> bytes_image_converter.toFieldValue(u'') is IBytesContent['image_field'].missing_value
   True
-  >>> ascii_image_converter.toFieldValue(None) is IASCIIContent['image_field'].missing_value
+  >>> bytes_image_converter.toFieldValue(None) is IBytesContent['image_field'].missing_value
   True
 
 A named file/image instance is returned as Base 64 encoded string in the
@@ -518,17 +518,17 @@ following form::
 
 Like so::
 
-  >>> ascii_file_converter.toFieldValue(
+  >>> bytes_file_converter.toFieldValue(
   ...     NamedFile(data=b'testfile', filename=u'test.txt'))
   b'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU='
-  >>> ascii_image_converter.toFieldValue(
+  >>> bytes_image_converter.toFieldValue(
   ...     NamedImage(data=b'testimage', filename=u'test.png'))
   b'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl'
 
 A Base 64 encoded structure like descibed above is converted to the appropriate
 type::
 
-  >>> afile = ascii_file_converter.toWidgetValue(
+  >>> afile = bytes_file_converter.toWidgetValue(
   ...     b'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU=')
   >>> afile
   <plone.namedfile.file.NamedFile object at ...>
@@ -537,7 +537,7 @@ type::
   >>> afile.filename
   'test.txt'
 
-  >>> aimage = ascii_image_converter.toWidgetValue(
+  >>> aimage = bytes_image_converter.toWidgetValue(
   ...     b'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl')
   >>> aimage
   <plone.namedfile.file.NamedImage object at ...>
@@ -556,7 +556,7 @@ filename too::
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
   >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('utf8'),
   ...     headers={'Content-Type': 'text/x-dummy'})
-  >>> ascii_file_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> bytes_file_converter.toFieldValue(FileUpload(aFieldStorage))
   b'filenameb64:cmFuZMO4bS50eHQ=;datab64:RmlsZSB1cGxvYWQgY29udGVudHMu'
 
 A zero-length, unnamed FileUpload results in the field's missing_value
@@ -564,23 +564,23 @@ being returned::
 
   >>> myfile = six.BytesIO(b'')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='', headers={'Content-Type': 'application/octet-stream'})
-  >>> field_value = ascii_file_converter.toFieldValue(FileUpload(aFieldStorage))
-  >>> field_value is IASCIIContent['file_field'].missing_value
+  >>> field_value = bytes_file_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> field_value is IBytesContent['file_field'].missing_value
   True
-  >>> field_value = ascii_image_converter.toFieldValue(FileUpload(aFieldStorage))
-  >>> field_value is IASCIIContent['image_field'].missing_value
+  >>> field_value = bytes_image_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> field_value is IBytesContent['image_field'].missing_value
   True
 
 
-Rendering ASCII field widgets
+Rendering Bytes field widgets
 -----------------------------
 
 The widgets let the user to upload file and image data and select, if previous data should be kept, deleted or overwritten.
 
 First, let's do the setup::
 
-  >>> @implementer(IASCIIContent, IImageScaleTraversable, IAttributeAnnotatable)
-  ... class ASCIIContent(object):
+  >>> @implementer(IBytesContent, IImageScaleTraversable, IAttributeAnnotatable)
+  ... class BytesContent(object):
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
@@ -594,7 +594,7 @@ First, let's do the setup::
   ...     def Title(self):
   ...         return 'A content item'
 
-  >>> content = ASCIIContent(None, None)
+  >>> content = BytesContent(None, None)
 
   >>> from z3c.form.datamanager import AttributeField
   >>> from zope.component import provideAdapter
@@ -609,7 +609,7 @@ First, let's do the setup::
   ...     else:
   ...         widget = NamedFileFieldWidget
   ...     widget = widget(
-  ...         IASCIIContent['{0}_field'.format(widget_type)],
+  ...         IBytesContent['{0}_field'.format(widget_type)],
   ...         make_request()
   ...     )
   ...     widget.context = context
@@ -617,7 +617,7 @@ First, let's do the setup::
   ...     widget.name = 'widget.name.{0}'.format(widget_type)
   ...
   ...     if set_widget_value:
-  ...         converter = globals()['ascii_{0}_converter'.format(widget_type)]
+  ...         converter = globals()['bytes_{0}_converter'.format(widget_type)]
   ...         value = getattr(context, '{0}_field'.format(widget_type))
   ...         widget.value = converter.toWidgetValue(value)
   ...
@@ -631,13 +631,13 @@ Our content has no value yet::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <span id="widget.id.file" class="named-file-widget required ascii-field">
+  <span id="widget.id.file" class="named-file-widget required bytes-field">
       <input type="file" id="widget.id.file-input" name="widget.name.file" />
   </span>
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <span id="widget.id.image" class="named-image-widget required ascii-field">
+  <span id="widget.id.image" class="named-image-widget required bytes-field">
       <input type="file" id="widget.id.image-input" name="widget.name.image" />
   </span>
 
@@ -654,7 +654,7 @@ Let's upload data::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.file_field
   b'filenameb64:ZmlsZTEudHh0;datab64:ZmlsZSAxIGNvbnRlbnQu'
 
@@ -672,11 +672,11 @@ Check that we have a good image that PIL can handle:
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> content.image_field = ascii_image_converter.toFieldValue(uploaded)
+  >>> content.image_field = bytes_image_converter.toFieldValue(uploaded)
   >>> content.image_field
   b'filenameb64:aW1hZ2UuanBn;datab64:/9j/4AAQSkZJRgABAQEAYABgAAD/...
 
-Note that PIL cannot open this ascii image, so we cannot scale it::
+Note that PIL cannot open this bytes image, so we cannot scale it::
 
   >>> PIL.Image.open(six.BytesIO(content.image_field))
   Traceback (most recent call last):
@@ -693,7 +693,7 @@ The upload shows up in the rendered widget::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required ascii-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/file1.txt" >file1.txt</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
@@ -701,13 +701,13 @@ The upload shows up in the rendered widget::
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required ascii-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/image.jpg" >image.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
 
-Like we said, we cannot scale this ascii image, so the thumb tag is empty::
+Like we said, we cannot scale this bytes image, so the thumb tag is empty::
 
   >>> print(image_widget.thumb_tag)
 
@@ -729,7 +729,7 @@ Now overwrite with other data::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.file_field
   b'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
 
@@ -744,7 +744,7 @@ Now overwrite with other data::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.image_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.image_field
   b'filenameb64:bG9nby50aWZm;datab64:bm8gaW1hZ2U='
 
@@ -759,7 +759,7 @@ The new image/file shows up in the rendered widget::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required ascii-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
@@ -767,7 +767,7 @@ The new image/file shows up in the rendered widget::
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required ascii-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
@@ -789,7 +789,7 @@ Resubmit, but keep the data::
   >>> uploaded
   <plone.namedfile.file.NamedFile object at ...>
 
-  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.file_field
   b'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
 
@@ -800,7 +800,7 @@ Resubmit, but keep the data::
   >>> uploaded
   <plone.namedfile.file.NamedFile object at ...>
 
-  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.image_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.image_field
   b'filenameb64:bG9nby50aWZm;datab64:bm8gaW1hZ2U='
 
@@ -815,7 +815,7 @@ The previous image/file should be kept::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required ascii-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
@@ -823,19 +823,19 @@ The previous image/file should be kept::
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required ascii-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
 
 
-The Download view on ASCII fields
+The Download view on Bytes fields
 ---------------------------------
 ::
 
-  >>> @implementer(IASCIIContent)
-  ... class ASCIIContent(object):
+  >>> @implementer(IBytesContent)
+  ... class BytesContent(object):
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
@@ -844,27 +844,27 @@ The Download view on ASCII fields
   ...     def absolute_url(self):
   ...         return root_url + self.path
 
-  >>> content = ASCIIContent(
+  >>> content = BytesContent(
   ...     NamedFile(data=b"testfile", filename=u"test.txt"),
   ...     NamedImage(data=b"testimage", filename=u"test.jpg"))
 
   >>> from z3c.form.widget import FieldWidget
 
-  >>> ascii_file_widget = FieldWidget(IASCIIContent['file_field'], NamedFileWidget(make_request()))
-  >>> ascii_file_widget.context = content
+  >>> bytes_file_widget = FieldWidget(IBytesContent['file_field'], NamedFileWidget(make_request()))
+  >>> bytes_file_widget.context = content
 
-  >>> ascii_image_widget = FieldWidget(IASCIIContent['image_field'], NamedImageWidget(make_request()))
-  >>> ascii_image_widget.context = content
+  >>> bytes_image_widget = FieldWidget(IBytesContent['image_field'], NamedImageWidget(make_request()))
+  >>> bytes_image_widget.context = content
 
   >>> request = make_request()
-  >>> view = Download(ascii_file_widget, request)
+  >>> view = Download(bytes_file_widget, request)
   >>> view()
   b'testfile'
 
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''test.txt"
 
-  >>> view = Download(ascii_image_widget, request)
+  >>> view = Download(bytes_image_widget, request)
   >>> view()
   b'testimage'
 

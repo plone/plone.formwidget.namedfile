@@ -32,7 +32,7 @@ from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
-from zope.schema.interfaces import IASCII
+from zope.schema.interfaces import IBytes
 from zope.size import byteDisplay
 from ZPublisher.HTTPRequest import FileUpload
 
@@ -48,7 +48,7 @@ def _make_namedfile(value, field, widget):
     """Return a NamedImage or NamedFile instance, if it isn't already one -
     e.g. when it's base64 encoded data.
     """
-    if isinstance(value, six.string_types) and IASCII.providedBy(field):
+    if isinstance(value, six.binary_type) and IBytes.providedBy(field):
         filename, data = b64decode_file(value)
         if INamedImageWidget.providedBy(widget):
             value = NamedImage(data=data, filename=filename)
