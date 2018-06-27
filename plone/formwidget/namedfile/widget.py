@@ -87,8 +87,9 @@ class NamedFileWidget(Explicit, file.FileWidget):
     _file_upload_id = None
 
     @property
-    def is_upload(self):
-        return utils.is_file_upload(self.value)
+    def is_uploaded(self):
+        return utils.is_file_upload(self.value)\
+            or INamed.providedBy(self.value)
 
     @property
     def file_upload_id(self):
@@ -102,7 +103,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return self._file_upload_id
 
         upload_id = None
-        if self.is_upload or INamed.providedBy(self.value):
+        if self.is_uploaded:
             data = None
             if INamed.providedBy(self.value):
                 # previously uploaded and failed
@@ -229,8 +230,10 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     def action(self):
         action = self.request.get("%s.action" % self.name, "nochange")
-        if hasattr(self.form, 'successMessage')\
-                and self.form.status == self.form.successMessage:
+        if self.is_uploaded or (
+            hasattr(self.form, 'successMessage')
+            and self.form.status == self.form.successMessage
+        ):
             # if form action completed successfully, we want nochange
             action = 'nochange'
         return action
