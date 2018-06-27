@@ -84,6 +84,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     klass = u'named-file-widget'
     value = None  # don't default to a string
+    _file_upload_id = None
 
     @property
     def is_upload(self):
@@ -95,17 +96,31 @@ class NamedFileWidget(Explicit, file.FileWidget):
         In case of form validation errors the already uploaded image can then
         be reused.
         """
-        if self.is_upload:
-            self.value.seek(0)
+        if self._file_upload_id:
+            # cache this property for multiple calls within one request.
+            # This avoids storing a file upload multiple times.
+            return self._file_upload_id
+
+        upload_id = None
+        if self.is_upload or INamed.providedBy(self.value):
+            data = None
+            if INamed.providedBy(self.value):
+                # previously uploaded and failed
+                data = self.value.data
+            else:
+                self.value.seek(0)
+                data = self.value.read()
+
             upload_id = uuid.uuid4().int  # type long
             upload_map = IFileUploadMap(getSite()).upload_map
             upload_map[upload_id] = {
                 'filename': self.value.filename,
-                'data': self.value.read(),
+                'data': data,
                 'dt': datetime.now(),
             }
-            return upload_id
-        return None
+
+        self._file_upload_id = upload_id
+        return upload_id
 
     @property
     def allow_nochange(self):
@@ -115,9 +130,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     @property
     def filename(self):
-        if self.field is not None and self.value == self.field.missing_value:
-            return None
-        elif INamed.providedBy(self.value):
+        if INamed.providedBy(self.value):
             return self.value.filename
         elif utils.is_file_upload(self.value):
             return safe_basename(self.value.filename)
@@ -268,7 +281,6 @@ class NamedFileWidget(Explicit, file.FileWidget):
                         'filename': filename,
                     }
                     ret = _make_namedfile(value, self.field, self)
-
                     return ret
 
             if self.ignoreContext:

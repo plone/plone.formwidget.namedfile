@@ -28,11 +28,13 @@
                 allow_nochange view/allow_nochange;
                 doc_type view/file_content_type;
                 icon view/file_icon;">
-    <input tal:define="up_id view/file_upload_id" tal:condition="up_id" type="hidden" name="${view/name}.file_upload_id" value="${up_id}"/>
-    <span tal:condition="view/is_upload">
-      <tal:i18n i18n:translate="image_already_uploaded">Image already uploaded:</tal:i18n>
-      ${view/value/filename}
-    </span>
+    <tal:if tal:define="up_id view/file_upload_id" tal:condition="up_id">
+      <input type="hidden" name="${view/name}.file_upload_id" value="${up_id}"/>
+      <span>
+        <tal:i18n i18n:translate="image_already_uploaded">Image already uploaded:</tal:i18n>
+        ${view/value/filename}
+      </span>
+    </tal:if>
     <span tal:condition="python:exists and download_url and action=='nochange'">
       <a tal:attributes="href download_url">
           <img tal:replace="structure view/thumb_tag"/>
