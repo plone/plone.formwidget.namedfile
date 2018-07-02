@@ -2,7 +2,8 @@
 from BTrees.OOBTree import OOBTree
 from datetime import datetime
 from datetime import timedelta
-from plone.formwidget.namedfile.interfaces import IFileUploadMap
+from persistent.dict import PersistentDict
+from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
 from random import randint
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
@@ -22,9 +23,9 @@ def is_file_upload(item):
     return isinstance(item, FileUpload)
 
 
-@implementer(IFileUploadMap)
+@implementer(IFileUploadTemporaryStorage)
 @adapter(Interface)
-class FileUploadMap(object):
+class FileUploadTemporaryStorage(object):
     """Temporary storage adapter for file uploads.
     To be used to not need to re-upload files after form submission errors.
     """
@@ -35,9 +36,13 @@ class FileUploadMap(object):
     @property
     def upload_map(self):
         annotations = IAnnotations(self.context)
-        # file_upload_id is of type long, therefore we need a OOBTree
-        upload_map = annotations.get(FILE_UPLOAD_MAP_KEY, OOBTree())
+        upload_map = annotations.setdefault(FILE_UPLOAD_MAP_KEY, OOBTree())
+        return upload_map
 
+    def cleanup(self):
+        """Remove obsolete temporary uploads.
+        """
+        upload_map = self.upload_map
         for key, val in upload_map.items():
             if val.get('dt', FALLBACK_DATE) < (
                 datetime.now() - timedelta(
@@ -46,4 +51,3 @@ class FileUploadMap(object):
             ) and randint(0, 5) == 0:  # Avoid conflict errors by deleting only every fifth time  # noqa
                 # Delete expired files or files without timestamp
                 del upload_map[key]
-        return upload_map

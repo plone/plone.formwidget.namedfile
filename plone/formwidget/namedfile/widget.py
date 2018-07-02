@@ -4,7 +4,7 @@ from Acquisition import Explicit
 from datetime import datetime
 from plone.formwidget.namedfile import utils
 from plone.formwidget.namedfile.converter import b64decode_file
-from plone.formwidget.namedfile.interfaces import IFileUploadMap
+from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
 from plone.namedfile.file import NamedBlobFile
@@ -41,7 +41,7 @@ from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from zope.schema.interfaces import IASCII
 from zope.size import byteDisplay
-
+from persistent.dict import PersistentDict
 import six
 import uuid
 
@@ -61,7 +61,7 @@ def _make_namedfile(value, field, widget):
 
     if isinstance(value, six.string_types) and IASCII.providedBy(field):
         filename, data = b64decode_file(value)
-    elif isinstance(value, dict):
+    elif isinstance(value, dict) or isinstance(value, PersistentDict):
         filename = value['filename']
         data = value['data']
 
@@ -112,13 +112,14 @@ class NamedFileWidget(Explicit, file.FileWidget):
                 self.value.seek(0)
                 data = self.value.read()
 
-            upload_id = uuid.uuid4().int  # type long
-            upload_map = IFileUploadMap(getSite()).upload_map
-            upload_map[upload_id] = {
-                'filename': self.value.filename,
-                'data': data,
-                'dt': datetime.now(),
-            }
+            upload_id = uuid.uuid4().hex
+            up = IFileUploadTemporaryStorage(getSite())
+            up.cleanup()
+            up.upload_map[upload_id] = PersistentDict(
+                filename=self.value.filename,
+                data=data,
+                dt=datetime.now(),
+            )
 
         self._file_upload_id = upload_id
         return upload_id
@@ -260,15 +261,12 @@ class NamedFileWidget(Explicit, file.FileWidget):
             file_upload_id = self.request.get(
                 "%s.file_upload_id" % self.name
             ) or 0
-            try:
-                file_upload_id = int(file_upload_id)
-            except ValueError:
-                file_upload_id = None
             if file_upload_id:
-                upload_map = IFileUploadMap(getSite()).upload_map
+                upload_map = IFileUploadTemporaryStorage(getSite()).upload_map
                 fileinfo = upload_map.get(file_upload_id, {})
                 filename = fileinfo.get('filename')
                 data = fileinfo.get('data')
+
                 if filename or data:
                     filename = safe_basename(filename)
                     if (
