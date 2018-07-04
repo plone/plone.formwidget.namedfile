@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from z3c.form.interfaces import IFileWidget
 from zope import schema
+from zope.interface import Attribute
+from zope.interface import Interface
 
 
 class INamedFileWidget(IFileWidget):
@@ -27,3 +29,17 @@ class INamedImageWidget(INamedFileWidget):
     height = schema.Int(title=u"Image height", min=0, required=False)
     thumb_tag = schema.Text(title=u"Thumbnail image tag", required=False)
     alt = schema.TextLine(title=u"Image alternative text", required=False)
+
+
+class IFileUploadTemporaryStorage(Interface):
+    """Temporary storage adapter for file uploads.
+    To be used to not need to re-upload files after form submission errors.
+    """
+    upload_map = Attribute("""
+        Mapping for temporary uploads.
+        Key is a uuid4.hex value.
+        The default storage is the annotation storage of the poral root.
+    """)
+
+    def cleanup():
+        """Removes stale temporary uploads from the upload storage"""
