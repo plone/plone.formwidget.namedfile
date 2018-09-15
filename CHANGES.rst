@@ -14,8 +14,8 @@ New features:
 
 Bug fixes:
 
-- Prepare for Python 2 / 3 compatibility
-  [ale-rt, pbauer]
+- Python 2 / 3 compatibility
+  [ale-rt, pbauer, davisagli]
 
 
 2.0.5 (2017-11-26)
