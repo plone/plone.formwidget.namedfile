@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import doctest
-import unittest
 from plone.formwidget.namedfile.testing import INTEGRATION_TESTING
 from plone.testing import layered
+
+import doctest
 import re
 import six
+import unittest
 
 
 class Py23DocChecker(doctest.OutputChecker):
@@ -12,9 +13,7 @@ class Py23DocChecker(doctest.OutputChecker):
         if six.PY2:
             got = re.sub('zope.publisher.interfaces.NotFound', 'NotFound', got)
             got = re.sub("u'(.*?)'", "'\\1'", want)
-            want = re.sub("b'(.*?)'", "'\\1'", want)
         return doctest.OutputChecker.check_output(self, want, got, optionflags)
-
 
 
 def test_suite():
