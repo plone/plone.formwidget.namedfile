@@ -4,18 +4,11 @@ Changelog
 2.0.6 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Prepare for Python 2 / 3 compatibility
   [ale-rt, pbauer]
+
 - On form validation errors after submitting, keep the already uploaded image.
   [thet]
 
