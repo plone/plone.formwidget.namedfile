@@ -22,7 +22,7 @@ setup(
     keywords='plone image widget z3c.form',
     author='Martin Aspeli',
     author_email='optilude@gmail.com',
-    url='https://pypi.python.org/pypi/plone.formwidget.namedfile',
+    url='https://pypi.org/project/plone.formwidget.namedfile',
     license='GPL',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['plone', 'plone.formwidget'],
