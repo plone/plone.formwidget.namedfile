@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '2.0.6.dev0'
+version = '2.0.7.dev0'
 
 setup(
     name='plone.formwidget.namedfile',
@@ -14,6 +14,7 @@ setup(
     classifiers=[
         "Framework :: Plone",
         "Framework :: Plone :: 5.1",
+        "Framework :: Plone :: 5.2",
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
@@ -22,9 +23,9 @@ setup(
     keywords='plone image widget z3c.form',
     author='Martin Aspeli',
     author_email='optilude@gmail.com',
-    url='https://pypi.python.org/pypi/plone.formwidget.namedfile',
+    url='https://pypi.org/project/plone.formwidget.namedfile',
     license='GPL',
-    packages=find_packages(exclude=['ez_setup']),
+    packages=find_packages(),
     namespace_packages=['plone', 'plone.formwidget'],
     include_package_data=True,
     zip_safe=False,

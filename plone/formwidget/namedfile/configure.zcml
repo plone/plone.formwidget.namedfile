@@ -12,6 +12,7 @@
   <adapter factory=".converter.NamedDataConverter" />
   <adapter factory=".converter.Base64Converter" />
   <adapter factory=".validator.NamedFileWidgetValidator" />
+  <adapter factory=".utils.FileUploadTemporaryStorage" />
 
   <class class=".widget.NamedFileWidget">
     <require

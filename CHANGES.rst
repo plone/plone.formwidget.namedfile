@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.6 (unreleased)
+2.0.7 (unreleased)
 ------------------
 
 Breaking changes:
@@ -16,6 +16,18 @@ Bug fixes:
 
 - Python 2 / 3 compatibility
   [ale-rt, pbauer, davisagli]
+
+
+2.0.6 (2018-09-26)
+------------------
+
+Bug fixes:
+
+- Prepare for Python 2 / 3 compatibility
+  [ale-rt, pbauer]
+
+- On form validation errors after submitting, keep the already uploaded image.
+  [thet]
 
 
 2.0.5 (2017-11-26)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from plone.formwidget.namedfile import utils
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
 from plone.namedfile.file import NamedFile
@@ -30,7 +31,8 @@ class NamedDataConverter(BaseDataConverter):
 
         if INamed.providedBy(value):
             return value
-        elif isinstance(value, FileUpload):
+
+        elif utils.is_file_upload(value):
 
             filename = safe_basename(value.filename)
 
@@ -108,7 +110,7 @@ class Base64Converter(BaseDataConverter):
             filename = value.filename
             data = value.data
 
-        elif isinstance(value, FileUpload):
+        elif utils.is_file_upload(value):
             filename = safe_basename(value.filename)
             value.seek(0)
             data = value.read()

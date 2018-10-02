@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_inner
 from Acquisition import Explicit
+from datetime import datetime
+from plone.formwidget.namedfile import utils
 from plone.formwidget.namedfile.converter import b64decode_file
+from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
+from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.file import NamedBlobImage
 from plone.namedfile.file import NamedFile
 from plone.namedfile.file import NamedImage
 from plone.namedfile.interfaces import INamed
+from plone.namedfile.interfaces import INamedBlobFileField
+from plone.namedfile.interfaces import INamedBlobImageField
 from plone.namedfile.interfaces import INamedFileField
 from plone.namedfile.interfaces import INamedImage
 from plone.namedfile.interfaces import INamedImageField
@@ -34,9 +41,10 @@ from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from zope.schema.interfaces import IBytes
 from zope.size import byteDisplay
-from ZPublisher.HTTPRequest import FileUpload
-
+from persistent.dict import PersistentDict
 import six
+import uuid
+
 
 try:
     from os import SEEK_END
@@ -48,12 +56,25 @@ def _make_namedfile(value, field, widget):
     """Return a NamedImage or NamedFile instance, if it isn't already one -
     e.g. when it's base64 encoded data.
     """
-    if isinstance(value, six.binary_type) and IBytes.providedBy(field):
+
+    if INamed.providedBy(value):
+        return value
+
+    if isinstance(value, six.string_types) and IASCII.providedBy(field):
         filename, data = b64decode_file(value)
-        if INamedImageWidget.providedBy(widget):
-            value = NamedImage(data=data, filename=filename)
-        else:
-            value = NamedFile(data=data, filename=filename)
+    elif isinstance(value, dict) or isinstance(value, PersistentDict):
+        filename = value['filename']
+        data = value['data']
+
+    if INamedBlobImageField.providedBy(field):
+        value = NamedBlobImage(data=data, filename=filename)
+    elif INamedImageField.providedBy(field):
+        value = NamedImage(data=data, filename=filename)
+    elif INamedBlobFileField.providedBy(field):
+        value = NamedBlobFile(data=data, filename=filename)
+    else:
+        value = NamedFile(data=data, filename=filename)
+
     return value
 
 
@@ -64,6 +85,45 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     klass = u'named-file-widget'
     value = None  # don't default to a string
+    _file_upload_id = None
+
+    @property
+    def is_uploaded(self):
+        return utils.is_file_upload(self.value)\
+            or INamed.providedBy(self.value)
+
+    @property
+    def file_upload_id(self):
+        """Temporary store the uploaded file contents with a file_upload_id key.
+        In case of form validation errors the already uploaded image can then
+        be reused.
+        """
+        if self._file_upload_id:
+            # cache this property for multiple calls within one request.
+            # This avoids storing a file upload multiple times.
+            return self._file_upload_id
+
+        upload_id = None
+        if self.is_uploaded:
+            data = None
+            if INamed.providedBy(self.value):
+                # previously uploaded and failed
+                data = self.value.data
+            else:
+                self.value.seek(0)
+                data = self.value.read()
+
+            upload_id = uuid.uuid4().hex
+            up = IFileUploadTemporaryStorage(getSite())
+            up.cleanup()
+            up.upload_map[upload_id] = PersistentDict(
+                filename=self.value.filename,
+                data=data,
+                dt=datetime.now(),
+            )
+
+        self._file_upload_id = upload_id
+        return upload_id
 
     @property
     def allow_nochange(self):
@@ -73,11 +133,9 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     @property
     def filename(self):
-        if self.field is not None and self.value == self.field.missing_value:
-            return None
-        elif INamed.providedBy(self.value):
+        if INamed.providedBy(self.value):
             return self.value.filename
-        elif isinstance(self.value, FileUpload):
+        elif utils.is_file_upload(self.value):
             return safe_basename(self.value.filename)
         else:
             return None
@@ -174,16 +232,20 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     def action(self):
         action = self.request.get("%s.action" % self.name, "nochange")
-        if hasattr(self.form, 'successMessage')\
-                and self.form.status == self.form.successMessage:
+        if self.is_uploaded or (
+            hasattr(self.form, 'successMessage')
+            and self.form.status == self.form.successMessage
+        ):
             # if form action completed successfully, we want nochange
             action = 'nochange'
         return action
 
     def extract(self, default=NOVALUE):
+        url = self.request.getURL()
         action = self.request.get("%s.action" % self.name, None)
-        if self.request.get(
-                'PATH_INFO', '').endswith('kss_z3cform_inline_validation'):
+        if url.endswith('kss_z3cform_inline_validation')\
+                or url.endswith('z3cform_validate_field'):
+            # Ignore validation requests.
             action = 'nochange'
 
         if action == 'remove':
@@ -191,6 +253,38 @@ class NamedFileWidget(Explicit, file.FileWidget):
         elif action == 'nochange':
             if self.value is not None:
                 return self.value
+
+            if url.endswith('z3cform_validate_field'):
+                # Ignore validation requests.
+                return None
+
+            # Handle already uploaded files in case of previous form errors
+            file_upload_id = self.request.get(
+                "%s.file_upload_id" % self.name
+            ) or 0
+            if file_upload_id:
+                upload_map = IFileUploadTemporaryStorage(getSite()).upload_map
+                fileinfo = upload_map.get(file_upload_id, {})
+                filename = fileinfo.get('filename')
+                data = fileinfo.get('data')
+
+                if filename or data:
+                    filename = safe_basename(filename)
+                    if (
+                            filename is not None
+                            and not isinstance(filename, unicode)
+                    ):
+                        # work-around for
+                        # https://bugs.launchpad.net/zope2/+bug/499696
+                        filename = filename.decode('utf-8')
+                    del upload_map[file_upload_id]
+                    value = {
+                        'data': data,
+                        'filename': filename,
+                    }
+                    ret = _make_namedfile(value, self.field, self)
+                    return ret
+
             if self.ignoreContext:
                 return default
             dm = getMultiAdapter((self.context, self.field,), IDataManager)
@@ -201,7 +295,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
         # empty unnamed FileUploads should not count as a value
         value = super(NamedFileWidget, self).extract(default)
-        if isinstance(value, FileUpload):
+        if utils.is_file_upload(value):
             value.seek(0, SEEK_END)
             empty = value.tell() == 0
             value.seek(0)
