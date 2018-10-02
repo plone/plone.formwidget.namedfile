@@ -60,7 +60,8 @@ def _make_namedfile(value, field, widget):
     if INamed.providedBy(value):
         return value
 
-    if isinstance(value, six.string_types) and IASCII.providedBy(field):
+    string_types = (six.binary_type, six.text_type)
+    if isinstance(value, string_types) and IBytes.providedBy(field):
         filename, data = b64decode_file(value)
     elif isinstance(value, dict) or isinstance(value, PersistentDict):
         filename = value['filename']
