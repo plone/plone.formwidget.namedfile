@@ -272,7 +272,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
                     filename = safe_basename(filename)
                     if (
                             filename is not None
-                            and not isinstance(filename, unicode)
+                            and not isinstance(filename, six.text_type)
                     ):
                         # work-around for
                         # https://bugs.launchpad.net/zope2/+bug/499696
