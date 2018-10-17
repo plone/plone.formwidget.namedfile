@@ -9,7 +9,7 @@ from plone.namedfile.interfaces import INamedField
 from plone.namedfile.utils import safe_basename
 from z3c.form.converter import BaseDataConverter
 from zope.component import adapts
-from zope.schema.interfaces import IASCII
+from zope.schema.interfaces import IBytes
 from ZPublisher.HTTPRequest import FileUpload
 
 import base64
@@ -36,8 +36,7 @@ class NamedDataConverter(BaseDataConverter):
 
             filename = safe_basename(value.filename)
 
-            if filename is not None and not isinstance(
-                    filename, six.text_type):
+            if filename is not None and isinstance(filename, six.binary_type):
                 # Work-around for
                 # https://bugs.launchpad.net/zope2/+bug/499696
                 filename = filename.decode('utf-8')
@@ -52,7 +51,7 @@ class NamedDataConverter(BaseDataConverter):
         else:
             if isinstance(value, six.text_type):
                 value = value.encode('utf-8')
-            return self.field._type(data=str(value))
+            return self.field._type(data=value)
 
 
 def b64encode_file(filename, data):
@@ -62,34 +61,36 @@ def b64encode_file(filename, data):
         filename = filename.encode('utf-8')
     filenameb64 = base64.standard_b64encode(filename or '')
     datab64 = base64.standard_b64encode(data)
-    filename = "filenameb64:%s;datab64:%s" % (
+    filename = b"filenameb64:%s;datab64:%s" % (
         filenameb64, datab64
     )
-    return filename.encode('ascii')
+    return filename
 
 
 def b64decode_file(value):
-    filename, data = value.split(';')
+    if isinstance(value, six.text_type):
+        value = value.encode('utf8')
+    filename, data = value.split(b';')
 
-    filename = filename.split(':')[1]
+    filename = filename.split(b':')[1]
     filename = base64.standard_b64decode(filename)
     filename = filename.decode('utf-8')
 
-    data = data.split(':')[1]
+    data = data.split(b':')[1]
     data = base64.standard_b64decode(data)
 
     return filename, data
 
 
 class Base64Converter(BaseDataConverter):
-    """Converts between ASCII fields with base64 encoded data and a filename
+    """Converts between Bytes fields with base64 encoded data and a filename
     and INamedImage/INamedFile values.
     """
-    adapts(IASCII, INamedFileWidget)
+    adapts(IBytes, INamedFileWidget)
 
     def toWidgetValue(self, value):
 
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, (six.text_type, six.binary_type)):
             return None
 
         filename, data = b64decode_file(value)

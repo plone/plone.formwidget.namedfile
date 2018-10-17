@@ -11,7 +11,7 @@ import unittest
 def get_file(filename):
     """Return contents of the file with the given name."""
     filename = os.path.join(os.path.dirname(__file__), filename)
-    return open(filename, 'r')
+    return open(filename, 'rb')
 
 
 class PloneFormwidgetNamedfileLayer(PloneSandboxLayer):

@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Python 2 / 3 compatibility
+  [ale-rt, pbauer, davisagli]
 
 
 2.0.6 (2018-09-26)

@@ -22,7 +22,7 @@ from plone.namedfile.utils import set_headers
 from plone.namedfile.utils import stream_data
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
-from Products.MimetypesRegistry.common import MimeTypeException
+from Products.MimetypesRegistry.interfaces import MimeTypeException
 from six.moves import urllib
 from z3c.form.browser import file
 from z3c.form.group import Group
@@ -39,7 +39,7 @@ from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
-from zope.schema.interfaces import IASCII
+from zope.schema.interfaces import IBytes
 from zope.size import byteDisplay
 from persistent.dict import PersistentDict
 import six
@@ -56,10 +56,12 @@ def _make_namedfile(value, field, widget):
     """Return a NamedImage or NamedFile instance, if it isn't already one -
     e.g. when it's base64 encoded data.
     """
+
     if INamed.providedBy(value):
         return value
 
-    if isinstance(value, six.string_types) and IASCII.providedBy(field):
+    string_types = (six.binary_type, six.text_type)
+    if isinstance(value, string_types) and IBytes.providedBy(field):
         filename, data = b64decode_file(value)
     elif isinstance(value, dict) or isinstance(value, PersistentDict):
         filename = value['filename']
@@ -271,7 +273,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
                     filename = safe_basename(filename)
                     if (
                             filename is not None
-                            and not isinstance(filename, unicode)
+                            and not isinstance(filename, six.text_type)
                     ):
                         # work-around for
                         # https://bugs.launchpad.net/zope2/+bug/499696
@@ -330,8 +332,10 @@ class NamedImageWidget(NamedFileWidget):
         """ Return a img tag with a url to the preview scale and the width and
             height of a thumbnail scale.
 
-            This way on high pixel density screens the image is displayed in screen pixels.
-            On non-high pixel density screens the browser will downsize them as used to.
+            This way on high pixel density screens the image is displayed in
+            screen pixels.
+            On non-high pixel density screens the browser will downsize them
+            as used to.
         """
         try:
             scales = getMultiAdapter(

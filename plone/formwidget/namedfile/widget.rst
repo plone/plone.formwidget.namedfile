@@ -86,18 +86,18 @@ Later, we will show more advanced functionality when using a field-widget::
 
 We can extract simple file data from the widget like this::
 
-  >>> import cStringIO
-  >>> myfile = cStringIO.StringIO('My file contents.')
+  >>> import six
+  >>> myfile = six.BytesIO(b'My file contents.')
 
   >>> file_widget.request = make_request(form={'widget.name.file': myfile})
   >>> file_widget.update()
   >>> file_widget.extract()
-  <cStringIO.StringI object at ...>
+  <...IO object at ...>
 
   >>> image_widget.request = make_request(form={'widget.name.image': myfile})
   >>> image_widget.update()
   >>> image_widget.extract()
-  <cStringIO.StringI object at ...>
+  <...IO object at ...>
 
 If nothing is found in the request, the default is returned::
 
@@ -113,7 +113,6 @@ If nothing is found in the request, the default is returned::
 
 We can also handle file-upload objects::
 
-  >>> import cStringIO
   >>> from ZPublisher.HTTPRequest import FileUpload
 
 Let's define a FieldStorage stub for easy use with the FileUpload::
@@ -127,7 +126,7 @@ Let's define a FieldStorage stub for easy use with the FileUpload::
 
 Now build a FileUpload::
 
-  >>> myfile = cStringIO.StringIO('File upload contents.')
+  >>> myfile = six.BytesIO(b'File upload contents.')
   >>> aFieldStorage = FieldStorageStub(myfile)
   >>> myUpload = FileUpload(aFieldStorage)
 
@@ -167,7 +166,7 @@ The rendering is unchanged::
 
 Empty, unnamed FileUploads are treated as having no value::
 
-  >>> emptyfile = cStringIO.StringIO('')
+  >>> emptyfile = six.BytesIO(b'')
   >>> aFieldStorage = FieldStorageStub(emptyfile, filename='')
   >>> myEmptyUpload = FileUpload(aFieldStorage)
 
@@ -193,7 +192,7 @@ For this to work, we need a context and a data manager::
 
   >>> from DateTime import DateTime
   >>> from plone.namedfile import field
-  >>> from zope.interface import implements, Interface
+  >>> from zope.interface import implementer, Interface
   >>> from plone.namedfile.interfaces import IImageScaleTraversable
   >>> from zope.annotation.interfaces import IAttributeAnnotatable
   >>> class IContent(Interface):
@@ -201,8 +200,8 @@ For this to work, we need a context and a data manager::
   ...     image_field = field.NamedImage(title=u"Image")
 
   >>> root_url = TestRequest().getURL()
-  >>> class Content(object):
-  ...     implements(IContent, IImageScaleTraversable, IAttributeAnnotatable)
+  >>> @implementer(IContent, IImageScaleTraversable, IAttributeAnnotatable)
+  ... class Content(object):
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
@@ -264,8 +263,8 @@ characters::
   >>> from plone.namedfile import NamedFile, NamedImage
   >>> from plone.formwidget.namedfile.testing import get_file
   >>> image_data = get_file('image.jpg').read()
-  >>> file_widget.value = NamedFile(data='My file data',
-  ...                               filename=unicode('data_深.txt', 'utf-8'))
+  >>> file_widget.value = NamedFile(data=b'My file data',
+  ...                               filename=u'data_深.txt')
   >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
   >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
@@ -291,7 +290,7 @@ Notice how there are radio buttons to decide whether to upload a new file or
 keep the existing one. If the '.action' field is not submitted or is
 empty, the behaviour is the same as before::
 
-  >>> myfile = cStringIO.StringIO('File upload contents.')
+  >>> myfile = six.BytesIO(b'File upload contents.')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='test2.txt')
   >>> myUpload = FileUpload(aFieldStorage)
 
@@ -333,7 +332,7 @@ If the widgets are rendered again, the newly uploaded files will be shown::
 However, if we provide the '.action' field, we get back the value currently
 stored in the field::
 
-  >>> content.file_field = NamedFile(data='My file data', filename=u'data.txt')
+  >>> content.file_field = NamedFile(data=b'My file data', filename=u'data.txt')
   >>> content.image_field = NamedImage(data=image_data, filename=u'faux.jpg')
 
   >>> file_widget.value = content.file_field
@@ -370,7 +369,7 @@ this view to display the image itself or link to the file::
   >>> request = make_request()
   >>> view = Download(file_widget, request)
   >>> view()
-  'My file data'
+  b'My file data'
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''data.txt"
 
@@ -381,7 +380,7 @@ doesn't stop it being found::
   >>> view = Download(file_widget, request)
   >>> view = view.publishTraverse(request, 'daisy.txt')
   >>> view()
-  'My file data'
+  b'My file data'
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''daisy.txt"
 
@@ -393,7 +392,7 @@ Any additional traversal will result in an error::
   >>> view = view.publishTraverse(request, 'daisy.txt')
   Traceback (most recent call last):
   ...
-  NotFound: ... 'daisy.txt'
+  zope.publisher.interfaces.NotFound: ... 'daisy.txt'
 
 
 The converter
@@ -436,7 +435,7 @@ A data string is converted to the appropriate type::
   >>> file_converter.toFieldValue('some file content')
   <plone.namedfile.file.NamedFile object at ...>
 
-  >>> image_converter.toFieldValue('random data')
+  >>> image_converter.toFieldValue(b'random data')
   <plone.namedfile.file.NamedImage object at ...>
 
 A FileUpload object is converted to the appropriate type, preserving filename,
@@ -445,15 +444,15 @@ The content type sent by the browser will be ignored because it's unreliable
 - it's left to the implementation of the file field to determine the proper
 content type::
 
-  >>> myfile = cStringIO.StringIO('File upload contents.')
+  >>> myfile = six.BytesIO(b'File upload contents.')
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='rand\xc3\xb8m.txt',
+  >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('utf8'),
   ...     headers={'Content-Type': 'text/x-dummy'})
   >>> file_obj = file_converter.toFieldValue(FileUpload(aFieldStorage))
   >>> file_obj.data
-  'File upload contents.'
-  >>> file_obj.filename
-  u'rand\xf8m.txt'
+  b'File upload contents.'
+  >>> print(file_obj.filename.encode('utf8'))
+  b'rand\xc3\xb8m.txt'
 
 Content type from headers sent by browser should be ignored::
 
@@ -465,7 +464,7 @@ Content type from headers sent by browser should be ignored::
   >>> image_obj.data == image_data
   True
   >>> image_obj.filename
-  u'random.png'
+  'random.png'
   >>> image_obj.contentType != 'image/x-dummy'
   True
 
@@ -473,7 +472,7 @@ Content type from headers sent by browser should be ignored::
 However, a zero-length, unnamed FileUpload results in the field's missing_value
 being returned::
 
-  >>> myfile = cStringIO.StringIO('')
+  >>> myfile = six.BytesIO(b'')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='', headers={'Content-Type': 'application/octet-stream'})
   >>> field_value = file_converter.toFieldValue(FileUpload(aFieldStorage))
   >>> field_value is IContent['file_field'].missing_value
@@ -483,17 +482,17 @@ being returned::
   True
 
 
-The Base64Converter for ASCII fields
+The Base64Converter for Bytes fields
 ------------------------------------
 
 There is another converter, which converts between a NamedFile or file upload
-instance and base64 encoded data, which can be stored in a ASCII field::
+instance and base64 encoded data, which can be stored in a Bytes field::
 
   >>> from zope import schema
-  >>> from zope.interface import implements, Interface
-  >>> class IASCIIContent(Interface):
-  ...     file_field = schema.ASCII(title=u"File")
-  ...     image_field = schema.ASCII(title=u"Image")
+  >>> from zope.interface import implementer, Interface
+  >>> class IBytesContent(Interface):
+  ...     file_field = schema.Bytes(title=u"File")
+  ...     image_field = schema.Bytes(title=u"Image")
 
   >>> from plone.formwidget.namedfile.converter import Base64Converter
   >>> provideAdapter(Base64Converter)
@@ -501,25 +500,25 @@ instance and base64 encoded data, which can be stored in a ASCII field::
   >>> from zope.component import getMultiAdapter
   >>> from z3c.form.interfaces import IDataConverter
 
-  >>> ascii_file_converter = getMultiAdapter(
-  ...     (IASCIIContent['file_field'], file_widget),
+  >>> bytes_file_converter = getMultiAdapter(
+  ...     (IBytesContent['file_field'], file_widget),
   ...     IDataConverter
   ... )
-  >>> ascii_image_converter = getMultiAdapter(
-  ...     (IASCIIContent['image_field'], image_widget),
+  >>> bytes_image_converter = getMultiAdapter(
+  ...     (IBytesContent['image_field'], image_widget),
   ...     IDataConverter
   ... )
 
 A value of None or '' results in the field's missing_value being returned::
 
-  >>> ascii_file_converter.toFieldValue(u'') is IASCIIContent['file_field'].missing_value
+  >>> bytes_file_converter.toFieldValue(u'') is IBytesContent['file_field'].missing_value
   True
-  >>> ascii_file_converter.toFieldValue(None) is IASCIIContent['file_field'].missing_value
+  >>> bytes_file_converter.toFieldValue(None) is IBytesContent['file_field'].missing_value
   True
 
-  >>> ascii_image_converter.toFieldValue(u'') is IASCIIContent['image_field'].missing_value
+  >>> bytes_image_converter.toFieldValue(u'') is IBytesContent['image_field'].missing_value
   True
-  >>> ascii_image_converter.toFieldValue(None) is IASCIIContent['image_field'].missing_value
+  >>> bytes_image_converter.toFieldValue(None) is IBytesContent['image_field'].missing_value
   True
 
 A named file/image instance is returned as Base 64 encoded string in the
@@ -529,33 +528,33 @@ following form::
 
 Like so::
 
-  >>> ascii_file_converter.toFieldValue(
-  ...     NamedFile(data='testfile', filename=u'test.txt'))
-  'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU='
-  >>> ascii_image_converter.toFieldValue(
-  ...     NamedImage(data='testimage', filename=u'test.png'))
-  'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl'
+  >>> bytes_file_converter.toFieldValue(
+  ...     NamedFile(data=b'testfile', filename=u'test.txt'))
+  b'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU='
+  >>> bytes_image_converter.toFieldValue(
+  ...     NamedImage(data=b'testimage', filename=u'test.png'))
+  b'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl'
 
 A Base 64 encoded structure like descibed above is converted to the appropriate
 type::
 
-  >>> afile = ascii_file_converter.toWidgetValue(
-  ...     'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU=')
+  >>> afile = bytes_file_converter.toWidgetValue(
+  ...     b'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU=')
   >>> afile
   <plone.namedfile.file.NamedFile object at ...>
   >>> afile.data
-  'testfile'
+  b'testfile'
   >>> afile.filename
-  u'test.txt'
+  'test.txt'
 
-  >>> aimage = ascii_image_converter.toWidgetValue(
-  ...     'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl')
+  >>> aimage = bytes_image_converter.toWidgetValue(
+  ...     b'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl')
   >>> aimage
   <plone.namedfile.file.NamedImage object at ...>
   >>> aimage.data
-  'testimage'
+  b'testimage'
   >>> aimage.filename
-  u'test.png'
+  'test.png'
 
 Finally, some tests with image uploads converted to the field value.
 
@@ -563,35 +562,35 @@ Convert a file upload to the Base 64 encoded field value and handle the
 filename too::
 
 
-  >>> myfile = cStringIO.StringIO('File upload contents.')
+  >>> myfile = six.BytesIO(b'File upload contents.')
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
-  >>> aFieldStorage = FieldStorageStub(myfile, filename='rand\xc3\xb8m.txt',
+  >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('utf8'),
   ...     headers={'Content-Type': 'text/x-dummy'})
-  >>> ascii_file_converter.toFieldValue(FileUpload(aFieldStorage))
-  'filenameb64:cmFuZMO4bS50eHQ=;datab64:RmlsZSB1cGxvYWQgY29udGVudHMu'
+  >>> bytes_file_converter.toFieldValue(FileUpload(aFieldStorage))
+  b'filenameb64:cmFuZMO4bS50eHQ=;datab64:RmlsZSB1cGxvYWQgY29udGVudHMu'
 
 A zero-length, unnamed FileUpload results in the field's missing_value
 being returned::
 
-  >>> myfile = cStringIO.StringIO('')
+  >>> myfile = six.BytesIO(b'')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='', headers={'Content-Type': 'application/octet-stream'})
-  >>> field_value = ascii_file_converter.toFieldValue(FileUpload(aFieldStorage))
-  >>> field_value is IASCIIContent['file_field'].missing_value
+  >>> field_value = bytes_file_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> field_value is IBytesContent['file_field'].missing_value
   True
-  >>> field_value = ascii_image_converter.toFieldValue(FileUpload(aFieldStorage))
-  >>> field_value is IASCIIContent['image_field'].missing_value
+  >>> field_value = bytes_image_converter.toFieldValue(FileUpload(aFieldStorage))
+  >>> field_value is IBytesContent['image_field'].missing_value
   True
 
 
-Rendering ASCII field widgets
+Rendering Bytes field widgets
 -----------------------------
 
 The widgets let the user to upload file and image data and select, if previous data should be kept, deleted or overwritten.
 
 First, let's do the setup::
 
-  >>> class ASCIIContent(object):
-  ...     implements(IASCIIContent, IImageScaleTraversable, IAttributeAnnotatable)
+  >>> @implementer(IBytesContent, IImageScaleTraversable, IAttributeAnnotatable)
+  ... class BytesContent(object):
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
@@ -605,7 +604,7 @@ First, let's do the setup::
   ...     def Title(self):
   ...         return 'A content item'
 
-  >>> content = ASCIIContent(None, None)
+  >>> content = BytesContent(None, None)
 
   >>> from z3c.form.datamanager import AttributeField
   >>> from zope.component import provideAdapter
@@ -620,7 +619,7 @@ First, let's do the setup::
   ...     else:
   ...         widget = NamedFileFieldWidget
   ...     widget = widget(
-  ...         IASCIIContent['{0}_field'.format(widget_type)],
+  ...         IBytesContent['{0}_field'.format(widget_type)],
   ...         make_request()
   ...     )
   ...     widget.context = context
@@ -628,7 +627,7 @@ First, let's do the setup::
   ...     widget.name = 'widget.name.{0}'.format(widget_type)
   ...
   ...     if set_widget_value:
-  ...         converter = globals()['ascii_{0}_converter'.format(widget_type)]
+  ...         converter = globals()['bytes_{0}_converter'.format(widget_type)]
   ...         value = getattr(context, '{0}_field'.format(widget_type))
   ...         widget.value = converter.toWidgetValue(value)
   ...
@@ -642,20 +641,20 @@ Our content has no value yet::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <span id="widget.id.file" class="named-file-widget required ascii-field">
+  <span id="widget.id.file" class="named-file-widget required bytes-field">
       <input type="file" id="widget.id.file-input" name="widget.name.file" />
   </span>
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <span id="widget.id.image" class="named-image-widget required ascii-field">
+  <span id="widget.id.image" class="named-image-widget required bytes-field">
       <input type="file" id="widget.id.image-input" name="widget.name.image" />
   </span>
 
 
 Let's upload data::
 
-  >>> data = cStringIO.StringIO('file 1 content.')
+  >>> data = six.BytesIO(b'file 1 content.')
   >>> field_storage = FieldStorageStub(data, filename='file1.txt')
   >>> upload = FileUpload(field_storage)
 
@@ -665,9 +664,9 @@ Let's upload data::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.file_field
-  'filenameb64:ZmlsZTEudHh0;datab64:ZmlsZSAxIGNvbnRlbnQu'
+  b'filenameb64:ZmlsZTEudHh0;datab64:ZmlsZSAxIGNvbnRlbnQu'
 
 Check that we have a good image that PIL can handle::
 
@@ -683,16 +682,16 @@ Check that we have a good image that PIL can handle::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> content.image_field = ascii_image_converter.toFieldValue(uploaded)
-  >>> print(content.image_field)
-  filenameb64:aW1hZ2UuanBn;datab64:/9j/4AAQSkZJRgABAQEAYABgAAD/...
+  >>> content.image_field = bytes_image_converter.toFieldValue(uploaded)
+  >>> content.image_field
+  b'filenameb64:aW1hZ2UuanBn;datab64:/9j/4AAQSkZJRgABAQEAYABgAAD/...
 
-Note that PIL cannot open this ascii image, so we cannot scale it::
+Note that PIL cannot open this bytes image, so we cannot scale it::
 
-  >>> PIL.Image.open(cStringIO.StringIO(content.image_field))
+  >>> PIL.Image.open(six.BytesIO(content.image_field))
   Traceback (most recent call last):
   ...
-  IOError: cannot identify image file <cStringIO.StringI object at ...>
+  OSError: cannot identify image file...
 
 Prepare for a new request cycle::
 
@@ -704,7 +703,7 @@ The upload shows up in the rendered widget::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required ascii-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/file1.txt" >file1.txt</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
@@ -712,13 +711,13 @@ The upload shows up in the rendered widget::
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required ascii-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/image.jpg" >image.jpg</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
 
-Like we said, we cannot scale this ascii image, so the thumb tag is empty::
+Like we said, we cannot scale this bytes image, so the thumb tag is empty::
 
   >>> print(image_widget.thumb_tag)
 
@@ -730,7 +729,7 @@ Prepare for a new request cycle::
 
 Now overwrite with other data::
 
-  >>> data = cStringIO.StringIO('random file content')
+  >>> data = six.BytesIO(b'random file content')
   >>> field_storage = FieldStorageStub(data, filename='plone.pdf')
   >>> upload = FileUpload(field_storage)
 
@@ -740,12 +739,12 @@ Now overwrite with other data::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.file_field
-  'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
+  b'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
 
 
-  >>> data = cStringIO.StringIO('no image')
+  >>> data = six.BytesIO(b'no image')
   >>> field_storage = FieldStorageStub(data, filename='logo.tiff')
   >>> upload = FileUpload(field_storage)
 
@@ -755,9 +754,9 @@ Now overwrite with other data::
   >>> uploaded
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.image_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.image_field
-  'filenameb64:bG9nby50aWZm;datab64:bm8gaW1hZ2U='
+  b'filenameb64:bG9nby50aWZm;datab64:bm8gaW1hZ2U='
 
 
 Prepare for a new request cycle::
@@ -770,7 +769,7 @@ The new image/file shows up in the rendered widget::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required ascii-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
@@ -778,7 +777,7 @@ The new image/file shows up in the rendered widget::
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required ascii-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
@@ -800,9 +799,9 @@ Resubmit, but keep the data::
   >>> uploaded
   <plone.namedfile.file.NamedFile object at ...>
 
-  >>> content.file_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.file_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.file_field
-  'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
+  b'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
 
 
   >>> image_widget.request = make_request(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
@@ -811,9 +810,9 @@ Resubmit, but keep the data::
   >>> uploaded
   <plone.namedfile.file.NamedFile object at ...>
 
-  >>> content.image_field = ascii_file_converter.toFieldValue(uploaded)
+  >>> content.image_field = bytes_file_converter.toFieldValue(uploaded)
   >>> content.image_field
-  'filenameb64:bG9nby50aWZm;datab64:bm8gaW1hZ2U='
+  b'filenameb64:bG9nby50aWZm;datab64:bm8gaW1hZ2U='
 
 
 Prepare for a new request cycle::
@@ -826,7 +825,7 @@ The previous image/file should be kept::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required ascii-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
   <input type="radio"... id="widget.id.file-nochange"...
   <input type="radio"... id="widget.id.file-replace"...
@@ -834,19 +833,19 @@ The previous image/file should be kept::
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required ascii-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field">...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
   <input type="radio"... id="widget.id.image-nochange"...
   <input type="radio"... id="widget.id.image-replace"...
   <input type="file"... id="widget.id.image-input"...
 
 
-The Download view on ASCII fields
+The Download view on Bytes fields
 ---------------------------------
 ::
 
-  >>> class ASCIIContent(object):
-  ...     implements(IASCIIContent)
+  >>> @implementer(IBytesContent)
+  ... class BytesContent(object):
   ...     def __init__(self, file, image):
   ...         self.file_field = file
   ...         self.image_field = image
@@ -855,29 +854,29 @@ The Download view on ASCII fields
   ...     def absolute_url(self):
   ...         return root_url + self.path
 
-  >>> content = ASCIIContent(
-  ...     NamedFile(data="testfile", filename=u"test.txt"),
-  ...     NamedImage(data="testimage", filename=u"test.jpg"))
+  >>> content = BytesContent(
+  ...     NamedFile(data=b"testfile", filename=u"test.txt"),
+  ...     NamedImage(data=b"testimage", filename=u"test.jpg"))
 
   >>> from z3c.form.widget import FieldWidget
 
-  >>> ascii_file_widget = FieldWidget(IASCIIContent['file_field'], NamedFileWidget(make_request()))
-  >>> ascii_file_widget.context = content
+  >>> bytes_file_widget = FieldWidget(IBytesContent['file_field'], NamedFileWidget(make_request()))
+  >>> bytes_file_widget.context = content
 
-  >>> ascii_image_widget = FieldWidget(IASCIIContent['image_field'], NamedImageWidget(make_request()))
-  >>> ascii_image_widget.context = content
+  >>> bytes_image_widget = FieldWidget(IBytesContent['image_field'], NamedImageWidget(make_request()))
+  >>> bytes_image_widget.context = content
 
   >>> request = make_request()
-  >>> view = Download(ascii_file_widget, request)
+  >>> view = Download(bytes_file_widget, request)
   >>> view()
-  'testfile'
+  b'testfile'
 
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''test.txt"
 
-  >>> view = Download(ascii_image_widget, request)
+  >>> view = Download(bytes_image_widget, request)
   >>> view()
-  'testimage'
+  b'testimage'
 
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''test.jpg"
@@ -899,7 +898,7 @@ only when the field is required::
   >>> validator.validate(None) is None
   Traceback (most recent call last):
   ...
-  RequiredMissing...
+  zope.schema._bootstrapinterfaces.RequiredMissing...
   >>> IContent['file_field'].required = False
   >>> validator.validate(None) is None
   True
@@ -913,7 +912,7 @@ user)::
   >>> validator.validate(None)
   Traceback (most recent call last):
   ...
-  InvalidState
+  plone.formwidget.namedfile.validator.InvalidState
 
 If we provide a file, all is good::
 
@@ -933,7 +932,7 @@ we again make the field required::
   >>> validator.validate(None) is None
   Traceback (most recent call last):
   ...
-  RequiredMissing...
+  zope.schema._bootstrapinterfaces.RequiredMissing...
 
 
 The Download URL
@@ -955,7 +954,7 @@ The download URL without a form and without a value::
 
 Now we add a value::
 
-  >>> content.file_field = NamedFile(data='My file data', filename=u'data.txt')
+  >>> content.file_field = NamedFile(data=b'My file data', filename=u'data.txt')
   >>> file_widget.value = content.file_field
   >>> file_widget.download_url
   'http://127.0.0.1/content1/++widget++file_field/@@download/data.txt'
