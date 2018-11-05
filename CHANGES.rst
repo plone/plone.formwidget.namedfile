@@ -4,14 +4,6 @@ Changelog
 2.0.7 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Python 2 / 3 compatibility
