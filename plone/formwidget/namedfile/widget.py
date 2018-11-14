@@ -307,7 +307,8 @@ class NamedFileWidget(Explicit, file.FileWidget):
             dm = getMultiAdapter((self.context, self.field,), IDataManager)
             # For sub-widgets to function use a query() not get()
             data = dm.query(default)
-            data = _make_namedfile(data, self.field, self.context)
+            if data is not None:
+                data = _make_namedfile(data, self.field, self.context)
             return data
 
         # empty unnamed FileUploads should not count as a value
