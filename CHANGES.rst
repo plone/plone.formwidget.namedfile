@@ -14,7 +14,9 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix `NamedFileWidget` bug when trying to create value
+  from `None`.
+  [vangheem]
 
 
 2.0.7 (2018-11-05)
