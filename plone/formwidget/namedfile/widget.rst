@@ -262,10 +262,13 @@ characters::
 
   >>> from plone.namedfile import NamedFile, NamedImage
   >>> from plone.formwidget.namedfile.testing import get_file
-  >>> image_data = get_file('image.jpg').read()
+  >>> open_files = []
+  >>> with get_file('image.jpg') as image_file:
+  ...     image_data = image_file.read()
   >>> file_widget.value = NamedFile(data=b'My file data',
   ...                               filename=u'data_深.txt')
-  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux.jpg')
+  >>> open_files.append(get_file('image.jpg'))
+  >>> aFieldStorage = FieldStorageStub(open_files[-1], filename='faux.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
   >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
   >>> file_widget.update()
@@ -303,7 +306,8 @@ Set the current image, which is shown as thumb on the page, and then
 setup the widget with a new value::
 
   >>> content.image_field = NamedImage(data=image_data, filename=u'faux.jpg')
-  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
+  >>> open_files.append(get_file('image.jpg'))
+  >>> aFieldStorage = FieldStorageStub(open_files[-1], filename='faux2.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
   >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
   >>> image_widget.update()
@@ -343,7 +347,8 @@ stored in the field::
   >>> file_widget.extract() is content.file_field
   True
 
-  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='faux2.jpg')
+  >>> open_files.append(get_file('image.jpg'))
+  >>> aFieldStorage = FieldStorageStub(open_files[-1], filename='faux2.jpg')
   >>> myUpload = FileUpload(aFieldStorage)
 
   >>> image_widget.request = make_request(form={'widget.name.image': '', 'widget.name.image.action': 'nochange'})
@@ -459,7 +464,8 @@ Content type from headers sent by browser should be ignored::
   >>> file_obj.contentType != 'text/x-dummy'
   True
 
-  >>> aFieldStorage = FieldStorageStub(get_file('image.jpg'), filename='random.png', headers={'Content-Type': 'image/x-dummy'})
+  >>> open_files.append(get_file('image.jpg'))
+  >>> aFieldStorage = FieldStorageStub(open_files[-1], filename='random.png', headers={'Content-Type': 'image/x-dummy'})
   >>> image_obj = image_converter.toFieldValue(FileUpload(aFieldStorage))
   >>> image_obj.data == image_data
   True
@@ -671,9 +677,11 @@ Let's upload data::
 Check that we have a good image that PIL can handle::
 
   >>> import PIL.Image
-  >>> PIL.Image.open(get_file('image.jpg'))
+  >>> open_files.append(get_file('image.jpg'))
+  >>> PIL.Image.open(open_files[-1])
   <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=500x200 at ...>
-  >>> field_storage = FieldStorageStub(get_file('image.jpg'), filename='image.jpg')
+  >>> open_files.append(get_file('image.jpg'))
+  >>> field_storage = FieldStorageStub(open_files[-1], filename='image.jpg')
   >>> upload = FileUpload(field_storage)
 
   >>> image_widget.request = make_request(form={'widget.name.image': upload})
@@ -1010,3 +1018,7 @@ If we change the name of the widget the download URL will reflect that::
   >>> file_widget.name = 'my_widget'
   >>> file_widget.download_url
   'http://127.0.0.1/some/path/++widget++my_widget/@@download/data.txt'
+
+Close all open file handlers:
+
+  >>> ignore = [x.close() for x in open_files]
