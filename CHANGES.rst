@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.8 (2019-01-08)
+------------------
+
+Bug fixes:
+
+
+- Close files, so no resource warnings are shown. [gforcada] (#36)
+- Initialize towncrier. [gforcada] (#2548)
+
+
 2.0.7 (2018-11-05)
 ------------------
 
