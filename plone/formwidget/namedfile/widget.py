@@ -98,7 +98,21 @@ class NamedFileWidget(Explicit, file.FileWidget):
         """Temporary store the uploaded file contents with a file_upload_id key.
         In case of form validation errors the already uploaded image can then
         be reused.
+
+        This is only useful on a POST request:
+        forms should not be using GET,
+        especially when you save something to the database.
+
+        Note that if we want this on a GET request,
+        we should add a safeWrite call in the code below:
+        plone.protect.utils.safeWrite(up.upload_map, self.request)
+        Otherwise plone.protect auto csrf will complain for example
+        when getting @@site-controlpanel or @@personal-information
+        See https://github.com/plone/Products.CMFPlone/issues/2628
+        and https://github.com/plone/Products.CMFPlone/issues/2709
         """
+        if self.request.method != 'POST':
+            return ''
         if self._file_upload_id:
             # cache this property for multiple calls within one request.
             # This avoids storing a file upload multiple times.
@@ -270,7 +284,8 @@ class NamedFileWidget(Explicit, file.FileWidget):
                 data = fileinfo.get('data')
 
                 if filename or data:
-                    filename = safe_basename(filename)
+                    if filename:
+                        filename = safe_basename(filename)
                     if (
                             filename is not None
                             and not isinstance(filename, six.text_type)
