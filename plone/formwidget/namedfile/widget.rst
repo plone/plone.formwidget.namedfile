@@ -495,7 +495,7 @@ content type::
   >>> file_obj = file_converter.toFieldValue(FileUpload(aFieldStorage))
   >>> file_obj.data
   b'File upload contents.'
-  >>> print(file_obj.filename.encode('utf8'))
+  >>> file_obj.filename.encode('utf8')
   b'rand\xc3\xb8m.txt'
 
 Content type from headers sent by browser should be ignored::
@@ -731,7 +731,7 @@ Check that we have a good image that PIL can handle::
 
   >>> content.image_field = bytes_image_converter.toFieldValue(uploaded)
   >>> content.image_field
-  b'filenameb64:aW1hZ2UuanBn;datab64:/9j/4AAQSkZJRgABAQEAYABgAAD/...
+  b'filenameb64:aW1hZ2UuanBn;datab64:/9j/4AAQSkZJRgABAQEAYABgAAD/...'
 
 Note that PIL cannot open this bytes image, so we cannot scale it::
 
