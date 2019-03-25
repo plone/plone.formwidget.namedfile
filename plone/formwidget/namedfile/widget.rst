@@ -31,20 +31,31 @@ There are also more specific interfaces for each widget::
 The widgets can be instantiated only using the request::
 
   >>> from z3c.form.testing import TestRequest
+  >>> def make_get_request(**kwargs):
+  ...     # GET is actually the default.
+  ...     # return TestRequest(**kwargs)
+  ...     req = TestRequest(**kwargs)
+  ...     req.method = 'GET'
+  ...     return req
   >>> def make_request(**kwargs):
-  ...     return TestRequest(**kwargs)
+  ...     req = TestRequest(**kwargs)
+  ...     req.method = 'POST'
+  ...     return req
   >>> request = make_request()
-
-  >>> file_widget = NamedFileWidget(request)
-  >>> image_widget = NamedImageWidget(request)
-
-Before rendering a widget, one has to set the name and id of the widget::
-
-  >>> file_widget.id = 'widget.id.file'
-  >>> file_widget.name = 'widget.name.file'
-
-  >>> image_widget.id = 'widget.id.image'
-  >>> image_widget.name = 'widget.name.image'
+  >>> def make_file_widget(request):
+  ...     file_widget = NamedFileWidget(request)
+  ...     # In some versions, before rendering a widget, one has to set the name and id of the widget:
+  ...     file_widget.id = 'widget.id.file'
+  ...     file_widget.name = 'widget.name.file'
+  ...     return file_widget
+  >>> def make_image_widget(request):
+  ...     image_widget = NamedImageWidget(request)
+  ...     # In some versions, before rendering a widget, one has to set the name and id of the widget:
+  ...     image_widget.id = 'widget.id.image'
+  ...     image_widget.name = 'widget.name.image'
+  ...     return image_widget
+  >>> file_widget = make_file_widget(request)
+  >>> image_widget = make_image_widget(request)
 
 We also need to register the templates for the widgets::
 
@@ -89,24 +100,24 @@ We can extract simple file data from the widget like this::
   >>> import six
   >>> myfile = six.BytesIO(b'My file contents.')
 
-  >>> file_widget.request = make_request(form={'widget.name.file': myfile})
+  >>> file_widget = make_file_widget(make_request(form={'widget.name.file': myfile}))
   >>> file_widget.update()
   >>> file_widget.extract()
   <...IO object at ...>
 
-  >>> image_widget.request = make_request(form={'widget.name.image': myfile})
+  >>> image_widget = make_image_widget(make_request(form={'widget.name.image': myfile}))
   >>> image_widget.update()
   >>> image_widget.extract()
   <...IO object at ...>
 
 If nothing is found in the request, the default is returned::
 
-  >>> file_widget.request = make_request()
+  >>> file_widget = make_file_widget(make_request())
   >>> file_widget.update()
   >>> file_widget.extract()
   <NO_VALUE>
 
-  >>> image_widget.request = make_request()
+  >>> image_widget = make_image_widget(make_request())
   >>> image_widget.update()
   >>> image_widget.extract()
   <NO_VALUE>
@@ -130,17 +141,45 @@ Now build a FileUpload::
   >>> aFieldStorage = FieldStorageStub(myfile)
   >>> myUpload = FileUpload(aFieldStorage)
 
-  >>> file_widget.request = make_request(form={'widget.name.file': myUpload})
+First use a GET request::
+
+  >>> file_widget = make_file_widget(make_get_request(form={'widget.name.file': myUpload}))
   >>> file_widget.update()
   >>> file_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-  >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
+  >>> image_widget = make_image_widget(make_get_request(form={'widget.name.image': myUpload}))
   >>> image_widget.update()
   >>> image_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-The rendering is unchanged::
+The rendering is unchanged:
+
+  >>> print(file_widget.render())
+  <span id="widget.id.file" class="named-file-widget">
+      <input type="file" id="widget.id.file-input"
+             name="widget.name.file" />
+  </span>
+
+  >>> print(image_widget.render())
+  <span id="widget.id.image" class="named-image-widget">
+      <input type="file" id="widget.id.image-input"
+             name="widget.name.image" />
+  </span>
+
+Now use a POST request (the default in our make_request helper function)::
+
+  >>> file_widget = make_file_widget(make_request(form={'widget.name.file': myUpload}))
+  >>> file_widget.update()
+  >>> file_widget.extract()
+  <ZPublisher.HTTPRequest.FileUpload ...>
+
+  >>> image_widget = make_image_widget(make_request(form={'widget.name.image': myUpload}))
+  >>> image_widget.update()
+  >>> image_widget.extract()
+  <ZPublisher.HTTPRequest.FileUpload ...>
+
+The rendering contains data about the file upload id::
 
   >>> print(file_widget.render())
   <span id="widget.id.file" class="named-file-widget">
@@ -170,12 +209,12 @@ Empty, unnamed FileUploads are treated as having no value::
   >>> aFieldStorage = FieldStorageStub(emptyfile, filename='')
   >>> myEmptyUpload = FileUpload(aFieldStorage)
 
-  >>> file_widget.request = make_request(form={'widget.name.file': myEmptyUpload})
+  >>> file_widget = make_file_widget(make_request(form={'widget.name.file': myEmptyUpload}))
   >>> file_widget.update()
   >>> file_widget.extract()
   <NO_VALUE>
 
-  >>> image_widget.request = make_request(form={'widget.name.image': myEmptyUpload})
+  >>> image_widget = make_image_widget(make_request(form={'widget.name.image': myEmptyUpload}))
   >>> image_widget.update()
   >>> image_widget.extract()
   <NO_VALUE>
