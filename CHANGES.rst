@@ -8,6 +8,18 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.9 (2019-03-28)
+------------------
+
+Bug fixes:
+
+
+- Only use the new feature for keeping an already uploaded image when it is a POST request.
+  Fixes auto csrf error in `site-controlpanel <https://github.com/plone/Products.CMFPlone/issues/2628>`_
+  and `personal-information <https://github.com/plone/Products.CMFPlone/issues/2709>`_ page.
+  [maurits] (#2628)
+
+
 2.0.8 (2019-01-08)
 ------------------
 
