@@ -2,6 +2,7 @@
 from Acquisition import aq_inner
 from Acquisition import Explicit
 from datetime import datetime
+from plone.app.blob.field import BlobWrapper
 from plone.formwidget.namedfile import utils
 from plone.formwidget.namedfile.converter import b64decode_file
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
@@ -17,6 +18,7 @@ from plone.namedfile.interfaces import INamedBlobImageField
 from plone.namedfile.interfaces import INamedFileField
 from plone.namedfile.interfaces import INamedImage
 from plone.namedfile.interfaces import INamedImageField
+from plone.namedfile.utils import get_contenttype
 from plone.namedfile.utils import safe_basename
 from plone.namedfile.utils import set_headers
 from plone.namedfile.utils import stream_data
@@ -415,6 +417,36 @@ class Download(BrowserView):
 
         set_headers(file_, self.request.response, filename=self.filename)
         return stream_data(file_)
+
+class MediaStream(Download):
+    """ Browser view for handling media streaming requests.
+    """
+
+    def __call__(self):
+        """ Partially reproduced from plone.formwidget.namedfile.widget.Download.
+        Leverages the existing BlobWrapper functionality to stream the media blobs
+        to the client, allowing ranges and partial content.
+        """
+        if self.context.ignoreContext:
+            raise NotFound("Cannot get the data file from a widget with no context")
+
+        # import ipdb;ipdb.set_trace()
+        if self.context.form is not None:
+            content = aq_inner(self.context.form.getContent())
+        else:
+            content = aq_inner(self.context.context)
+        field = aq_inner(self.context.field)
+
+        dm = getMultiAdapter((content, field,), IDataManager)
+        file_ = dm.get()
+        if file_ is None:
+            raise NotFound(self, self.request)
+
+        content_type = get_contenttype(file_)
+        blob_wrapper = BlobWrapper(content_type)
+        blob_wrapper.setBlob(file_)
+
+        return blob_wrapper.index_html(self.request)
 
 
 @implementer(IFieldWidget)

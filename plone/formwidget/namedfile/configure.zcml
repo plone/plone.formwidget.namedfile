@@ -66,4 +66,11 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="seek"
+      for=".interfaces.INamedFileWidget"
+      class=".widget.MediaStream"
+      permission="zope2.View"
+      />
+
 </configure>
