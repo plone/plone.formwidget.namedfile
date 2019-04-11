@@ -430,7 +430,6 @@ class MediaStream(Download):
         if self.context.ignoreContext:
             raise NotFound("Cannot get the data file from a widget with no context")
 
-        # import ipdb;ipdb.set_trace()
         if self.context.form is not None:
             content = aq_inner(self.context.form.getContent())
         else:
