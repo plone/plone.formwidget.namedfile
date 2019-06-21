@@ -1,2 +1,2 @@
-Don't test for hard coded image size in test.
+Don't check for hard coded image size in test.
 [agitator]
