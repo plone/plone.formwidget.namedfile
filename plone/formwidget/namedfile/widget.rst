@@ -451,12 +451,18 @@ instances and the two named file/image widgets::
 
   >>> from zope.component import getMultiAdapter
   >>> from z3c.form.interfaces import IDataConverter
-
+  >>> from z3c.form.interfaces import NOT_CHANGED
+  
   >>> file_converter = getMultiAdapter((IContent['file_field'], file_widget), IDataConverter)
   >>> image_converter = getMultiAdapter((IContent['image_field'], image_widget), IDataConverter)
 
-A value of None or '' results in the field's missing_value being returned::
+An initial upload of a file will never include the action field, 
+so let's remove it from our test requests
 
+  >>> del file_widget.request.form['widget.name.file.action']
+  >>> del image_widget.request.form['widget.name.image.action']
+
+A value of None or '' results in the field's missing_value being returned::
   >>> file_converter.toFieldValue(u'') is IContent['file_field'].missing_value
   True
   >>> file_converter.toFieldValue(None) is IContent['file_field'].missing_value
@@ -526,6 +532,17 @@ being returned::
   >>> field_value is IContent['image_field'].missing_value
   True
 
+If the file has already been uploaded and the user selects 'Keep Existing File' 
+in the widget, the widget will include 'action':'nochange' in the form post, 
+and the converter will always set the value to z3c.form.interfaces.NOT_CHANGED::
+
+  >>> file_widget.request.form['widget.name.file.action'] = 'nochange'
+  >>> file_converter.toFieldValue(u'') is NOT_CHANGED
+  True
+  >>> image_widget.request.form['widget.name.image.action'] = 'nochange'
+  >>> image_converter.toFieldValue(u'') is NOT_CHANGED
+  True
+  
 
 The Base64Converter for Bytes fields
 ------------------------------------
