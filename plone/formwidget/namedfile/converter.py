@@ -8,6 +8,7 @@ from plone.namedfile.interfaces import INamed
 from plone.namedfile.interfaces import INamedField
 from plone.namedfile.utils import safe_basename
 from z3c.form.converter import BaseDataConverter
+from z3c.form.interfaces import NOT_CHANGED
 from zope.component import adapts
 from zope.schema.interfaces import IBytes
 from ZPublisher.HTTPRequest import FileUpload
@@ -25,7 +26,10 @@ class NamedDataConverter(BaseDataConverter):
         return value
 
     def toFieldValue(self, value):
-
+        action = self.widget.request.get("%s.action" % self.widget.name, None)
+        if action == 'nochange':
+            return NOT_CHANGED
+        
         if value is None or value == '':
             return self.field.missing_value
 
