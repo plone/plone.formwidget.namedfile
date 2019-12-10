@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '2.0.10.dev0'
+version = '2.0.10'
 
 setup(
     name='plone.formwidget.namedfile',

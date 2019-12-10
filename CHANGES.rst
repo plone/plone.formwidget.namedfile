@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.10 (2019-12-11)
+-------------------
+
+Bug fixes:
+
+
+- set widget value to z3c.form.interfaces.NOT_CHANGED when the user selects 'Keep Existing File' in the widget, so z3c.form understands the field has not changed (#41)
+
+
 2.0.9 (2019-03-28)
 ------------------
 

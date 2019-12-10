@@ -1,1 +1,0 @@
-set widget value to z3c.form.interfaces.NOT_CHANGED when the user selects 'Keep Existing File' in the widget, so z3c.form understands the field has not changed
