@@ -9,10 +9,16 @@
   <include package="z3c.form" />
   <include package="plone.namedfile" />
 
+  <adapter factory=".datamanager.NamedImageAttributeField" />
   <adapter factory=".converter.NamedDataConverter" />
   <adapter factory=".converter.Base64Converter" />
   <adapter factory=".validator.NamedFileWidgetValidator" />
   <adapter factory=".utils.FileUploadTemporaryStorage" />
+
+  <subscriber
+      for="ZPublisher.interfaces.IPubSuccess"
+      handler=".datamanager.plone_scale_generate_on_save"
+  />
 
   <class class=".widget.NamedFileWidget">
     <require

@@ -40,3 +40,9 @@ class IFileUploadTemporaryStorage(Interface):
 
     def cleanup():
         """Removes stale temporary uploads from the upload storage"""
+
+
+class IScaleGenerateOnSave(Interface):
+    """Marker interface on request for creating scales
+    when NamedImageField has been used to save a new image file on content.
+    """
