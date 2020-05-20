@@ -452,11 +452,11 @@ instances and the two named file/image widgets::
   >>> from zope.component import getMultiAdapter
   >>> from z3c.form.interfaces import IDataConverter
   >>> from z3c.form.interfaces import NOT_CHANGED
-  
+
   >>> file_converter = getMultiAdapter((IContent['file_field'], file_widget), IDataConverter)
   >>> image_converter = getMultiAdapter((IContent['image_field'], image_widget), IDataConverter)
 
-An initial upload of a file will never include the action field, 
+An initial upload of a file will never include the action field,
 so let's remove it from our test requests
 
   >>> del file_widget.request.form['widget.name.file.action']
@@ -532,8 +532,8 @@ being returned::
   >>> field_value is IContent['image_field'].missing_value
   True
 
-If the file has already been uploaded and the user selects 'Keep Existing File' 
-in the widget, the widget will include 'action':'nochange' in the form post, 
+If the file has already been uploaded and the user selects 'Keep Existing File'
+in the widget, the widget will include 'action':'nochange' in the form post,
 and the converter will always set the value to z3c.form.interfaces.NOT_CHANGED::
 
   >>> file_widget.request.form['widget.name.file.action'] = 'nochange'
@@ -542,7 +542,7 @@ and the converter will always set the value to z3c.form.interfaces.NOT_CHANGED::
   >>> image_widget.request.form['widget.name.image.action'] = 'nochange'
   >>> image_converter.toFieldValue(u'') is NOT_CHANGED
   True
-  
+
 
 The Base64Converter for Bytes fields
 ------------------------------------
@@ -944,6 +944,38 @@ The Download view on Bytes fields
 
   >>> request.response.getHeader('Content-Disposition')
   "attachment; filename*=UTF-8''test.jpg"
+
+
+Range support
+-------------
+
+Checking for partial requests support::
+
+  >>> request = make_request()
+  >>> view = Download(bytes_file_widget, request)
+  >>> view()
+  b'testfile'
+  >>> request.response.getHeader('Content-Length')
+  '8'
+  >>> request.response.getHeader('Accept-Ranges')
+  'bytes'
+
+Request a specific range::
+
+  >>> request = make_request(environ={'HTTP_RANGE': 'bytes=0-3'})
+  >>> view = Download(bytes_file_widget, request)
+  >>> view()
+  b'test'
+  >>> request.response.getStatus()
+  206
+
+The Content-Length header now indicates the size of the requested range (and not the full size of the image).
+The Content-Range response header indicates where in the full resource this partial message belongs.::
+
+  >>> request.response.getHeader('Content-Length')
+  '4'
+  >>> request.response.getHeader('Content-Range')
+  'bytes 0-3/8'
 
 
 The validator
