@@ -7,6 +7,7 @@ from plone.formwidget.namedfile.converter import b64decode_file
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
+from plone.namedfile.browser import Download as DownloadBase
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from plone.namedfile.file import NamedFile
@@ -373,7 +374,7 @@ class NamedImageWidget(NamedFileWidget):
 
 
 @implementer(IPublishTraverse)
-class Download(BrowserView):
+class Download(DownloadBase):
     """Download a file, via ../context/form/++widget++/@@download/filename
     """
 
@@ -414,7 +415,8 @@ class Download(BrowserView):
             self.filename = getattr(file_, 'filename', None)
 
         set_headers(file_, self.request.response, filename=self.filename)
-        return stream_data(file_)
+        request_range = self.handle_request_range(file_)
+        return stream_data(file_, **request_range)
 
 
 @implementer(IFieldWidget)
