@@ -11,7 +11,7 @@ import unittest
 def get_file(filename):
     """Return contents of the file with the given name."""
     filename = os.path.join(os.path.dirname(__file__), filename)
-    return open(filename, 'rb')
+    return open(filename, "rb")
 
 
 class PloneFormwidgetNamedfileLayer(PloneSandboxLayer):
@@ -22,21 +22,26 @@ class PloneFormwidgetNamedfileLayer(PloneSandboxLayer):
         """Set up Zope."""
         # Load ZCML
         import plone.formwidget.namedfile
+
         self.loadZCML(package=plone.formwidget.namedfile)
 
 
 FIXTURE = PloneFormwidgetNamedfileLayer()
 INTEGRATION_TESTING = IntegrationTesting(
-    bases=(FIXTURE,), name="PloneFormwidgetNamedfileLayer:Integration")
+    bases=(FIXTURE,), name="PloneFormwidgetNamedfileLayer:Integration"
+)
 FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(FIXTURE,), name="PloneFormwidgetNamedfileLayer:Functional")
+    bases=(FIXTURE,), name="PloneFormwidgetNamedfileLayer:Functional"
+)
 
 
 class IntegrationTestCase(unittest.TestCase):
     """Base class for integration tests."""
+
     layer = INTEGRATION_TESTING
 
 
 class FunctionalTestCase(unittest.TestCase):
     """Base class for functional tests."""
+
     layer = FUNCTIONAL_TESTING

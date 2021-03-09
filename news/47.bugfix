@@ -1,0 +1,1 @@
+Overhaul for Plone 6: Skip Python 2 compatibility, pyupgrade, isort, black, manual cleanup. [jensens]

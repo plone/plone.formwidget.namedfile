@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.formwidget.namedfile import utils
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
@@ -18,8 +17,8 @@ import six
 
 
 class NamedDataConverter(BaseDataConverter):
-    """Converts from a file-upload to a NamedFile variant.
-    """
+    """Converts from a file-upload to a NamedFile variant."""
+
     adapts(INamedField, INamedFileWidget)
 
     def toWidgetValue(self, value):
@@ -27,10 +26,10 @@ class NamedDataConverter(BaseDataConverter):
 
     def toFieldValue(self, value):
         action = self.widget.request.get("%s.action" % self.widget.name, None)
-        if action == 'nochange':
+        if action == "nochange":
             return NOT_CHANGED
-        
-        if value is None or value == '':
+
+        if value is None or value == "":
             return self.field.missing_value
 
         if INamed.providedBy(value):
@@ -40,10 +39,10 @@ class NamedDataConverter(BaseDataConverter):
 
             filename = safe_basename(value.filename)
 
-            if filename is not None and isinstance(filename, six.binary_type):
+            if filename is not None and isinstance(filename, bytes):
                 # Work-around for
                 # https://bugs.launchpad.net/zope2/+bug/499696
-                filename = filename.decode('utf-8')
+                filename = filename.decode("utf-8")
 
             value.seek(0)
             data = value.read()
@@ -53,34 +52,32 @@ class NamedDataConverter(BaseDataConverter):
                 return self.field.missing_value
 
         else:
-            if isinstance(value, six.text_type):
-                value = value.encode('utf-8')
+            if isinstance(value, str):
+                value = value.encode("utf-8")
             return self.field._type(data=value)
 
 
 def b64encode_file(filename, data):
     # encode filename and data using the standard alphabet, so that ";" can be
     # used as delimiter.
-    if isinstance(filename, six.text_type):
-        filename = filename.encode('utf-8')
-    filenameb64 = base64.standard_b64encode(filename or '')
+    if isinstance(filename, str):
+        filename = filename.encode("utf-8")
+    filenameb64 = base64.standard_b64encode(filename or "")
     datab64 = base64.standard_b64encode(data)
-    filename = b"filenameb64:%s;datab64:%s" % (
-        filenameb64, datab64
-    )
+    filename = b"filenameb64:%s;datab64:%s" % (filenameb64, datab64)
     return filename
 
 
 def b64decode_file(value):
-    if isinstance(value, six.text_type):
-        value = value.encode('utf8')
-    filename, data = value.split(b';')
+    if isinstance(value, str):
+        value = value.encode("utf8")
+    filename, data = value.split(b";")
 
-    filename = filename.split(b':')[1]
+    filename = filename.split(b":")[1]
     filename = base64.standard_b64decode(filename)
-    filename = filename.decode('utf-8')
+    filename = filename.decode("utf-8")
 
-    data = data.split(b':')[1]
+    data = data.split(b":")[1]
     data = base64.standard_b64decode(data)
 
     return filename, data
@@ -90,11 +87,12 @@ class Base64Converter(BaseDataConverter):
     """Converts between Bytes fields with base64 encoded data and a filename
     and INamedImage/INamedFile values.
     """
+
     adapts(IBytes, INamedFileWidget)
 
     def toWidgetValue(self, value):
 
-        if not isinstance(value, (six.text_type, six.binary_type)):
+        if not isinstance(value, (str, bytes)):
             return None
 
         filename, data = b64decode_file(value)

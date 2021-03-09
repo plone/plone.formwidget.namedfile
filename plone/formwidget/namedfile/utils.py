@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from BTrees.OOBTree import OOBTree
 from datetime import datetime
 from datetime import timedelta
@@ -12,20 +11,19 @@ from zope.interface import Interface
 from ZPublisher.HTTPRequest import FileUpload
 
 
-FILE_UPLOAD_MAP_KEY = 'file_upload_map'
-FILE_UPLOAD_EXPIRATION_TIME = 30*60  # seconds
+FILE_UPLOAD_MAP_KEY = "file_upload_map"
+FILE_UPLOAD_EXPIRATION_TIME = 30 * 60  # seconds
 FALLBACK_DATE = datetime(2000, 2, 2)
 
 
 def is_file_upload(item):
-    """Check if ``item`` is a file upload.
-    """
+    """Check if ``item`` is a file upload."""
     return isinstance(item, FileUpload)
 
 
 @implementer(IFileUploadTemporaryStorage)
 @adapter(Interface)
-class FileUploadTemporaryStorage(object):
+class FileUploadTemporaryStorage:
     """Temporary storage adapter for file uploads.
     To be used to not need to re-upload files after form submission errors.
     """
@@ -40,14 +38,13 @@ class FileUploadTemporaryStorage(object):
         return upload_map
 
     def cleanup(self):
-        """Remove obsolete temporary uploads.
-        """
+        """Remove obsolete temporary uploads."""
         upload_map = self.upload_map
         for key, val in upload_map.items():
-            if val.get('dt', FALLBACK_DATE) < (
-                datetime.now() - timedelta(
-                    seconds=FILE_UPLOAD_EXPIRATION_TIME
-                )
-            ) and randint(0, 5) == 0:  # Avoid conflict errors by deleting only every fifth time  # noqa
+            if (
+                val.get("dt", FALLBACK_DATE)
+                < (datetime.now() - timedelta(seconds=FILE_UPLOAD_EXPIRATION_TIME))
+                and randint(0, 5) == 0
+            ):  # Avoid conflict errors by deleting only every fifth time  # noqa
                 # Delete expired files or files without timestamp
                 del upload_map[key]
