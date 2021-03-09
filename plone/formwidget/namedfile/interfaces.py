@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from z3c.form.interfaces import IWidget
 from zope import schema
 from zope.interface import Attribute
@@ -10,25 +9,25 @@ class INamedFileWidget(IWidget):
     """
 
     allow_nochange = schema.Bool(
-        title=u"Allow user to keep existing data in lieu of uploading a file?")
+        title="Allow user to keep existing data in lieu of uploading a file?")
     filename = schema.TextLine(
-        title=u"Name of the underlying file",
+        title="Name of the underlying file",
         required=False)
     filename_encoded = schema.TextLine(
-        title=u"Filename, URL-encoded",
+        title="Filename, URL-encoded",
         required=False)
-    file_size = schema.Int(title=u"Size in kb", required=True, default=0)
-    download_url = schema.URI(title=u"File download URL", required=False)
+    file_size = schema.Int(title="Size in kb", required=True, default=0)
+    download_url = schema.URI(title="File download URL", required=False)
 
 
 class INamedImageWidget(INamedFileWidget):
     """A widget for a named image field
     """
 
-    width = schema.Int(title=u"Image width", min=0, required=False)
-    height = schema.Int(title=u"Image height", min=0, required=False)
-    thumb_tag = schema.Text(title=u"Thumbnail image tag", required=False)
-    alt = schema.TextLine(title=u"Image alternative text", required=False)
+    width = schema.Int(title="Image width", min=0, required=False)
+    height = schema.Int(title="Image height", min=0, required=False)
+    thumb_tag = schema.Text(title="Thumbnail image tag", required=False)
+    alt = schema.TextLine(title="Image alternative text", required=False)
 
 
 class IFileUploadTemporaryStorage(Interface):

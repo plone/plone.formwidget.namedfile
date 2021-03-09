@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from Acquisition import aq_inner
 from Acquisition import Explicit
 from datetime import datetime
@@ -47,10 +46,7 @@ import six
 import uuid
 
 
-try:
-    from os import SEEK_END
-except ImportError:
-    from posixfile import SEEK_END
+from os import SEEK_END
 
 
 def _make_namedfile(value, field, widget):
@@ -61,7 +57,7 @@ def _make_namedfile(value, field, widget):
     if INamed.providedBy(value):
         return value
 
-    string_types = (six.binary_type, six.text_type)
+    string_types = (bytes, str)
     if isinstance(value, string_types) and IBytes.providedBy(field):
         filename, data = b64decode_file(value)
     elif isinstance(value, dict) or isinstance(value, PersistentDict):
@@ -85,7 +81,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
     """A widget for a named file object
     """
 
-    klass = u'named-file-widget'
+    klass = 'named-file-widget'
     value = None  # don't default to a string
     _file_upload_id = None
 
@@ -199,7 +195,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
         mimetype = self._mimetype
         if mimetype and mimetype.icon_path:
-            return "%s/%s" % (getToolByName(getSite(), 'portal_url')(),
+            return "{}/{}".format(getToolByName(getSite(), 'portal_url')(),
                               mimetype.icon_path)
         else:
             return None
@@ -210,7 +206,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if filename is None:
             return None
         else:
-            if isinstance(filename, six.text_type):
+            if isinstance(filename, str):
                 filename = filename.encode('utf-8')
             return urllib.parse.quote_plus(filename)
 
@@ -289,7 +285,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
                         filename = safe_basename(filename)
                     if (
                             filename is not None
-                            and not isinstance(filename, six.text_type)
+                            and not isinstance(filename, str)
                     ):
                         # work-around for
                         # https://bugs.launchpad.net/zope2/+bug/499696
@@ -312,7 +308,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return data
 
         # empty unnamed FileUploads should not count as a value
-        value = super(NamedFileWidget, self).extract(default)
+        value = super().extract(default)
         if utils.is_file_upload(value):
             value.seek(0, SEEK_END)
             empty = value.tell() == 0
@@ -328,7 +324,7 @@ class NamedImageWidget(NamedFileWidget):
     """A widget for a named file object
     """
 
-    klass = u'named-image-widget'
+    klass = 'named-image-widget'
 
     @property
     def width(self):
@@ -360,14 +356,14 @@ class NamedImageWidget(NamedFileWidget):
         except ComponentLookupError:
             # For example in the @@site-controlpanel after uploading an image,
             # because the context is a RecordsProxy.
-            return u''
+            return ''
         fieldname = self.field.getName()
         thumb_scale = scales.scale(fieldname, scale='thumb')
         preview_scale = scales.scale(fieldname, scale='preview')
         if preview_scale is not None and thumb_scale is not None:
             return preview_scale.tag(width=thumb_scale.width,
                                      height=thumb_scale.height)
-        return u''
+        return ''
 
     @property
     def alt(self):

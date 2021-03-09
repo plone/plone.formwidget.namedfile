@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from BTrees.OOBTree import OOBTree
 from datetime import datetime
 from datetime import timedelta
@@ -25,7 +24,7 @@ def is_file_upload(item):
 
 @implementer(IFileUploadTemporaryStorage)
 @adapter(Interface)
-class FileUploadTemporaryStorage(object):
+class FileUploadTemporaryStorage:
     """Temporary storage adapter for file uploads.
     To be used to not need to re-upload files after form submission errors.
     """

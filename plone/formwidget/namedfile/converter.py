@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.formwidget.namedfile import utils
 from plone.formwidget.namedfile.interfaces import INamedFileWidget
 from plone.formwidget.namedfile.interfaces import INamedImageWidget
@@ -40,7 +39,7 @@ class NamedDataConverter(BaseDataConverter):
 
             filename = safe_basename(value.filename)
 
-            if filename is not None and isinstance(filename, six.binary_type):
+            if filename is not None and isinstance(filename, bytes):
                 # Work-around for
                 # https://bugs.launchpad.net/zope2/+bug/499696
                 filename = filename.decode('utf-8')
@@ -53,7 +52,7 @@ class NamedDataConverter(BaseDataConverter):
                 return self.field.missing_value
 
         else:
-            if isinstance(value, six.text_type):
+            if isinstance(value, str):
                 value = value.encode('utf-8')
             return self.field._type(data=value)
 
@@ -61,7 +60,7 @@ class NamedDataConverter(BaseDataConverter):
 def b64encode_file(filename, data):
     # encode filename and data using the standard alphabet, so that ";" can be
     # used as delimiter.
-    if isinstance(filename, six.text_type):
+    if isinstance(filename, str):
         filename = filename.encode('utf-8')
     filenameb64 = base64.standard_b64encode(filename or '')
     datab64 = base64.standard_b64encode(data)
@@ -72,7 +71,7 @@ def b64encode_file(filename, data):
 
 
 def b64decode_file(value):
-    if isinstance(value, six.text_type):
+    if isinstance(value, str):
         value = value.encode('utf8')
     filename, data = value.split(b';')
 
@@ -94,7 +93,7 @@ class Base64Converter(BaseDataConverter):
 
     def toWidgetValue(self, value):
 
-        if not isinstance(value, (six.text_type, six.binary_type)):
+        if not isinstance(value, (str, bytes)):
             return None
 
         filename, data = b64decode_file(value)

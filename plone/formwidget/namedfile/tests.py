@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.formwidget.namedfile.testing import INTEGRATION_TESTING
 from plone.testing import layered
 
