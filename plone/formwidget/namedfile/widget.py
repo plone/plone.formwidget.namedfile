@@ -1,6 +1,8 @@
 from Acquisition import aq_inner
 from Acquisition import Explicit
 from datetime import datetime
+from os import SEEK_END
+from persistent.dict import PersistentDict
 from plone.formwidget.namedfile import utils
 from plone.formwidget.namedfile.converter import b64decode_file
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
@@ -41,12 +43,9 @@ from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from zope.schema.interfaces import IBytes
 from zope.size import byteDisplay
-from persistent.dict import PersistentDict
+
 import six
 import uuid
-
-
-from os import SEEK_END
 
 
 def _make_namedfile(value, field, widget):
