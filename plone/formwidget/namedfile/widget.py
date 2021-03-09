@@ -60,8 +60,8 @@ def _make_namedfile(value, field, widget):
     if isinstance(value, string_types) and IBytes.providedBy(field):
         filename, data = b64decode_file(value)
     elif isinstance(value, dict) or isinstance(value, PersistentDict):
-        filename = value['filename']
-        data = value['data']
+        filename = value["filename"]
+        data = value["data"]
 
     if INamedBlobImageField.providedBy(field):
         value = NamedBlobImage(data=data, filename=filename)
@@ -77,17 +77,15 @@ def _make_namedfile(value, field, widget):
 
 @implementer_only(INamedFileWidget)
 class NamedFileWidget(Explicit, file.FileWidget):
-    """A widget for a named file object
-    """
+    """A widget for a named file object"""
 
-    klass = 'named-file-widget'
+    klass = "named-file-widget"
     value = None  # don't default to a string
     _file_upload_id = None
 
     @property
     def is_uploaded(self):
-        return utils.is_file_upload(self.value)\
-            or INamed.providedBy(self.value)
+        return utils.is_file_upload(self.value) or INamed.providedBy(self.value)
 
     @property
     def file_upload_id(self):
@@ -107,8 +105,8 @@ class NamedFileWidget(Explicit, file.FileWidget):
         See https://github.com/plone/Products.CMFPlone/issues/2628
         and https://github.com/plone/Products.CMFPlone/issues/2709
         """
-        if self.request.method != 'POST':
-            return ''
+        if self.request.method != "POST":
+            return ""
         if self._file_upload_id:
             # cache this property for multiple calls within one request.
             # This avoids storing a file upload multiple times.
@@ -138,9 +136,11 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     @property
     def allow_nochange(self):
-        return self.field is not None and \
-            self.value is not None and \
-            self.value != self.field.missing_value
+        return (
+            self.field is not None
+            and self.value is not None
+            and self.value != self.field.missing_value
+        )
 
     @property
     def filename(self):
@@ -160,7 +160,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
     @property
     def _mimetype(self):
-        registry = getToolByName(self.context, 'mimetypes_registry', None)
+        registry = getToolByName(self.context, "mimetypes_registry", None)
         if not registry:
             return None
         try:
@@ -185,7 +185,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
         if mimetype:
             return mimetype.name()
         else:
-            return getattr(self.value, 'contentType', None)
+            return getattr(self.value, "contentType", None)
 
     @property
     def file_icon(self):
@@ -194,8 +194,9 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
         mimetype = self._mimetype
         if mimetype and mimetype.icon_path:
-            return "{}/{}".format(getToolByName(getSite(), 'portal_url')(),
-                              mimetype.icon_path)
+            return "{}/{}".format(
+                getToolByName(getSite(), "portal_url")(), mimetype.icon_path
+            )
         else:
             return None
 
@@ -206,7 +207,7 @@ class NamedFileWidget(Explicit, file.FileWidget):
             return None
         else:
             if isinstance(filename, str):
-                filename = filename.encode('utf-8')
+                filename = filename.encode("utf-8")
             return urllib.parse.quote_plus(filename)
 
     @property
@@ -216,90 +217,94 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
         url_parts = []
 
-        absolute_url_method = getattr(self.context, 'absolute_url', None)
+        absolute_url_method = getattr(self.context, "absolute_url", None)
         if absolute_url_method:
             if isinstance(self.form, Group):
-                url_parts.extend([
-                    absolute_url_method(),
-                    getattr(
-                        getattr(self.form, '__parent__', None),
-                        '__name__', None),
-                ])
+                url_parts.extend(
+                    [
+                        absolute_url_method(),
+                        getattr(
+                            getattr(self.form, "__parent__", None), "__name__", None
+                        ),
+                    ]
+                )
             else:
-                url_parts.extend([
-                    absolute_url_method(),
-                    getattr(self.form, '__name__', None),
-                ])
+                url_parts.extend(
+                    [
+                        absolute_url_method(),
+                        getattr(self.form, "__name__", None),
+                    ]
+                )
         else:
             url_parts.append(self.request.getURL())
 
-        url_parts.extend([
-            '++widget++' + self.name,
-            '@@download',
-            self.filename_encoded
-        ])
+        url_parts.extend(
+            ["++widget++" + self.name, "@@download", self.filename_encoded]
+        )
 
-        return '/'.join(p for p in url_parts if p)
+        return "/".join(p for p in url_parts if p)
 
     def action(self):
         action = self.request.get("%s.action" % self.name, "nochange")
         if self.is_uploaded or (
-            hasattr(self.form, 'successMessage')
+            hasattr(self.form, "successMessage")
             and self.form.status == self.form.successMessage
         ):
             # if form action completed successfully, we want nochange
-            action = 'nochange'
+            action = "nochange"
         return action
 
     def extract(self, default=NOVALUE):
         url = self.request.getURL()
         action = self.request.get("%s.action" % self.name, None)
-        if url.endswith('kss_z3cform_inline_validation')\
-                or url.endswith('z3cform_validate_field'):
+        if url.endswith("kss_z3cform_inline_validation") or url.endswith(
+            "z3cform_validate_field"
+        ):
             # Ignore validation requests.
-            action = 'nochange'
+            action = "nochange"
 
-        if action == 'remove':
+        if action == "remove":
             return None
-        elif action == 'nochange':
+        elif action == "nochange":
             if self.value is not None:
                 return self.value
 
-            if url.endswith('z3cform_validate_field'):
+            if url.endswith("z3cform_validate_field"):
                 # Ignore validation requests.
                 return None
 
             # Handle already uploaded files in case of previous form errors
-            file_upload_id = self.request.get(
-                "%s.file_upload_id" % self.name
-            ) or 0
+            file_upload_id = self.request.get("%s.file_upload_id" % self.name) or 0
             if file_upload_id:
                 upload_map = IFileUploadTemporaryStorage(getSite()).upload_map
                 fileinfo = upload_map.get(file_upload_id, {})
-                filename = fileinfo.get('filename')
-                data = fileinfo.get('data')
+                filename = fileinfo.get("filename")
+                data = fileinfo.get("data")
 
                 if filename or data:
                     if filename:
                         filename = safe_basename(filename)
-                    if (
-                            filename is not None
-                            and not isinstance(filename, str)
-                    ):
+                    if filename is not None and not isinstance(filename, str):
                         # work-around for
                         # https://bugs.launchpad.net/zope2/+bug/499696
-                        filename = filename.decode('utf-8')
+                        filename = filename.decode("utf-8")
                     del upload_map[file_upload_id]
                     value = {
-                        'data': data,
-                        'filename': filename,
+                        "data": data,
+                        "filename": filename,
                     }
                     ret = _make_namedfile(value, self.field, self)
                     return ret
 
             if self.ignoreContext:
                 return default
-            dm = getMultiAdapter((self.context, self.field,), IDataManager)
+            dm = getMultiAdapter(
+                (
+                    self.context,
+                    self.field,
+                ),
+                IDataManager,
+            )
             # For sub-widgets to function use a query() not get()
             data = dm.query(default)
             if data is not None:
@@ -320,10 +325,9 @@ class NamedFileWidget(Explicit, file.FileWidget):
 
 @implementer_only(INamedImageWidget)
 class NamedImageWidget(NamedFileWidget):
-    """A widget for a named file object
-    """
+    """A widget for a named file object"""
 
-    klass = 'named-image-widget'
+    klass = "named-image-widget"
 
     @property
     def width(self):
@@ -341,28 +345,26 @@ class NamedImageWidget(NamedFileWidget):
 
     @property
     def thumb_tag(self):
-        """ Return a img tag with a url to the preview scale and the width and
-            height of a thumbnail scale.
+        """Return a img tag with a url to the preview scale and the width and
+        height of a thumbnail scale.
 
-            This way on high pixel density screens the image is displayed in
-            screen pixels.
-            On non-high pixel density screens the browser will downsize them
-            as used to.
+        This way on high pixel density screens the image is displayed in
+        screen pixels.
+        On non-high pixel density screens the browser will downsize them
+        as used to.
         """
         try:
-            scales = getMultiAdapter(
-                (self.context, self.request), name='images')
+            scales = getMultiAdapter((self.context, self.request), name="images")
         except ComponentLookupError:
             # For example in the @@site-controlpanel after uploading an image,
             # because the context is a RecordsProxy.
-            return ''
+            return ""
         fieldname = self.field.getName()
-        thumb_scale = scales.scale(fieldname, scale='thumb')
-        preview_scale = scales.scale(fieldname, scale='preview')
+        thumb_scale = scales.scale(fieldname, scale="thumb")
+        preview_scale = scales.scale(fieldname, scale="preview")
         if preview_scale is not None and thumb_scale is not None:
-            return preview_scale.tag(width=thumb_scale.width,
-                                     height=thumb_scale.height)
-        return ''
+            return preview_scale.tag(width=thumb_scale.width, height=thumb_scale.height)
+        return ""
 
     @property
     def alt(self):
@@ -371,8 +373,7 @@ class NamedImageWidget(NamedFileWidget):
 
 @implementer(IPublishTraverse)
 class Download(DownloadBase):
-    """Download a file, via ../context/form/++widget++/@@download/filename
-    """
+    """Download a file, via ../context/form/++widget++/@@download/filename"""
 
     def __init__(self, context, request):
         super(BrowserView, self).__init__(context, request)
@@ -391,8 +392,7 @@ class Download(DownloadBase):
         # TODO: Security check on form view/widget
 
         if self.context.ignoreContext:
-            raise NotFound(
-                "Cannot get the data file from a widget with no context")
+            raise NotFound("Cannot get the data file from a widget with no context")
 
         if self.context.form is not None:
             content = aq_inner(self.context.form.getContent())
@@ -400,7 +400,13 @@ class Download(DownloadBase):
             content = aq_inner(self.context.context)
         field = aq_inner(self.context.field)
 
-        dm = getMultiAdapter((content, field,), IDataManager)
+        dm = getMultiAdapter(
+            (
+                content,
+                field,
+            ),
+            IDataManager,
+        )
         file_ = dm.get()
         file_ = _make_namedfile(file_, field, self.context)
 
@@ -408,7 +414,7 @@ class Download(DownloadBase):
             raise NotFound(self, self.filename, self.request)
 
         if not self.filename:
-            self.filename = getattr(file_, 'filename', None)
+            self.filename = getattr(file_, "filename", None)
 
         set_headers(file_, self.request.response, filename=self.filename)
         request_range = self.handle_request_range(file_)

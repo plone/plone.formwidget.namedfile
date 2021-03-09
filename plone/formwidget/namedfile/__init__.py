@@ -5,4 +5,4 @@ from plone.formwidget.namedfile.widget import NamedImageWidget  # noqa
 from zope.i18nmessageid import MessageFactory
 
 
-_ = MessageFactory('plone')
+_ = MessageFactory("plone")

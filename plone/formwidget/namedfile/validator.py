@@ -5,20 +5,16 @@ from zope.schema import ValidationError
 
 
 class InvalidState(ValidationError):
-    __doc__ = _('No file provided.')
+    __doc__ = _("No file provided.")
 
 
 class NamedFileWidgetValidator(validator.SimpleFieldValidator):
-
     def validate(self, value, force=False):
         """See interfaces.IValidator"""
         action = self.request.get("%s.action" % self.widget.name, None)
-        if action == 'replace' and value is None:
+        if action == "replace" and value is None:
             raise InvalidState()
         return super().validate(value, force)
 
 
-validator.WidgetValidatorDiscriminators(
-    NamedFileWidgetValidator,
-    field=INamedField
-)
+validator.WidgetValidatorDiscriminators(NamedFileWidgetValidator, field=INamedField)

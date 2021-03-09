@@ -2,14 +2,13 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '3.0.0.dev0'
+version = "3.0.0.dev0"
 
 setup(
-    name='plone.formwidget.namedfile',
+    name="plone.formwidget.namedfile",
     version=version,
     description="Image widget for z3c.form and Plone",
-    long_description=open("README.rst").read() + "\n" +
-    open("CHANGES.rst").read(),
+    long_description=open("README.rst").read() + "\n" + open("CHANGES.rst").read(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
@@ -22,24 +21,24 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords='plone image widget z3c.form',
-    author='Martin Aspeli',
-    author_email='optilude@gmail.com',
-    url='https://pypi.org/project/plone.formwidget.namedfile',
-    license='GPL',
+    keywords="plone image widget z3c.form",
+    author="Martin Aspeli",
+    author_email="optilude@gmail.com",
+    url="https://pypi.org/project/plone.formwidget.namedfile",
+    license="GPL",
     packages=find_packages(),
-    namespace_packages=['plone', 'plone.formwidget'],
+    namespace_packages=["plone", "plone.formwidget"],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'setuptools',
-        'plone.namedfile',
-        'plone.z3cform >= 0.7.4',
-        'z3c.form',
+        "setuptools",
+        "plone.namedfile",
+        "plone.z3cform >= 0.7.4",
+        "z3c.form",
     ],
     extras_require={
-        'test': [
-            'plone.app.testing',
+        "test": [
+            "plone.app.testing",
         ],
     },
     entry_points="""
