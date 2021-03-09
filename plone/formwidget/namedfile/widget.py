@@ -25,8 +25,7 @@ from plone.namedfile.utils import stream_data
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.MimetypesRegistry.interfaces import MimeTypeException
-from six.moves import urllib
-from z3c.form.browser import file
+from z3c.form.browser.file import FileWidget
 from z3c.form.group import Group
 from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IFieldWidget
@@ -46,6 +45,7 @@ from zope.size import byteDisplay
 
 import six
 import uuid
+import urllib
 
 
 def _make_namedfile(value, field, widget):
@@ -76,7 +76,7 @@ def _make_namedfile(value, field, widget):
 
 
 @implementer_only(INamedFileWidget)
-class NamedFileWidget(Explicit, file.FileWidget):
+class NamedFileWidget(Explicit, FileWidget):
     """A widget for a named file object"""
 
     klass = "named-file-widget"
