@@ -1,1 +1,0 @@
-Fix `NamedFileWidget` bug when trying to create value from `None`. [vangheem]
