@@ -8,18 +8,6 @@ Changelog
 
 .. towncrier release notes start
 
-3.0.0a1 (2021-06-14)
---------------------
-
-Bug fixes:
-
-
-- Fix `NamedFileWidget` bug when trying to create value from `None`. [vangheem] (#35)
-- Don't check for hard coded image size in test.
-  [agitator] (#40)
-- Overhaul for Plone 6: Skip Python 2 compatibility, pyupgrade, isort, black, manual cleanup. [jensens] (#47)
-
-
 2.1.0 (2020-06-24)
 ------------------
 
