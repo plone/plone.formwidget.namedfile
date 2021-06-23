@@ -752,10 +752,11 @@ Check that we have a good image that PIL can handle::
 
 Note that PIL cannot open this bytes image, so we cannot scale it::
 
-  >>> PIL.Image.open(six.BytesIO(content.image_field))
-  Traceback (most recent call last):
-  ...
-  OSError: cannot identify image file...
+  >>> try:
+  ...     PIL.Image.open(six.BytesIO(content.image_field))
+  ... except Exception as e:
+  ...     print(e)
+  cannot identify image file...
 
 Prepare for a new request cycle::
 
