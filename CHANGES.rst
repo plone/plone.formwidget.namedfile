@@ -8,6 +8,17 @@ Changelog
 
 .. towncrier release notes start
 
+2.1.1 (2021-06-30)
+------------------
+
+Bug fixes:
+
+
+- Fix `NamedFileWidget` bug when trying to create value from `None`. [vangheem] (#35)
+- Don't check for hard coded image size in test.
+  [agitator] (#40)
+
+
 2.1.0 (2020-06-24)
 ------------------
 
