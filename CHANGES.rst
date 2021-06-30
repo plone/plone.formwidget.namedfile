@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.0a2 (2021-06-30)
+--------------------
+
+Bug fixes:
+
+
+- Support for Pillow 8 in tests. [jensens] (#50)
+
+
 3.0.0a1 (2021-06-14)
 --------------------
 
