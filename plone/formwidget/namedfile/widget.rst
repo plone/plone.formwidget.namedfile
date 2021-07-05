@@ -543,6 +543,20 @@ and the converter will always set the value to z3c.form.interfaces.NOT_CHANGED::
   >>> image_converter.toFieldValue(u'') is NOT_CHANGED
   True
 
+On validation errors, file uploads are stored in a temporary storage. The id of the temporarily stored file is given
+by file_upload_id and action is set to 'nochange'.
+The widget returns the temporary file on `extract` as Named[Blob](File|Image) and the dataconverter will simply use it
+
+    >>> file_widget.request.form['widget.name.file.action'] = 'nochange'
+    >>> file_widget.request.form['widget.name.file.file_upload_id'] = '5c6cc90ce82941919daaeb62700e079a'
+    >>> file_converter.toFieldValue(NamedFile(data=b'testfile', filename=u'test.txt'))
+    <plone.namedfile.file.NamedFile object at ...>
+
+    >>> image_widget.request.form['widget.name.file.action'] = 'nochange'
+    >>> image_widget.request.form['widget.name.file.file_upload_id'] = '5c6cc90ce82941919daaeb62700e079a'
+    >>> file_converter.toFieldValue(NamedImage(data=b'testimage', filename=u'test.jpg'))
+    <plone.namedfile.file.NamedImage object at ...>
+
 
 The Base64Converter for Bytes fields
 ------------------------------------
