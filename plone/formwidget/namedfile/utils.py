@@ -11,13 +11,6 @@ from zope.interface import implementer
 from zope.interface import Interface
 from ZPublisher.HTTPRequest import FileUpload
 
-try:
-    from Products.CMFPlone.factory import _IMREALLYPLONE5  # noqa
-except ImportError:
-    PLONE_5 = False  # pragma: no cover
-else:
-    PLONE_5 = True  # pragma: no cover
-
 
 FILE_UPLOAD_MAP_KEY = "file_upload_map"
 FILE_UPLOAD_EXPIRATION_TIME = 30 * 60  # seconds
@@ -63,7 +56,7 @@ def get_scale_infos():
     available image scales.
     """
     from Products.CMFCore.interfaces import IPropertiesTool
-    if PLONE_5:
+    try:
         from plone.registry.interfaces import IRegistry
 
         registry = getUtility(IRegistry)
@@ -71,8 +64,7 @@ def get_scale_infos():
 
         imaging_settings = registry.forInterface(IImagingSchema, prefix="plone")
         allowed_sizes = imaging_settings.allowed_sizes
-
-    else:
+    except ImportError:  # Plone 4
         ptool = getUtility(IPropertiesTool)
         image_properties = ptool.imaging_properties
         allowed_sizes = image_properties.getProperty("allowed_sizes")
