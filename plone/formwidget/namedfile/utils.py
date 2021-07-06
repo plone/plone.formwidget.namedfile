@@ -6,9 +6,17 @@ from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
 from random import randint
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
+from zope.component import getUtility
 from zope.interface import implementer
 from zope.interface import Interface
 from ZPublisher.HTTPRequest import FileUpload
+
+try:
+    from Products.CMFPlone.factory import _IMREALLYPLONE5  # noqa
+except ImportError:
+    PLONE_5 = False  # pragma: no cover
+else:
+    PLONE_5 = True  # pragma: no cover
 
 
 FILE_UPLOAD_MAP_KEY = "file_upload_map"
@@ -48,3 +56,30 @@ class FileUploadTemporaryStorage:
             ):  # Avoid conflict errors by deleting only every fifth time  # noqa
                 # Delete expired files or files without timestamp
                 del upload_map[key]
+
+
+def get_scale_infos():
+    """Returns a list of (name, width, height) 3-tuples of the
+    available image scales.
+    """
+    from Products.CMFCore.interfaces import IPropertiesTool
+    if PLONE_5:
+        from plone.registry.interfaces import IRegistry
+
+        registry = getUtility(IRegistry)
+        from Products.CMFPlone.interfaces import IImagingSchema
+
+        imaging_settings = registry.forInterface(IImagingSchema, prefix="plone")
+        allowed_sizes = imaging_settings.allowed_sizes
+
+    else:
+        ptool = getUtility(IPropertiesTool)
+        image_properties = ptool.imaging_properties
+        allowed_sizes = image_properties.getProperty("allowed_sizes")
+
+    def split_scale_info(allowed_size):
+        name, dims = allowed_size.split(" ")
+        width, height = list(map(int, dims.split(":")))
+        return name, width, height
+
+    return [split_scale_info(size) for size in allowed_sizes]
