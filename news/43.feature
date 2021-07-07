@@ -1,0 +1,1 @@
+Add to generate configured Plone image scales on save when environment variable PLONE_SCALE_GENERATE_ON_SAVE=1 is set. With the default Plone configuration, this effectively removes on-demand image scaling on GET requests. [datakurre]

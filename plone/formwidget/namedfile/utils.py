@@ -1,14 +1,17 @@
 from BTrees.OOBTree import OOBTree
+from Products.CMFPlone.interfaces import IImagingSchema
+from ZPublisher.HTTPRequest import FileUpload
 from datetime import datetime
 from datetime import timedelta
 from persistent.dict import PersistentDict
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
+from plone.registry.interfaces import IRegistry
 from random import randint
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
-from zope.interface import implementer
+from zope.component import getUtility
 from zope.interface import Interface
-from ZPublisher.HTTPRequest import FileUpload
+from zope.interface import implementer
 
 
 FILE_UPLOAD_MAP_KEY = "file_upload_map"
@@ -48,3 +51,19 @@ class FileUploadTemporaryStorage:
             ):  # Avoid conflict errors by deleting only every fifth time  # noqa
                 # Delete expired files or files without timestamp
                 del upload_map[key]
+
+
+def get_scale_infos():
+    """Returns a list of (name, width, height) 3-tuples of the
+    available image scales.
+    """
+    registry = getUtility(IRegistry)
+    imaging_settings = registry.forInterface(IImagingSchema, prefix="plone")
+    allowed_sizes = imaging_settings.allowed_sizes
+
+    def split_scale_info(allowed_size):
+        name, dims = allowed_size.split(" ")
+        width, height = list(map(int, dims.split(":")))
+        return name, width, height
+
+    return [split_scale_info(size) for size in allowed_sizes]
