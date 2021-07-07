@@ -1,15 +1,17 @@
 from BTrees.OOBTree import OOBTree
+from Products.CMFPlone.interfaces import IImagingSchema
+from ZPublisher.HTTPRequest import FileUpload
 from datetime import datetime
 from datetime import timedelta
 from persistent.dict import PersistentDict
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
+from plone.registry.interfaces import IRegistry
 from random import randint
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.component import getUtility
-from zope.interface import implementer
 from zope.interface import Interface
-from ZPublisher.HTTPRequest import FileUpload
+from zope.interface import implementer
 
 
 FILE_UPLOAD_MAP_KEY = "file_upload_map"
@@ -55,19 +57,9 @@ def get_scale_infos():
     """Returns a list of (name, width, height) 3-tuples of the
     available image scales.
     """
-    from Products.CMFCore.interfaces import IPropertiesTool
-    try:
-        from plone.registry.interfaces import IRegistry
-
-        registry = getUtility(IRegistry)
-        from Products.CMFPlone.interfaces import IImagingSchema
-
-        imaging_settings = registry.forInterface(IImagingSchema, prefix="plone")
-        allowed_sizes = imaging_settings.allowed_sizes
-    except ImportError:  # Plone 4
-        ptool = getUtility(IPropertiesTool)
-        image_properties = ptool.imaging_properties
-        allowed_sizes = image_properties.getProperty("allowed_sizes")
+    registry = getUtility(IRegistry)
+    imaging_settings = registry.forInterface(IImagingSchema, prefix="plone")
+    allowed_sizes = imaging_settings.allowed_sizes
 
     def split_scale_info(allowed_size):
         name, dims = allowed_size.split(" ")
