@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 @adapter(Interface, INamedImageField)
 class NamedImageAttributeField(AttributeField):
 
-    scale_generate_on_save = False
+    scale_generate_on_save = (
+        os.environ.get(ENVIRONMENT_KEY) or ""
+    ).lower() in ["1", "true", "yes", "on"]
 
     def set(self, value):
         """See z3c.form.interfaces.IDataManager"""
@@ -33,11 +35,6 @@ class NamedImageAttributeField(AttributeField):
         if self.scale_generate_on_save:
             schedule_plone_scale_generate_on_save(
                 self.context, getRequest(), self.field.__name__)
-
-
-NamedImageAttributeField.scale_generate_on_save = (
-    os.environ.get(ENVIRONMENT_KEY) or ""
-).lower() in ["1", "true", "yes", "on"]
 
 
 def schedule_plone_scale_generate_on_save(context, request, fieldname):
