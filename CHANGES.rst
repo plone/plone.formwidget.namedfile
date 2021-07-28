@@ -8,6 +8,21 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.0a3 (2021-07-28)
+--------------------
+
+New features:
+
+
+- Add to generate configured Plone image scales on save when environment variable PLONE_SCALE_GENERATE_ON_SAVE=1 is set. With the default Plone configuration, this effectively removes on-demand image scaling on GET requests. [datakurre] (#43)
+
+
+Bug fixes:
+
+
+- Fix issue where already uploaded images were lost when file validation error occurs (https://github.com/plone/plone.formwidget.namedfile/issues/46)  [fRiSi] (#46)
+
+
 3.0.0a2 (2021-06-30)
 --------------------
 
