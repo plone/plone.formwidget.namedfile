@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+2.1.2 (2021-07-28)
+------------------
+
+Bug fixes:
+
+
+- Fix issue where already uploaded images were lost when file validation error occurs (https://github.com/plone/plone.formwidget.namedfile/issues/46)  [fRiSi] (#46)
+
+
 2.1.1 (2021-06-30)
 ------------------
 
