@@ -39,13 +39,18 @@ class FileUploadTemporaryStorage(object):
         upload_map = annotations.setdefault(FILE_UPLOAD_MAP_KEY, OOBTree())
         return upload_map
 
-    def cleanup(self):
+    def cleanup(self, force=False):
         """Remove obsolete temporary uploads.
+
+        To avoid conflict errors, files are deleted on every ~5th method call.
+        Use force to make sure all expired files are deleted
         """
         upload_map = self.upload_map
         expiration_limit = datetime.now() - timedelta(seconds=FILE_UPLOAD_EXPIRATION_TIME)
+        # Avoid conflict errors by deleting only every fifth time
+        delete = force or randint(0, 5) == 0
         for key in list(upload_map.keys()):
             dt = upload_map[key].get('dt', FALLBACK_DATE)
-            if dt < expiration_limit and randint(0, 5) == 0:  # Avoid conflict errors by deleting only every fifth time  # noqa
+            if dt < expiration_limit and delete:
                 # Delete expired files or files without timestamp
                 del upload_map[key]
