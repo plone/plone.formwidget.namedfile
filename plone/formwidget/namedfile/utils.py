@@ -17,7 +17,7 @@ from zope.interface import implementer
 FILE_UPLOAD_MAP_KEY = "file_upload_map"
 FILE_UPLOAD_EXPIRATION_TIME = 30 * 60  # seconds
 FALLBACK_DATE = datetime(2000, 2, 2)
-
+CLEANUP_INTERVAL = 5
 
 def is_file_upload(item):
     """Check if ``item`` is a file upload."""
@@ -40,13 +40,19 @@ class FileUploadTemporaryStorage:
         upload_map = annotations.setdefault(FILE_UPLOAD_MAP_KEY, OOBTree())
         return upload_map
 
-    def cleanup(self):
-        """Remove obsolete temporary uploads."""
+    def cleanup(self, force=False):
+        """Remove obsolete temporary uploads.
+
+        To avoid conflict errors, files are deleted on every ~5th method call.
+        Use force to make sure all expired files are deleted
+        """
         upload_map = self.upload_map
         expiration_limit = datetime.now() - timedelta(seconds=FILE_UPLOAD_EXPIRATION_TIME)
+        # Avoid conflict errors by deleting only every fifth time
+        delete = force or randint(1, CLEANUP_INTERVAL) == 1
         for key in list(upload_map.keys()):
             dt = upload_map[key].get('dt', FALLBACK_DATE)
-            if dt < expiration_limit and randint(0, 5) == 0:  # Avoid conflict errors by deleting only every fifth time  # noqa
+            if dt < expiration_limit and delete:
                 # Delete expired files or files without timestamp
                 del upload_map[key]
 
