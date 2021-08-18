@@ -43,12 +43,10 @@ class FileUploadTemporaryStorage:
     def cleanup(self):
         """Remove obsolete temporary uploads."""
         upload_map = self.upload_map
-        for key, val in upload_map.items():
-            if (
-                val.get("dt", FALLBACK_DATE)
-                < (datetime.now() - timedelta(seconds=FILE_UPLOAD_EXPIRATION_TIME))
-                and randint(0, 5) == 0
-            ):  # Avoid conflict errors by deleting only every fifth time  # noqa
+        expiration_limit = datetime.now() - timedelta(seconds=FILE_UPLOAD_EXPIRATION_TIME)
+        for key in list(upload_map.keys()):
+            dt = upload_map[key].get('dt', FALLBACK_DATE)
+            if dt < expiration_limit and randint(0, 5) == 0:  # Avoid conflict errors by deleting only every fifth time  # noqa
                 # Delete expired files or files without timestamp
                 del upload_map[key]
 
