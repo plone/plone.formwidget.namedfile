@@ -1,0 +1,1 @@
+Fix issue where expired temporary uploads have not been removed when calling FileUploadTemporaryStorage.cleanup() (https://github.com/plone/plone.formwidget.namedfile/issues/52) [fRiSi]
