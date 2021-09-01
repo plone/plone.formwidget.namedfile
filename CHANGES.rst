@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+2.1.3 (2021-09-01)
+------------------
+
+Bug fixes:
+
+
+- Fix issue where expired temporary uploads have not been removed when calling FileUploadTemporaryStorage.cleanup() (https://github.com/plone/plone.formwidget.namedfile/issues/52) [fRiSi] (#52)
+- Make CLEANUP_INTERVAL patchable and fix condition (https://github.com/plone/plone.formwidget.namedfile/issues/54) (#54)
+
+
 2.1.2 (2021-07-28)
 ------------------
 
