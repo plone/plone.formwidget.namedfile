@@ -1,1 +1,0 @@
-Make CLEANUP_INTERVAL patchable and fix condition (https://github.com/plone/plone.formwidget.namedfile/issues/54)
