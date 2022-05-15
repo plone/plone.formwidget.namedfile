@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.0a5 (2022-05-15)
+--------------------
+
+Bug fixes:
+
+
+- Removed z3c.autoinclude.plugin entrypoint. [maurits] (#3188)
+
+
 3.0.0a4 (2021-09-15)
 --------------------
 
