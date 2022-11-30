@@ -57,6 +57,7 @@ def _make_namedfile(value, field, widget):
         return value
 
     string_types = (bytes, str)
+    data = None
     if isinstance(value, string_types) and IBytes.providedBy(field):
         filename, data = b64decode_file(value)
     elif isinstance(value, dict) or isinstance(value, PersistentDict):
