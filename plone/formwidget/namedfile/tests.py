@@ -39,7 +39,6 @@ class DummyContent(SimpleItem):
 
 
 class ScaleGenerateOnSaveTests(unittest.TestCase):
-
     layer = FUNCTIONAL_TESTING
 
     def setUp(self):
@@ -72,7 +71,9 @@ class ScaleGenerateOnSaveTests(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ScaleGenerateOnSaveTests))
+    suite.addTest(
+        unittest.defaultTestLoader.loadTestsFromTestCase(ScaleGenerateOnSaveTests)
+    )
     suite.addTest(
         layered(
             doctest.DocFileSuite(
