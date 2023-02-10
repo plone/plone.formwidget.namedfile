@@ -1,17 +1,17 @@
 from BTrees.OOBTree import OOBTree
-from Products.CMFPlone.interfaces import IImagingSchema
-from ZPublisher.HTTPRequest import FileUpload
 from datetime import datetime
 from datetime import timedelta
 from persistent.dict import PersistentDict
+from plone.base.interfaces import IImagingSchema
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
 from plone.registry.interfaces import IRegistry
 from random import randint
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.component import getUtility
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
+from ZPublisher.HTTPRequest import FileUpload
 
 
 FILE_UPLOAD_MAP_KEY = "file_upload_map"
