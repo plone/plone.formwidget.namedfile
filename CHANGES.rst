@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.1 (2023-02-22)
+------------------
+
+Bug fixes:
+
+
+- Fix deprecation warnings (#58)
+
+
 3.0.0 (2022-11-30)
 ------------------
 
