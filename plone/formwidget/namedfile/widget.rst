@@ -496,12 +496,13 @@ content type::
 
   >>> myfile = six.BytesIO(b'File upload contents.')
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
-  >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('utf8'),
+  >>> # Still, we must decode it using latin-1 according to HTTP/1.1.
+  >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('latin-1'),
   ...     headers={'Content-Type': 'text/x-dummy'})
   >>> file_obj = file_converter.toFieldValue(FileUpload(aFieldStorage))
   >>> file_obj.data
   b'File upload contents.'
-  >>> file_obj.filename.encode('utf8')
+  >>> file_obj.filename.encode('utf-8')
   b'rand\xc3\xb8m.txt'
 
 Content type from headers sent by browser should be ignored::
@@ -640,7 +641,8 @@ filename too::
 
   >>> myfile = six.BytesIO(b'File upload contents.')
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
-  >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('utf8'),
+  >>> # Still, we must decode it using latin-1 according to HTTP/1.1.
+  >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('latin-1'),
   ...     headers={'Content-Type': 'text/x-dummy'})
   >>> bytes_file_converter.toFieldValue(FileUpload(aFieldStorage))
   b'filenameb64:cmFuZMO4bS50eHQ=;datab64:RmlsZSB1cGxvYWQgY29udGVudHMu'
