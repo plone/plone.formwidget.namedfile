@@ -18,8 +18,6 @@ from zope.interface import implementer
 from ZPublisher.pubevents import PubSuccess
 
 import doctest
-import re
-import six
 import unittest
 
 

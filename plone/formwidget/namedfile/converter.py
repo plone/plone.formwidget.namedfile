@@ -10,10 +10,8 @@ from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import NOT_CHANGED
 from zope.component import adapts
 from zope.schema.interfaces import IBytes
-from ZPublisher.HTTPRequest import FileUpload
 
 import base64
-import six
 
 
 class NamedDataConverter(BaseDataConverter):

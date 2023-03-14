@@ -1,7 +1,6 @@
 from BTrees.OOBTree import OOBTree
 from datetime import datetime
 from datetime import timedelta
-from persistent.dict import PersistentDict
 from plone.base.interfaces import IImagingSchema
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
 from plone.registry.interfaces import IRegistry

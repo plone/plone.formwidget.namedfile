@@ -43,7 +43,6 @@ from zope.publisher.interfaces import NotFound
 from zope.schema.interfaces import IBytes
 from zope.size import byteDisplay
 
-import six
 import urllib
 import uuid
 
