@@ -612,16 +612,16 @@ Like so::
   ...     NamedImage(data=b'testimage', filename=u'test.png'))
   b'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl'
 
-A Base 64 encoded structure like descibed above is converted to the appropriate
+A Base 64 encoded structure like described above is converted to the appropriate
 type::
 
-  >>> afile = bytes_file_converter.toWidgetValue(
+  >>> a_file = bytes_file_converter.toWidgetValue(
   ...     b'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU=')
-  >>> afile
+  >>> a_file
   <plone.namedfile.file.NamedFile object at ...>
-  >>> afile.data
+  >>> a_file.data
   b'testfile'
-  >>> afile.filename
+  >>> a_file.filename
   'test.txt'
 
   >>> aimage = bytes_image_converter.toWidgetValue(
