@@ -23,17 +23,20 @@ logger = logging.getLogger(__name__)
 
 @adapter(Interface, INamedImageField)
 class NamedImageAttributeField(AttributeField):
-
-    scale_generate_on_save = (
-        os.environ.get(ENVIRONMENT_KEY) or ""
-    ).lower() in ["1", "true", "yes", "on"]
+    scale_generate_on_save = (os.environ.get(ENVIRONMENT_KEY) or "").lower() in [
+        "1",
+        "true",
+        "yes",
+        "on",
+    ]
 
     def set(self, value):
         """See z3c.form.interfaces.IDataManager"""
         super().set(value)
         if self.scale_generate_on_save:
             schedule_plone_scale_generate_on_save(
-                self.context, getRequest(), self.field.__name__)
+                self.context, getRequest(), self.field.__name__
+            )
 
 
 def schedule_plone_scale_generate_on_save(context, request, fieldname):
@@ -60,13 +63,20 @@ def plone_scale_generate_on_save(event):
             image = getattr(context, fieldname, None)
             if image:  # REST API requires this scale to refer the original
                 width, height = image.getImageSize()
-                images.scale(fieldname,
-                             width=width, height=height, direction="thumbnail")
-            msg = "/".join(filter(bool, ["/".join(context.getPhysicalPath()),
-                                         "@@images", fieldname]))
+                images.scale(
+                    fieldname, width=width, height=height, direction="thumbnail"
+                )
+            msg = "/".join(
+                filter(
+                    bool, ["/".join(context.getPhysicalPath()), "@@images", fieldname]
+                )
+            )
             t.note(msg)
             t.commit()
         except ConflictError:
-            msg = "/".join(filter(bool, ["/".join(context.getPhysicalPath()),
-                                         "@@images", fieldname]))
+            msg = "/".join(
+                filter(
+                    bool, ["/".join(context.getPhysicalPath()), "@@images", fieldname]
+                )
+            )
             logger.warning("ConflictError. Scale not generated on save: " + msg)

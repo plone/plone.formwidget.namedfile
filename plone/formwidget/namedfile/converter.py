@@ -26,8 +26,10 @@ class NamedDataConverter(BaseDataConverter):
 
     def toFieldValue(self, value):
         action = self.widget.request.get("%s.action" % self.widget.name, None)
-        file_upload_id = self.widget.request.get("%s.file_upload_id" % self.widget.name, None) or 0
-        if action == 'nochange' and not file_upload_id:
+        file_upload_id = (
+            self.widget.request.get("%s.file_upload_id" % self.widget.name, None) or 0
+        )
+        if action == "nochange" and not file_upload_id:
             return NOT_CHANGED
 
         if value is None or value == "":
@@ -37,7 +39,6 @@ class NamedDataConverter(BaseDataConverter):
             return value
 
         elif utils.is_file_upload(value):
-
             filename = safe_basename(value.filename)
 
             if filename is not None and isinstance(filename, bytes):
@@ -92,7 +93,6 @@ class Base64Converter(BaseDataConverter):
     adapts(IBytes, INamedFileWidget)
 
     def toWidgetValue(self, value):
-
         if not isinstance(value, (str, bytes)):
             return None
 
@@ -105,7 +105,6 @@ class Base64Converter(BaseDataConverter):
         return value
 
     def toFieldValue(self, value):
-
         filename = None
         data = None
 

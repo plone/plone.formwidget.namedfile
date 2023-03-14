@@ -380,7 +380,6 @@ class Download(DownloadBase):
         self.filename = None
 
     def publishTraverse(self, request, name):
-
         if self.filename is None:  # ../@@download/filename
             self.filename = name
         else:
