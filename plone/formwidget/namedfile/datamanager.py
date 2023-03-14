@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.formwidget.namedfile.interfaces import IScaleGenerateOnSave
 from plone.formwidget.namedfile.utils import get_scale_infos
 from plone.namedfile.field import INamedImageField
@@ -31,7 +30,7 @@ class NamedImageAttributeField(AttributeField):
 
     def set(self, value):
         """See z3c.form.interfaces.IDataManager"""
-        super(NamedImageAttributeField, self).set(value)
+        super().set(value)
         if self.scale_generate_on_save:
             schedule_plone_scale_generate_on_save(
                 self.context, getRequest(), self.field.__name__)
