@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.2 (2023-03-14)
+------------------
+
+Bug fixes:
+
+
+- Test fix: use latin-1 decoded filename in tests with FileUpload.
+  [maurits] (#1094)
+
+
 3.0.1 (2023-02-22)
 ------------------
 
