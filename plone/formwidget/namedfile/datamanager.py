@@ -7,8 +7,8 @@ from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.component import getMultiAdapter
 from zope.globalrequest import getRequest
-from zope.interface import Interface
 from zope.interface import alsoProvides
+from zope.interface import Interface
 
 import logging
 import os

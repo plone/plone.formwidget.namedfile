@@ -44,8 +44,8 @@ from zope.schema.interfaces import IBytes
 from zope.size import byteDisplay
 
 import six
-import uuid
 import urllib
+import uuid
 
 
 def _make_namedfile(value, field, widget):
