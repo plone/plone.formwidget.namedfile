@@ -32,15 +32,24 @@ setup(
     zip_safe=False,
     python_requires=">=3.8",
     install_requires=[
+        "BTrees",
         "setuptools",
         "plone.base",
         "plone.namedfile",
-        "plone.z3cform >= 0.7.4",
+        "Products.MimetypesRegistry",
+        "persistent",
+        "plone.registry",
         "z3c.form",
+        "zope.annotation",
+        "zope.size",
     ],
     extras_require={
         "test": [
+            "Pillow",
             "plone.app.testing",
+            "plone.scale",
+            "plone.testing",
+            "zope.pagetemplate",
         ],
     },
 )
