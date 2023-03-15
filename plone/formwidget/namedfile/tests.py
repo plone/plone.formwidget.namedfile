@@ -76,7 +76,7 @@ def test_suite():
         layered(
             doctest.DocFileSuite(
                 "widget.rst",
-                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
+                optionflags=(doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
                 encoding="utf-8",
             ),
             layer=INTEGRATION_TESTING,
