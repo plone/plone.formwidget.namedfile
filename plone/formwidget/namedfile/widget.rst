@@ -83,22 +83,20 @@ Later, we will show more advanced functionality when using a field-widget::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <span id="widget.id.file" class="named-file-widget">
-    <input type="file" id="widget.id.file-input"
-           name="widget.name.file" />
+  <span id="widget.id.file" class="named-file-widget" >
+      <input type="file" id="widget.id.file-input" name="widget.name.file" />
   </span>
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <span id="widget.id.image" class="named-image-widget">
-      <input type="file" id="widget.id.image-input"
-             name="widget.name.image" />
+  <span id="widget.id.image" class="named-image-widget" >
+      <input type="file" id="widget.id.image-input" name="widget.name.image" />
   </span>
 
 We can extract simple file data from the widget like this::
 
-  >>> import six
-  >>> myfile = six.BytesIO(b'My file contents.')
+  >>> from io import BytesIO
+  >>> myfile = BytesIO(b'My file contents.')
 
   >>> file_widget = make_file_widget(make_request(form={'widget.name.file': myfile}))
   >>> file_widget.update()
@@ -137,7 +135,7 @@ Let's define a FieldStorage stub for easy use with the FileUpload::
 
 Now build a FileUpload::
 
-  >>> myfile = six.BytesIO(b'File upload contents.')
+  >>> myfile = BytesIO(b'File upload contents.')
   >>> aFieldStorage = FieldStorageStub(myfile)
   >>> myUpload = FileUpload(aFieldStorage)
 
@@ -156,15 +154,13 @@ First use a GET request::
 The rendering is unchanged:
 
   >>> print(file_widget.render())
-  <span id="widget.id.file" class="named-file-widget">
-      <input type="file" id="widget.id.file-input"
-             name="widget.name.file" />
+  <span id="widget.id.file" class="named-file-widget" >
+      <input type="file" id="widget.id.file-input" name="widget.name.file" />
   </span>
 
   >>> print(image_widget.render())
-  <span id="widget.id.image" class="named-image-widget">
-      <input type="file" id="widget.id.image-input"
-             name="widget.name.image" />
+  <span id="widget.id.image" class="named-image-widget" >
+      <input type="file" id="widget.id.image-input" name="widget.name.image" />
   </span>
 
 Now use a POST request (the default in our make_request helper function)::
@@ -182,30 +178,28 @@ Now use a POST request (the default in our make_request helper function)::
 The rendering contains data about the file upload id::
 
   >>> print(file_widget.render())
-  <span id="widget.id.file" class="named-file-widget">
-      <input type="hidden" name="widget.name.file.file_upload_id" value="...
+  <span id="widget.id.file" class="named-file-widget" >
+      <input name="widget.name.file.file_upload_id" type="hidden" value="...
       <span>
         File already uploaded:
         foo.bar
       </span>
-      <input type="file" id="widget.id.file-input"
-             name="widget.name.file" />
+      <input type="file" id="widget.id.file-input" name="widget.name.file" />
   </span>
 
   >>> print(image_widget.render())
-  <span id="widget.id.image" class="named-image-widget">
-      <input type="hidden" name="widget.name.image.file_upload_id" value="...
+  <span id="widget.id.image" class="named-image-widget" >
+      <input name="widget.name.image.file_upload_id" type="hidden" value="...
       <span>
         Image already uploaded:
         foo.bar
       </span>
-      <input type="file" id="widget.id.image-input"
-             name="widget.name.image" />
+      <input type="file" id="widget.id.image-input" name="widget.name.image" />
   </span>
 
 Empty, unnamed FileUploads are treated as having no value::
 
-  >>> emptyfile = six.BytesIO(b'')
+  >>> emptyfile = BytesIO(b'')
   >>> aFieldStorage = FieldStorageStub(emptyfile, filename='')
   >>> myEmptyUpload = FileUpload(aFieldStorage)
 
@@ -283,16 +277,14 @@ At first, there is no value, so the behaviour is much like before::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <span id="widget.id.file" class="named-file-widget required namedfile-field">
-      <input type="file" id="widget.id.file-input"
-             name="widget.name.file" />
+  <span id="widget.id.file" class="named-file-widget required namedfile-field" >
+      <input type="file" id="widget.id.file-input" name="widget.name.file" />
   </span>
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <span id="widget.id.image" class="named-image-widget required namedimage-field">
-      <input type="file" id="widget.id.image-input"
-             name="widget.name.image" />
+  <span id="widget.id.image" class="named-image-widget required namedimage-field" >
+      <input type="file" id="widget.id.image-input" name="widget.name.image" />
   </span>
 
 However, if we now set a value, we will have the option of keeping it,
@@ -312,19 +304,19 @@ characters::
   >>> image_widget.request = make_request(form={'widget.name.image': myUpload})
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required namedfile-field">...
+  <... id="widget.id.file" class="named-file-widget required namedfile-field" >...
   <a href="http://127.0.0.1/content1/++widget++widget.name.file/@@download/data_%E6%B7%B1.txt" >data_深.txt</a>...
-  <input type="radio"... id="widget.id.file-nochange"...
-  <input type="radio"... id="widget.id.file-replace"...
-  <input type="file"... id="widget.id.file-input"...
+  <input... type="radio"... id="widget.id.file-nochange"...
+  <input... type="radio"... id="widget.id.file-replace"...
+  <input... type="file"... id="widget.id.file-input"...
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required namedimage-field">...
+  <... id="widget.id.image" class="named-image-widget required namedimage-field" >...
   <a href="http://127.0.0.1/content1/++widget++widget.name.image/@@download/faux.jpg" >faux.jpg</a>...
-  <input type="radio"... id="widget.id.image-nochange"...
-  <input type="radio"... id="widget.id.image-replace"...
-  <input type="file"... id="widget.id.image-input"...
+  <input... type="radio"... id="widget.id.image-nochange"...
+  <input... type="radio"... id="widget.id.image-replace"...
+  <input... type="file"... id="widget.id.image-input"...
 
 Note: since we did not save anything, no scale is shown.
 
@@ -332,7 +324,7 @@ Notice how there are radio buttons to decide whether to upload a new file or
 keep the existing one. If the '.action' field is not submitted or is
 empty, the behaviour is the same as before::
 
-  >>> myfile = six.BytesIO(b'File upload contents.')
+  >>> myfile = BytesIO(b'File upload contents.')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='test2.txt')
   >>> myUpload = FileUpload(aFieldStorage)
 
@@ -356,21 +348,21 @@ setup the widget with a new value::
 If the widgets are rendered again, the newly uploaded files will be shown::
 
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required namedfile-field">...
+  <... id="widget.id.file" class="named-file-widget required namedfile-field" >...
   <a href="http://127.0.0.1/content1/++widget++widget.name.file/@@download/test2.txt" >test2.txt</a>...
-  <input type="radio"... id="widget.id.file-nochange"...
-  <input type="radio"... id="widget.id.file-replace"...
-  <input type="file"... id="widget.id.file-input"...
+  <input... type="radio"... id="widget.id.file-nochange"...
+  <input... type="radio"... id="widget.id.file-replace"...
+  <input... type="file"... id="widget.id.file-input"...
 
   >>> print(image_widget.thumb_tag)
   <img src="http://127.0.0.1/content1/@@images/...jpeg" alt="A content item" title="A content item" height="..." width="..." />
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required namedimage-field">...
+  <... id="widget.id.image" class="named-image-widget required namedimage-field" >...
   <img src="http://127.0.0.1/content1/@@images/...jpeg" alt="A content item" title="A content item" height="..." width="..." />...
   <a href="http://127.0.0.1/content1/++widget++widget.name.image/@@download/faux2.jpg" >faux2.jpg</a>...
-  <input type="radio"... id="widget.id.image-nochange"...
-  <input type="radio"... id="widget.id.image-replace"...
-  <input type="file"... id="widget.id.image-input"...
+  <input... type="radio"... id="widget.id.image-nochange"...
+  <input... type="radio"... id="widget.id.image-replace"...
+  <input... type="file"... id="widget.id.image-input"...
 
 However, if we provide the '.action' field, we get back the value currently
 stored in the field::
@@ -494,7 +486,7 @@ The content type sent by the browser will be ignored because it's unreliable
 - it's left to the implementation of the file field to determine the proper
 content type::
 
-  >>> myfile = six.BytesIO(b'File upload contents.')
+  >>> myfile = BytesIO(b'File upload contents.')
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
   >>> # Still, we must decode it using latin-1 according to HTTP/1.1.
   >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('latin-1'),
@@ -524,7 +516,7 @@ Content type from headers sent by browser should be ignored::
 However, a zero-length, unnamed FileUpload results in the field's missing_value
 being returned::
 
-  >>> myfile = six.BytesIO(b'')
+  >>> myfile = BytesIO(b'')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='', headers={'Content-Type': 'application/octet-stream'})
   >>> field_value = file_converter.toFieldValue(FileUpload(aFieldStorage))
   >>> field_value is IContent['file_field'].missing_value
@@ -612,16 +604,16 @@ Like so::
   ...     NamedImage(data=b'testimage', filename=u'test.png'))
   b'filenameb64:dGVzdC5wbmc=;datab64:dGVzdGltYWdl'
 
-A Base 64 encoded structure like descibed above is converted to the appropriate
+A Base 64 encoded structure like described above is converted to the appropriate
 type::
 
-  >>> afile = bytes_file_converter.toWidgetValue(
+  >>> a_file = bytes_file_converter.toWidgetValue(
   ...     b'filenameb64:dGVzdC50eHQ=;datab64:dGVzdGZpbGU=')
-  >>> afile
+  >>> a_file
   <plone.namedfile.file.NamedFile object at ...>
-  >>> afile.data
+  >>> a_file.data
   b'testfile'
-  >>> afile.filename
+  >>> a_file.filename
   'test.txt'
 
   >>> aimage = bytes_image_converter.toWidgetValue(
@@ -639,7 +631,7 @@ Convert a file upload to the Base 64 encoded field value and handle the
 filename too::
 
 
-  >>> myfile = six.BytesIO(b'File upload contents.')
+  >>> myfile = BytesIO(b'File upload contents.')
   >>> # \xc3\xb8 is UTF-8 for a small letter o with slash
   >>> # Still, we must decode it using latin-1 according to HTTP/1.1.
   >>> aFieldStorage = FieldStorageStub(myfile, filename=b'rand\xc3\xb8m.txt'.decode('latin-1'),
@@ -650,7 +642,7 @@ filename too::
 A zero-length, unnamed FileUpload results in the field's missing_value
 being returned::
 
-  >>> myfile = six.BytesIO(b'')
+  >>> myfile = BytesIO(b'')
   >>> aFieldStorage = FieldStorageStub(myfile, filename='', headers={'Content-Type': 'application/octet-stream'})
   >>> field_value = bytes_file_converter.toFieldValue(FileUpload(aFieldStorage))
   >>> field_value is IBytesContent['file_field'].missing_value
@@ -719,20 +711,20 @@ Our content has no value yet::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <span id="widget.id.file" class="named-file-widget required bytes-field">
+  <span id="widget.id.file" class="named-file-widget required bytes-field" >
       <input type="file" id="widget.id.file-input" name="widget.name.file" />
   </span>
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <span id="widget.id.image" class="named-image-widget required bytes-field">
+  <span id="widget.id.image" class="named-image-widget required bytes-field" >
       <input type="file" id="widget.id.image-input" name="widget.name.image" />
   </span>
 
 
 Let's upload data::
 
-  >>> data = six.BytesIO(b'file 1 content.')
+  >>> data = BytesIO(b'file 1 content.')
   >>> field_storage = FieldStorageStub(data, filename='file1.txt')
   >>> upload = FileUpload(field_storage)
 
@@ -769,7 +761,7 @@ Check that we have a good image that PIL can handle::
 Note that PIL cannot open this bytes image, so we cannot scale it::
 
   >>> try:
-  ...     PIL.Image.open(six.BytesIO(content.image_field))
+  ...     PIL.Image.open(BytesIO(content.image_field))
   ... except Exception as e:
   ...     print(e)
   cannot identify image file...
@@ -784,19 +776,19 @@ The upload shows up in the rendered widget::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required bytes-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field" >...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/file1.txt" >file1.txt</a>...
-  <input type="radio"... id="widget.id.file-nochange"...
-  <input type="radio"... id="widget.id.file-replace"...
-  <input type="file"... id="widget.id.file-input"...
+  <input... type="radio"... id="widget.id.file-nochange"...
+  <input... type="radio"... id="widget.id.file-replace"...
+  <input... type="file"... id="widget.id.file-input"...
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required bytes-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field" >...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/image.jpg" >image.jpg</a>...
-  <input type="radio"... id="widget.id.image-nochange"...
-  <input type="radio"... id="widget.id.image-replace"...
-  <input type="file"... id="widget.id.image-input"...
+  <input... type="radio"... id="widget.id.image-nochange"...
+  <input... type="radio"... id="widget.id.image-replace"...
+  <input... type="file"... id="widget.id.image-input"...
 
 Like we said, we cannot scale this bytes image, so the thumb tag is empty::
 
@@ -810,7 +802,7 @@ Prepare for a new request cycle::
 
 Now overwrite with other data::
 
-  >>> data = six.BytesIO(b'random file content')
+  >>> data = BytesIO(b'random file content')
   >>> field_storage = FieldStorageStub(data, filename='plone.pdf')
   >>> upload = FileUpload(field_storage)
 
@@ -825,7 +817,7 @@ Now overwrite with other data::
   b'filenameb64:cGxvbmUucGRm;datab64:cmFuZG9tIGZpbGUgY29udGVudA=='
 
 
-  >>> data = six.BytesIO(b'no image')
+  >>> data = BytesIO(b'no image')
   >>> field_storage = FieldStorageStub(data, filename='logo.tiff')
   >>> upload = FileUpload(field_storage)
 
@@ -850,19 +842,19 @@ The new image/file shows up in the rendered widget::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required bytes-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field" >...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
-  <input type="radio"... id="widget.id.file-nochange"...
-  <input type="radio"... id="widget.id.file-replace"...
-  <input type="file"... id="widget.id.file-input"...
+  <input... type="radio"... id="widget.id.file-nochange"...
+  <input... type="radio"... id="widget.id.file-replace"...
+  <input... type="file"... id="widget.id.file-input"...
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required bytes-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field" >...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
-  <input type="radio"... id="widget.id.image-nochange"...
-  <input type="radio"... id="widget.id.image-replace"...
-  <input type="file"... id="widget.id.image-input"...
+  <input... type="radio"... id="widget.id.image-nochange"...
+  <input... type="radio"... id="widget.id.image-replace"...
+  <input... type="file"... id="widget.id.image-input"...
 
 
 Prepare for a new request cycle::
@@ -906,19 +898,19 @@ The previous image/file should be kept::
 
   >>> file_widget.update()
   >>> print(file_widget.render())
-  <... id="widget.id.file" class="named-file-widget required bytes-field">...
+  <... id="widget.id.file" class="named-file-widget required bytes-field" >...
   <a href="http://127.0.0.1/content2/++widget++widget.name.file/@@download/plone.pdf" >plone.pdf</a>...
-  <input type="radio"... id="widget.id.file-nochange"...
-  <input type="radio"... id="widget.id.file-replace"...
-  <input type="file"... id="widget.id.file-input"...
+  <input... type="radio"... id="widget.id.file-nochange"...
+  <input... type="radio"... id="widget.id.file-replace"...
+  <input... type="file"... id="widget.id.file-input"...
 
   >>> image_widget.update()
   >>> print(image_widget.render())
-  <... id="widget.id.image" class="named-image-widget required bytes-field">...
+  <... id="widget.id.image" class="named-image-widget required bytes-field" >...
   <a href="http://127.0.0.1/content2/++widget++widget.name.image/@@download/logo.tiff" >logo.tiff</a>...
-  <input type="radio"... id="widget.id.image-nochange"...
-  <input type="radio"... id="widget.id.image-replace"...
-  <input type="file"... id="widget.id.image-input"...
+  <input... type="radio"... id="widget.id.image-nochange"...
+  <input... type="radio"... id="widget.id.image-replace"...
+  <input... type="file"... id="widget.id.image-input"...
 
 
 The Download view on Bytes fields

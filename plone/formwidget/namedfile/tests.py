@@ -1,6 +1,5 @@
 from DateTime import DateTime
 from OFS.SimpleItem import SimpleItem
-from ZPublisher.pubevents import PubSuccess
 from plone.formwidget.namedfile.datamanager import NamedImageAttributeField
 from plone.formwidget.namedfile.interfaces import IScaleGenerateOnSave
 from plone.formwidget.namedfile.testing import FUNCTIONAL_TESTING
@@ -16,10 +15,9 @@ from zope.annotation import IAttributeAnnotatable
 from zope.component import getMultiAdapter
 from zope.event import notify
 from zope.interface import implementer
+from ZPublisher.pubevents import PubSuccess
 
 import doctest
-import re
-import six
 import unittest
 
 
@@ -78,7 +76,7 @@ def test_suite():
         layered(
             doctest.DocFileSuite(
                 "widget.rst",
-                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
+                optionflags=(doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
                 encoding="utf-8",
             ),
             layer=INTEGRATION_TESTING,

@@ -1,7 +1,6 @@
 from BTrees.OOBTree import OOBTree
 from datetime import datetime
 from datetime import timedelta
-from persistent.dict import PersistentDict
 from plone.base.interfaces import IImagingSchema
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
 from plone.registry.interfaces import IRegistry
@@ -18,6 +17,7 @@ FILE_UPLOAD_MAP_KEY = "file_upload_map"
 FILE_UPLOAD_EXPIRATION_TIME = 30 * 60  # seconds
 FALLBACK_DATE = datetime(2000, 2, 2)
 CLEANUP_INTERVAL = 5
+
 
 def is_file_upload(item):
     """Check if ``item`` is a file upload."""
@@ -47,11 +47,13 @@ class FileUploadTemporaryStorage:
         Use force to make sure all expired files are deleted
         """
         upload_map = self.upload_map
-        expiration_limit = datetime.now() - timedelta(seconds=FILE_UPLOAD_EXPIRATION_TIME)
+        expiration_limit = datetime.now() - timedelta(
+            seconds=FILE_UPLOAD_EXPIRATION_TIME
+        )
         # Avoid conflict errors by deleting only every fifth time
         delete = force or randint(1, CLEANUP_INTERVAL) == 1
         for key in list(upload_map.keys()):
-            dt = upload_map[key].get('dt', FALLBACK_DATE)
+            dt = upload_map[key].get("dt", FALLBACK_DATE)
             if dt < expiration_limit and delete:
                 # Delete expired files or files without timestamp
                 del upload_map[key]

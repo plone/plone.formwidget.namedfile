@@ -15,7 +15,6 @@ def get_file(filename):
 
 
 class PloneFormwidgetNamedfileLayer(PloneSandboxLayer):
-
     defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
