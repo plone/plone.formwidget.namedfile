@@ -100,6 +100,14 @@
                             disabled view/disabled;
                             maxlength view/maxlength;"
             />
+        <div class="form-text"
+             tal:condition="view/accept"
+             i18n:translate="namedfile_accepted_types"
+        >
+          Allowed types:
+          <tal:i18n i18n:name="accepted_types">${view/accept}</tal:i18n>.
+        </div>
+
         <script tal:condition="python:allow_nochange and action != 'replace'" type="text/javascript"
             tal:content="string:document.getElementById('${view/id}-input').disabled=true;">
         </script>
