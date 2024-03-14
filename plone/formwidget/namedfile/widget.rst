@@ -285,7 +285,9 @@ At first, there is no value, so the behaviour is much like before::
   >>> print(image_widget.render())
   <span id="widget.id.image" class="named-image-widget required namedimage-field" >
       <input accept="image/*" type="file" id="widget.id.image-input" name="widget.name.image" />
+      <div class="form-text" >Allowed types: image/*.</div>
   </span>
+
 
 However, if we now set a value, we will have the option of keeping it,
 or changing it.  The filename can handle unicode and international
@@ -440,12 +442,14 @@ At first, there is no value, so the behaviour is much like before::
   >>> print(file_widget_constrained.render())
   <span id="widget.id.file" class="named-file-widget required namedfile-field" >
       <input accept="audio/mp3, audio/flac, .wav" type="file" id="widget.id.file-input" name="widget.name.file" />
+      <div class="form-text" >Allowed types: audio/mp3, audio/flac, .wav.</div>
   </span>
 
   >>> image_widget_constrained.update()
   >>> print(image_widget_constrained.render())
   <span id="widget.id.image" class="named-image-widget required namedimage-field" >
       <input accept="image/webp, image/png, .jpg" type="file" id="widget.id.image-input" name="widget.name.image" />
+      <div class="form-text" >Allowed types: image/webp, image/png, .jpg.</div>
   </span>
 
 
