@@ -98,6 +98,7 @@
             type="file"
             tal:attributes="id string:${view/id}-input;
                             name view/name;
+                            accept view/accept;
                             size view/size;
                             disabled view/disabled;
                             maxlength view/maxlength;"
