@@ -130,7 +130,8 @@
   <div style="padding-left: 1.5em; padding-top: 0.5em;"
        tal:omit-tag="not:allow_nochange"
   >
-    <input type="file"
+    <input accept="${view/accept}"
+           type="file"
            tal:attributes="
              id string:${view/id}-input;
              name view/name;
