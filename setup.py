@@ -34,7 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
-        "plone.namedfile>5.6.1",
+        'plone.namedfile>=5.7.0',
         'plone.z3cform >= 0.7.4',
         'six',
         'z3c.form',
