@@ -153,7 +153,7 @@ First use a GET request::
   >>> image_widget.extract()
   <ZPublisher.HTTPRequest.FileUpload ...>
 
-The rendering is unchanged:
+The rendering is unchanged::
 
   >>> print(file_widget.render())
   <span id="widget.id.file" class="named-file-widget">
@@ -292,8 +292,10 @@ At first, there is no value, so the behaviour is much like before::
   >>> print(image_widget.render())
   <span id="widget.id.image" class="named-image-widget required namedimage-field">
       <input type="file" id="widget.id.image-input"
-             name="widget.name.image" />
+             name="widget.name.image" accept="image/*" />
+      <div class="form-text" >Allowed types: image/*.</div>
   </span>
+
 
 However, if we now set a value, we will have the option of keeping it,
 or changing it.  The filename can handle unicode and international
@@ -394,6 +396,69 @@ stored in the field::
   >>> image_widget.update()
   >>> image_widget.extract() is content.image_field
   True
+
+
+Rendering field widgets with constraints on allowed media types
+-----------------------------------------------------------------
+
+The NamedImage already has a constraint on `image/*` mime types for files and
+this is also rendered for the input element. See above.
+You can also customize the allowed media types with the `accept` attribute,
+like shown here::
+
+  >>> class IContentConstrained(Interface):
+  ...     file_field = field.NamedFile(
+  ...         title=u"File",
+  ...         accept=("audio/mp3", "audio/flac", ".wav")
+  ...     )
+  ...     image_field = field.NamedImage(
+  ...         title=u"Image",
+  ...         accept=("image/webp", "image/png", ".jpg")
+  ...     )
+
+  >>> @implementer(IContentConstrained, IImageScaleTraversable, IAttributeAnnotatable)
+  ... class ContentConstrained(object):
+  ...     def __init__(self, file, image):
+  ...         self.file_field = file
+  ...         self.image_field = image
+  ...         self._p_mtime = DateTime()
+  ...         self.path = '/content_constrained'
+  ...
+  ...     def absolute_url(self):
+  ...         return root_url + self.path
+  ...
+  ...     def Title(self):
+  ...         return 'A content item'
+
+  >>> content_constrained = ContentConstrained(None, None)
+
+  >>> file_widget_constrained = NamedFileFieldWidget(IContentConstrained['file_field'], make_request())
+  >>> image_widget_constrained = NamedImageFieldWidget(IContentConstrained['image_field'], make_request())
+
+  >>> file_widget_constrained.context = content_constrained
+  >>> image_widget_constrained.context = content_constrained
+
+  >>> file_widget_constrained.id = 'widget.id.file'
+  >>> file_widget_constrained.name = 'widget.name.file'
+
+  >>> image_widget_constrained.id = 'widget.id.image'
+  >>> image_widget_constrained.name = 'widget.name.image'
+
+At first, there is no value, so the behaviour is much like before::
+
+  >>> file_widget_constrained.update()
+  >>> print(file_widget_constrained.render())
+  <span id="widget.id.file" class="named-file-widget required namedfile-field">
+      <input type="file" id="widget.id.file-input" name="widget.name.file" accept="audio/mp3, audio/flac, .wav" />
+      <div class="form-text" >Allowed types: audio/mp3, audio/flac, .wav.</div>
+  </span>
+
+  >>> image_widget_constrained.update()
+  >>> print(image_widget_constrained.render())
+  <span id="widget.id.image" class="named-image-widget required namedimage-field">
+      <input type="file" id="widget.id.image-input" name="widget.name.image" accept="image/webp, image/png, .jpg" />
+      <div class="form-text" >Allowed types: image/webp, image/png, .jpg.</div>
+  </span>
 
 
 Download view
