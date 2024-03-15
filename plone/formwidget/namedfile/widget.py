@@ -83,6 +83,12 @@ class NamedFileWidget(Explicit, FileWidget):
     _file_upload_id = None
 
     @property
+    def accept(self):
+        accept = getattr(self.field, "accept", None)
+        if accept:
+            return ", ".join(accept)
+
+    @property
     def is_uploaded(self):
         return utils.is_file_upload(self.value) or INamed.providedBy(self.value)
 

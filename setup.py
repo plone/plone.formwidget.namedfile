@@ -35,7 +35,7 @@ setup(
         "BTrees",
         "setuptools",
         "plone.base",
-        "plone.namedfile",
+        "plone.namedfile>=6.3.0",
         "Products.MimetypesRegistry",
         "persistent",
         "plone.registry",
