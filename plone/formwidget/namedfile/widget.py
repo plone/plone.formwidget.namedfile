@@ -2,7 +2,7 @@ from Acquisition import aq_inner
 from Acquisition import Explicit
 from datetime import datetime
 from os import SEEK_END
-from persistent.dict import PersistentDict
+from persistent.mapping import PersistentMapping
 from plone.formwidget.namedfile import utils
 from plone.formwidget.namedfile.converter import b64decode_file
 from plone.formwidget.namedfile.interfaces import IFileUploadTemporaryStorage
@@ -58,7 +58,7 @@ def _make_namedfile(value, field, widget):
     string_types = (bytes, str)
     if isinstance(value, string_types) and IBytes.providedBy(field):
         filename, data = b64decode_file(value)
-    elif isinstance(value, dict) or isinstance(value, PersistentDict):
+    elif isinstance(value, dict) or isinstance(value, PersistentMapping):
         filename = value["filename"]
         data = value["data"]
 
@@ -130,7 +130,7 @@ class NamedFileWidget(Explicit, FileWidget):
             upload_id = uuid.uuid4().hex
             up = IFileUploadTemporaryStorage(getSite())
             up.cleanup()
-            up.upload_map[upload_id] = PersistentDict(
+            up.upload_map[upload_id] = PersistentMapping(
                 filename=self.value.filename,
                 data=data,
                 dt=datetime.now(),
