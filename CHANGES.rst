@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+3.1.2 (2025-09-11)
+------------------
+
+Internal:
+
+
+- Move distribution to src layout [gforcada] (#4217)
+
+
 3.1.1 (2025-01-24)
 ------------------
 
