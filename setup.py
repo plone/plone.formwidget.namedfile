@@ -1,8 +1,7 @@
-from setuptools import find_packages
 from setuptools import setup
 
 
-version = "3.1.3.dev0"
+version = "4.0.0.dev0"
 
 setup(
     name="plone.formwidget.namedfile",
@@ -12,11 +11,9 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
-        "Framework :: Plone :: 6.0",
+        "Framework :: Plone :: 6.2",
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -26,14 +23,10 @@ setup(
     author_email="optilude@gmail.com",
     url="https://pypi.org/project/plone.formwidget.namedfile",
     license="GPL",
-    packages=find_packages("src"),
-    package_dir={"": "src"},
-    namespace_packages=["plone", "plone.formwidget"],
     include_package_data=True,
     zip_safe=False,
-    python_requires=">=3.8",
+    python_requires=">=3.10",
     install_requires=[
-        "setuptools",
         "plone.base",
         "plone.namedfile>=6.3.0",
         "Products.MimetypesRegistry",
