@@ -14,7 +14,6 @@ import logging
 import os
 import transaction
 
-
 ANNOTATION_KEY = "plone.formwidget.namedfile.scale"
 ENVIRONMENT_KEY = "PLONE_SCALE_GENERATE_ON_SAVE"
 
