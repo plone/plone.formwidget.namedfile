@@ -30,13 +30,11 @@ class IFileUploadTemporaryStorage(Interface):
     To be used to not need to re-upload files after form submission errors.
     """
 
-    upload_map = Attribute(
-        """
+    upload_map = Attribute("""
         Mapping for temporary uploads.
         Key is a uuid4.hex value.
         The default storage is the annotation storage of the poral root.
-    """
-    )
+    """)
 
     def cleanup():
         """Removes stale temporary uploads from the upload storage"""

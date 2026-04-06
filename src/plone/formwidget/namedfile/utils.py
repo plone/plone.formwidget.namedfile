@@ -12,7 +12,6 @@ from zope.interface import implementer
 from zope.interface import Interface
 from ZPublisher.HTTPRequest import FileUpload
 
-
 FILE_UPLOAD_MAP_KEY = "file_upload_map"
 FILE_UPLOAD_EXPIRATION_TIME = 30 * 60  # seconds
 FALLBACK_DATE = datetime(2000, 2, 2)
