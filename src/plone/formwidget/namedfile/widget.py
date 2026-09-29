@@ -52,6 +52,12 @@ def _make_namedfile(value, field, widget):
     e.g. when it's base64 encoded data.
     """
 
+    if value is None:
+        # There is nothing stored yet for this field, e.g. when a widget
+        # is rendered for a field that has never been filled in, or when
+        # its download view is hit directly.
+        return None
+
     if INamed.providedBy(value):
         return value
 
@@ -61,6 +67,9 @@ def _make_namedfile(value, field, widget):
     elif isinstance(value, dict) or isinstance(value, PersistentMapping):
         filename = value["filename"]
         data = value["data"]
+    else:
+        # Nothing we know how to turn into a named file.
+        return None
 
     if INamedBlobImageField.providedBy(field):
         value = NamedBlobImage(data=data, filename=filename)

@@ -1,0 +1,1 @@
+Fix ``UnboundLocalError`` in ``_make_namedfile`` when a field has no stored value yet, for example when hitting the ``@@download`` view directly on an empty field. [afonsojanu]
