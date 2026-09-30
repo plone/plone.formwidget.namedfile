@@ -92,9 +92,7 @@ def test_suite():
     suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(ScaleGenerateOnSaveTests)
     )
-    suite.addTest(
-        unittest.defaultTestLoader.loadTestsFromTestCase(MakeNamedFileTests)
-    )
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(MakeNamedFileTests))
     suite.addTest(
         layered(
             doctest.DocFileSuite(
