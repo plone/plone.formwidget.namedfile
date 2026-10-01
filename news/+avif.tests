@@ -1,0 +1,2 @@
+Accept a `<picture>` around the thumb tag `<img>`, as plone.namedfile renders with AVIF support.
+@MrTango
